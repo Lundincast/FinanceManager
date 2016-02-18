@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">presentation</string>
+    <string name="app_name">Finance Manager</string>
+    <string name="filter_list">Filter list</string>
+    <string name="settings">Settings</string>
 </resources>

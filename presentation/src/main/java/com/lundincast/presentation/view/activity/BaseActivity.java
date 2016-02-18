@@ -1,12 +1,14 @@
 package com.lundincast.presentation.view.activity;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.lundincast.presentation.AndroidApplication;
 import com.lundincast.presentation.dagger.components.ApplicationComponent;
+import com.lundincast.presentation.dagger.modules.ActivityModule;
 import com.lundincast.presentation.navigation.Navigator;
 
 import javax.inject.Inject;
@@ -14,10 +16,10 @@ import javax.inject.Inject;
 /**
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject
-    Navigator navigator;
+    @Inject Navigator navigator;
+    @Inject SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,5 +46,14 @@ public abstract class BaseActivity extends Activity {
      */
     public ApplicationComponent getApplicationComponent() {
         return ((AndroidApplication)getApplication()).getApplicationComponent();
+    }
+
+    /**
+     * Get an Activity module for dependency injection.
+     *
+     * @return {@link com.lundincast.presentation.dagger.modules.ActivityModule}
+     */
+    public ActivityModule getActivityModule() {
+        return new ActivityModule(this);
     }
 }

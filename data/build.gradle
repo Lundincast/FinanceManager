@@ -47,6 +47,7 @@ dependencies {
     apt 'com.google.dagger:dagger-compiler:2.0'
     compile 'io.reactivex:rxandroid:1.0.1'
     provided 'javax.annotation:jsr250-api:1.0'
+    compile 'io.realm:realm-android:0.87.4'
 
     // Unit test
     testCompile 'junit:junit:4.12'
