@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 
 import com.lundincast.data.executor.JobExecutor;
 import com.lundincast.data.repository.TransactionDataRepository;
+import com.lundincast.data.repository.datasource.DiskTransactionDataStore;
+import com.lundincast.data.repository.datasource.TransactionDataStore;
 import com.lundincast.domain.executor.PostExecutionThread;
 import com.lundincast.domain.executor.ThreadExecutor;
 import com.lundincast.domain.repository.TransactionRepository;
@@ -17,6 +19,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Dagger module that provides objects which will live during the application lifecycle.
@@ -56,7 +60,21 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
+    Realm provideRealm () {
+        RealmConfiguration config = new RealmConfiguration.Builder(provideApplicationContext())
+                .name("financemanager.realm")
+                .schemaVersion(1)
+                .build();
+        return Realm.getInstance(config);
+    }
+
+    @Provides @Singleton
     TransactionRepository provideTransactionRepository(TransactionDataRepository transactionDataRepository) {
         return transactionDataRepository;
+    }
+
+    @Provides @Singleton
+    TransactionDataStore provideTransactionDataStore(Realm realm) {
+        return new DiskTransactionDataStore(realm);
     }
 }
