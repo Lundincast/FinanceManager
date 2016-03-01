@@ -1,12 +1,12 @@
 package com.lundincast.data.repository.datasource;
 
-import android.content.Context;
-
 import com.lundincast.data.entity.TransactionEntity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
@@ -29,6 +29,8 @@ public class DiskTransactionDataStore implements TransactionDataStore {
     @Override
     public Observable<List<TransactionEntity>> transactionEntityList() throws IOException {
 
+        List<TransactionEntity> transactionList = new ArrayList<TransactionEntity>();
+
         // Create transaction just for testing
         realm.beginTransaction();
         TransactionEntity transaction = realm.createObject(TransactionEntity.class);
@@ -41,9 +43,14 @@ public class DiskTransactionDataStore implements TransactionDataStore {
 
         // Now retrieve this transaction
         RealmResults<TransactionEntity> result = realm.where(TransactionEntity.class)
-                                                      .findAll();
+                                                                  .findAll();
 
-        return null;
+        // build a List<TransactionEntity> out of query result
+        for (TransactionEntity transactionEntity : result) {
+            transactionList.add(transactionEntity);
+        }
+
+        return Observable.from((Iterable) transactionList);
     }
 
     @Override

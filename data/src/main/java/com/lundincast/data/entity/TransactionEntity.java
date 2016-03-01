@@ -11,17 +11,17 @@ import io.realm.annotations.PrimaryKey;
 public class TransactionEntity extends RealmObject {
 
     @PrimaryKey
-    private long id;
+    private int id;
     private double price;
     private CategoryEntity category;
     private Date date;
     private String comment;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

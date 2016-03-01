@@ -5,6 +5,7 @@ import com.lundincast.data.entity.TransactionEntity;
 import java.io.IOException;
 import java.util.List;
 
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**
