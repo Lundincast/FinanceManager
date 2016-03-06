@@ -18,7 +18,7 @@ public class Transaction {
     private Date date;
     private String comment;
 
-    public long getTransactionId() {
+    public int getTransactionId() {
         return transactionId;
     }
 

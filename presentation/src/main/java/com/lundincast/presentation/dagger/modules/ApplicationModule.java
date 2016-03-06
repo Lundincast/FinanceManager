@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.lundincast.data.executor.JobExecutor;
-import com.lundincast.data.repository.TransactionDataRepository;
-import com.lundincast.data.repository.datasource.DiskTransactionDataStore;
-import com.lundincast.data.repository.datasource.TransactionDataStore;
+import com.lundincast.data.repository.TransacDataRepository;
+import com.lundincast.data.repository.datasource.TransacDataStore;
+import com.lundincast.presentation.data.TransactionRepositoryImpl;
+import com.lundincast.presentation.data.datasource.DiskTransactionDataStore;
+import com.lundincast.presentation.data.datasource.TransactionDataStore;
 import com.lundincast.domain.executor.PostExecutionThread;
 import com.lundincast.domain.executor.ThreadExecutor;
-import com.lundincast.domain.repository.TransactionRepository;
+import com.lundincast.presentation.data.TransactionRepository;
+import com.lundincast.domain.repository.TransactionRepositoryDomain;
 import com.lundincast.presentation.AndroidApplication;
 import com.lundincast.presentation.UIThread;
 import com.lundincast.presentation.navigation.Navigator;
@@ -69,12 +72,24 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    TransactionRepository provideTransactionRepository(TransactionDataRepository transactionDataRepository) {
+    TransactionDataStore provideTransactionDataStore(Realm realm) {
+        return new DiskTransactionDataStore(realm);
+    }
+
+    @Provides @Singleton
+    TransactionRepository provideTransactionRepository(TransactionRepositoryImpl transactionDataRepository) {
         return transactionDataRepository;
     }
 
     @Provides @Singleton
-    TransactionDataStore provideTransactionDataStore(Realm realm) {
-        return new DiskTransactionDataStore(realm);
+    TransacDataStore provideTransacDataStore(Realm realm) {
+        return new com.lundincast.data.repository.datasource.DiskTransactionDataStore();
     }
+
+    @Provides @Singleton
+    TransactionRepositoryDomain provideTransactionRepositoryDomain(TransacDataRepository transactionDataRepository) {
+        return transactionDataRepository;
+    }
+
+
 }

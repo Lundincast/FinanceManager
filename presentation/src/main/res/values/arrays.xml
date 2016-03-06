@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="currencyentries">
+        <item>EUR - Euro</item>
+        <item>USD - Dollar</item>
+        <item>GBP - British Pound</item>
+    </string-array>
+
+    <string-array name="currencyvalues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="feedbackoptions">
+        <item>Rate App</item>
+        <item>Report a bug</item>
+    </string-array>
+
+
+    <string-array name="colors_array">
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Dark blue</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Green</item>
+        <item>Dark green</item>
+        <item>Grey</item>
+        <item>Pink</item>
+        <item>Brown</item>
+        <item>Purple</item>
+    </string-array>
+
+    <string-array name="colors_value">
+        <item>#FF8D9A</item>
+        <item>#87EAFE</item>
+        <item>#192980</item>
+        <item>#FFF892</item>
+        <item>#FFD390</item>
+        <item>#C2FF93</item>
+        <item>#085D3C</item>
+        <item>#B5B5B5</item>
+        <item>#E879A4</item>
+        <item>#775530</item>
+        <item>#7E0B80</item>
+    </string-array>
+
+</resources>

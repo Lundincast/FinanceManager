@@ -3,7 +3,7 @@ package com.lundincast.domain.interactor;
 import com.lundincast.domain.Transaction;
 import com.lundincast.domain.executor.PostExecutionThread;
 import com.lundincast.domain.executor.ThreadExecutor;
-import com.lundincast.domain.repository.TransactionRepository;
+import com.lundincast.domain.repository.TransactionRepositoryDomain;
 
 import javax.inject.Inject;
 
@@ -15,12 +15,12 @@ import rx.Observable;
  */
 public class GetTransactionList extends UseCase {
 
-    private final TransactionRepository transactionRepository;
+    private final TransactionRepositoryDomain transactionRepository;
 
     @Inject
     public GetTransactionList(ThreadExecutor threadExecutor,
                               PostExecutionThread postExecutionThread,
-                              TransactionRepository transactionRepository) {
+                              TransactionRepositoryDomain transactionRepository) {
         super(threadExecutor, postExecutionThread);
         this.transactionRepository = transactionRepository;
     }

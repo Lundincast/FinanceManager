@@ -11,12 +11,12 @@ import rx.Observable;
 /**
  * Interface that represents a data store from where transaction data is retrieved.
  */
-public interface TransactionDataStore {
+public interface TransacDataStore {
 
     /**
      * Get an {@link rx.Observable} which will emit a List of {@link TransactionEntity}.
      */
-    Observable<List<TransactionEntity>> transactionEntityList() throws IOException;
+    Observable transactionEntityList() throws IOException;
 
     /**
      * Get an {@link rx.Observable} which will emit a {@link TransactionEntity} by its id.

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:background="@color/colorPrimary"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="5dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="RtlHardcoded,RtlSymmetry">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_arrow_back_white_24dp" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="15dp"
+        android:text="@string/settings"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+</android.support.v7.widget.Toolbar>

@@ -4,6 +4,7 @@ import com.lundincast.domain.Transaction;
 import com.lundincast.domain.interactor.DefaultSubscriber;
 import com.lundincast.domain.interactor.UseCase;
 import com.lundincast.presentation.dagger.PerActivity;
+import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.mapper.TransactionModelDataMapper;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.TransactionListView;
@@ -22,16 +23,18 @@ import javax.inject.Named;
 @PerActivity
 public class TransactionListPresenter implements Presenter {
 
+    private final TransactionRepository transactionRepository;
+
     private TransactionListView viewListView;
 
-    private final UseCase getTransactionListUseCase;
-    private final TransactionModelDataMapper transactionModelDataMapper;
+//    private final UseCase getTransactionListUseCase;
+//    private final TransactionModelDataMapper transactionModelDataMapper;
 
     @Inject
-    public TransactionListPresenter(@Named("transactionList") UseCase getTransactionListUseCase,
-                                    TransactionModelDataMapper transactionModelDataMapper) {
-        this.getTransactionListUseCase = getTransactionListUseCase;
-        this.transactionModelDataMapper = transactionModelDataMapper;
+    public TransactionListPresenter(TransactionRepository transactionRepository) {
+//        this.getTransactionListUseCase = getTransactionListUseCase;
+//        this.transactionModelDataMapper = transactionModelDataMapper;
+        this.transactionRepository = transactionRepository;
     }
 
     /**
@@ -85,18 +88,17 @@ public class TransactionListPresenter implements Presenter {
         this.viewListView.hideLoading();
     }
 
-    private void showTransactionsCollectionInView(Collection<Transaction> transactionsCollection) {
-        final Collection<TransactionModel> transactionModelCollection =
-                this.transactionModelDataMapper.transform(transactionsCollection);
-        this.viewListView.renderTransactionList(transactionModelCollection);
+    private void showTransactionsCollectionInView(List<TransactionModel> transactionList) {
+        this.viewListView.renderTransactionList(transactionList);
     }
 
     private void getTransactionList() {
-        this.getTransactionListUseCase.execute(new TransactionListSubscriber());
+        showTransactionsCollectionInView(transactionRepository.transactions());
+//        this.getTransactionListUseCase.execute(new TransactionListSubscriber());
     }
 
 
-    private final class TransactionListSubscriber extends DefaultSubscriber<List<Transaction>> {
+    public final class TransactionListSubscriber extends DefaultSubscriber<List<Transaction>> {
 
         @Override
         public void onCompleted() {
@@ -110,7 +112,6 @@ public class TransactionListPresenter implements Presenter {
 
         @Override
         public void onNext(List<Transaction> transactions) {
-            TransactionListPresenter.this.showTransactionsCollectionInView(transactions);
         }
     }
 }

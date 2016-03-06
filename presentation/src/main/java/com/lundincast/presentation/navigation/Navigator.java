@@ -3,6 +3,8 @@ package com.lundincast.presentation.navigation;
 import android.content.Context;
 import android.content.Intent;
 
+import com.lundincast.presentation.view.activity.SettingsActivity;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -22,8 +24,8 @@ public class Navigator {
      */
     public void navigateToSettings(Context context) {
         if (context != null) {
-//            Intent intentToLaunch = SettingsActivity.getCallingIntent(context);
-//            context.startActivity(intentToLaunch);
+            Intent intentToLaunch = SettingsActivity.getCallingIntent(context);
+            context.startActivity(intentToLaunch);
         }
     }
 }

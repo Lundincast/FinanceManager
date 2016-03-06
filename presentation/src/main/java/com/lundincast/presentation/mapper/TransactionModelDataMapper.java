@@ -3,7 +3,9 @@ package com.lundincast.presentation.mapper;
 import com.lundincast.domain.Transaction;
 import com.lundincast.presentation.model.TransactionModel;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -24,7 +26,16 @@ public class TransactionModelDataMapper {
      */
     public TransactionModel transform(Transaction transaction) {
 
-        return null;
+        if (transaction == null) {
+            throw new IllegalArgumentException("Cannot transform a null value");
+        }
+        TransactionModel transactionModel = new TransactionModel(transaction.getTransactionId());
+        transactionModel.setPrice(transaction.getPrice());
+        transactionModel.setCategory(null);
+        transactionModel.setDate(transaction.getDate());
+        transactionModel.setComment(transaction.getComment());
+
+        return transactionModel;
     }
 
     /**
@@ -35,6 +46,17 @@ public class TransactionModelDataMapper {
      */
     public Collection<TransactionModel> transform(Collection<Transaction> transactionCollection) {
 
-        return null;
+        Collection<TransactionModel> transactionModelCollection;
+
+        if (transactionCollection != null && !transactionCollection.isEmpty()) {
+            transactionModelCollection = new ArrayList<>();
+            for (Transaction transaction : transactionCollection) {
+                transactionModelCollection.add(transform(transaction));
+            }
+        } else {
+            transactionModelCollection = Collections.emptyList();
+        }
+
+        return transactionModelCollection;
     }
 }

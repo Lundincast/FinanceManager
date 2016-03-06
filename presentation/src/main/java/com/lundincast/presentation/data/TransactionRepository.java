@@ -1,6 +1,7 @@
-package com.lundincast.domain.repository;
+package com.lundincast.presentation.data;
 
 import com.lundincast.domain.Transaction;
+import com.lundincast.presentation.model.TransactionModel;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface TransactionRepository {
     /**
      * Get an {@link rx.Observable} which will emit a list of {@link Transaction}.
      */
-    Observable<List<Transaction>> transactions();
+    List<TransactionModel> transactions();
 
     /**
      * Get an {@link rx.Observable} which will emit a {@link Transaction}.

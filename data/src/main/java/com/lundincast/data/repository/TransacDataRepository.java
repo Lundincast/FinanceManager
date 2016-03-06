@@ -2,37 +2,36 @@ package com.lundincast.data.repository;
 
 import com.lundincast.data.entity.TransactionEntity;
 import com.lundincast.data.entity.mapper.TransactionEntityDataMapper;
-import com.lundincast.data.repository.datasource.TransactionDataStore;
+import com.lundincast.data.repository.datasource.TransacDataStore;
 import com.lundincast.domain.Transaction;
-import com.lundincast.domain.repository.TransactionRepository;
+import com.lundincast.domain.repository.TransactionRepositoryDomain;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.realm.RealmResults;
-import io.realm.rx.RxObservableFactory;
 import rx.Observable;
 
 /**
- * {@link TransactionRepository} for retrieving transaction data.
+ * {@link TransactionRepositoryDomain} for retrieving transaction data.
  */
 @Singleton
-public class TransactionDataRepository implements TransactionRepository {
+public class TransacDataRepository implements TransactionRepositoryDomain {
 
-    private final TransactionDataStore transactionDataStore;
+    private final TransacDataStore transactionDataStore;
     private final TransactionEntityDataMapper transactionEntityDataMapper;
 
     /**
-     * Constructs a {@link TransactionRepository}.
+     * Constructs a {@link TransactionRepositoryDomain}.
      *
      * @param transactionDataStore A factory to construct different data source implementations.
      */
     @Inject
-    public TransactionDataRepository(TransactionDataStore transactionDataStore,
-                                     TransactionEntityDataMapper transactionEntityDataMapper) {
+    public TransacDataRepository(TransacDataStore transactionDataStore,
+                                 TransactionEntityDataMapper transactionEntityDataMapper) {
         this.transactionDataStore = transactionDataStore;
         this.transactionEntityDataMapper = transactionEntityDataMapper;
     }
@@ -42,7 +41,7 @@ public class TransactionDataRepository implements TransactionRepository {
         Observable<List<Transaction>> transactionList = null;
         try {
             transactionList = transactionDataStore.transactionEntityList()
-                    .map(transactionEntities -> this.transactionEntityDataMapper.transform(transactionEntities));
+                    .map(transactionEntities -> this.transactionEntityDataMapper.transform((Collection<TransactionEntity>) transactionEntities));
         } catch (IOException e) {
             e.printStackTrace();
         }

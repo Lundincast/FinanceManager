@@ -1,11 +1,14 @@
-package com.lundincast.data.entity;
+package com.lundincast.presentation.model;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
- * Category Entity used in the data layer.
+ * Created by lundincast on 1/03/16.
  */
-public class CategoryEntity{
+public class CategoryModel extends RealmObject {
 
+    @PrimaryKey
     private long id;
     private String name;
     private String color;

@@ -1,7 +1,66 @@
 package com.lundincast.presentation.model;
 
+import java.util.Date;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
- * Created by lundincast on 16/02/16.
+ * Class that represents a transaction in the presentation layer.
  */
-public class TransactionModel {
+public class TransactionModel extends RealmObject {
+
+    @PrimaryKey
+    private int transactionId;
+
+    public TransactionModel() {};
+
+    public TransactionModel(int transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    private double price;
+    private CategoryModel category;
+    private Date date;
+    private String comment;
+
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public CategoryModel getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryModel category) {
+        this.category = category;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

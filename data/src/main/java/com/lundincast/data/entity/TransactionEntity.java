@@ -2,15 +2,13 @@ package com.lundincast.data.entity;
 
 import java.util.Date;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Event Entity used in the data layer.
  */
-public class TransactionEntity extends RealmObject {
+public class TransactionEntity{
 
-    @PrimaryKey
+
     private int id;
     private double price;
     private CategoryEntity category;

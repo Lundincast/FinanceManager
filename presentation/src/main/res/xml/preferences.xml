@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_general_settings"
+        android:key="pref_key_general_settings">
+        <ListPreference
+            android:entries="@array/currencyentries"
+            android:entryValues="@array/currencyvalues"
+            android:defaultValue="1"
+            android:summary="Euro"
+            android:key="pref_key_currency"
+            android:title="@string/pref_title_currency" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_expense_settings"
+        android:key="pref_key_expense_settings" >
+        <Preference
+            android:key="pref_key_categories"
+            android:title="@string/pref_title_categories" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Notifications"
+        android:key="pref_key_notification">
+        <CheckBoxPreference
+            android:key="pref_key_daily_reminder"
+            android:title="Daily reminder"
+            android:defaultValue="false" />
+        <Preference
+            android:key="pref_key_time_day"
+            android:title="Time of day"
+            android:dependency="pref_key_daily_reminder"/>
+        <CheckBoxPreference
+            android:key="pref_key_adapted_reminder"
+            android:title="Adapted reminder"
+            android:summary="Remind me only when I did not record an expense for the current day"
+            android:dependency="pref_key_daily_reminder"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+    <Preference
+        android:key="pref_key_rate_app"
+        android:title="@string/pref_title_feedback" />
+    <Preference
+        android:key="pref_key_about"
+        android:title="@string/pref_title_about"
+        android:summary="App version 1.0.0"/>
+
+</PreferenceScreen>

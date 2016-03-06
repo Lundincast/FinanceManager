@@ -3,12 +3,19 @@ package com.lundincast.presentation.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.TransactionModel;
 
 import java.util.Collection;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Adapter that manages a collection of {@link TransactionModel}.
@@ -24,21 +31,39 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private OnItemClickListener onItemClickListener;
 
-    public TransactionsAdapter(Context context, Collection<TransactionModel> transactionCollection) {
+    public TransactionsAdapter(Context context, List<TransactionModel> transactionCollection) {
         this.validateTransactionsCollection(transactionCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.transactionsCollection = (List<TransactionModel>) transactionCollection;
+        this.transactionsCollection = transactionCollection;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // TODO
-        return null;
+    public TransactionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View v = this.layoutInflater.inflate(R.layout.transaction_list_entry, parent, false);
+        TransactionViewHolder transactionViewHolder = new TransactionViewHolder(v);
+
+        return transactionViewHolder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        // TODO
+
+        TransactionViewHolder viewHolder = (TransactionViewHolder) holder;
+
+        final TransactionModel transactionModel = this.transactionsCollection.get(position);
+        viewHolder.ivTransactionCategory.setImageDrawable(null);
+        viewHolder.tvTransactionDate.setText(transactionModel.getDate().toString());
+        viewHolder.tvTransactionComment.setText(transactionModel.getComment());
+        viewHolder.tvTransactionPrice.setText(String.valueOf(transactionModel.getPrice()));
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (TransactionsAdapter.this.onItemClickListener != null) {
+                    TransactionsAdapter.this.onItemClickListener.onTransactionItemClicked(transactionModel);
+                }
+            }
+        });
     }
 
     @Override
@@ -67,5 +92,17 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
+    static class TransactionViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.iv_transaction_category) ImageView ivTransactionCategory;
+        @Bind(R.id.tv_transaction_date) TextView tvTransactionDate;
+        @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
+        @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
+
+        public TransactionViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 
 }
