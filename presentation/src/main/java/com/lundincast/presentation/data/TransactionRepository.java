@@ -8,12 +8,12 @@ import java.util.List;
 import rx.Observable;
 
 /**
- * Public interface that represents a Repository for getting {@link Transaction} related data.
+ * Public interface that represents a Repository for getting {@link TransactionModel} related data.
  */
 public interface TransactionRepository {
 
     /**
-     * Get an {@link rx.Observable} which will emit a list of {@link Transaction}.
+     * Get a {@link List} of {@link TransactionModel}.
      */
     List<TransactionModel> transactions();
 
@@ -23,4 +23,9 @@ public interface TransactionRepository {
      * @param transactionId The transaction id used to retrieve user data.
      */
     Observable<Transaction> transaction(final int transactionId);
+
+    /**
+     * Save a {@link TransactionModel} in database
+     */
+    void saveTransaction(final TransactionModel transactionModel);
 }

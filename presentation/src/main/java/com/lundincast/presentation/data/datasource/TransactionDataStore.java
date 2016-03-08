@@ -25,4 +25,9 @@ public interface TransactionDataStore {
      * @param transactionId The id to retrieve transaction data.
      */
     Observable<TransactionEntity> transactionEntityDetails(final int transactionId);
+
+    /**
+     * Save a {@link TransactionModel} in database
+     */
+    void saveTransaction(final TransactionModel transactionModel);
 }

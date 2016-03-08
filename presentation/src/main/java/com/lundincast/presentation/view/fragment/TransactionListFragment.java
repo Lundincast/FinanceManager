@@ -14,9 +14,11 @@ import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
 import com.lundincast.presentation.view.TransactionListView;
+import com.lundincast.presentation.view.activity.MainActivity;
 import com.lundincast.presentation.view.adapter.TransactionsAdapter;
 import com.lundincast.presentation.view.adapter.TransactionsLayoutManager;
 import com.lundincast.presentation.view.utilities.SimpleDividerItemDecoration;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * A {@link Fragment} subclass for "List" tab in Main Activity
@@ -42,6 +45,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
     @Bind(R.id.rv_transactions) RecyclerView rv_transactions;
+    @Bind(R.id.fab) FloatingActionButton fab;
 
     private TransactionsAdapter transactionsAdapter;
     private TransactionsLayoutManager transactionsLayoutManager;
@@ -81,6 +85,8 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Override public void onResume() {
         super.onResume();
         this.transactionListPresenter.resume();
+
+        this.fab.setVisibility(View.VISIBLE);
     }
 
     @Override public void onPause() {
@@ -127,6 +133,9 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         this.transactionsAdapter = new TransactionsAdapter(getActivity(), new ArrayList<TransactionModel>());
         this.transactionsAdapter.setOnItemClickListener(onItemClickListener);
         this.rv_transactions.setAdapter(transactionsAdapter);
+
+        // Attach fab to RecyclerView
+        fab.attachToRecyclerView(this.rv_transactions);
     }
 
     /**
@@ -169,4 +178,9 @@ public class TransactionListFragment extends BaseFragment implements Transaction
                     }
                 }
             };
+
+    @OnClick(R.id.fab)
+    void onFabClicked() {
+        ((MainActivity) getActivity()).onFabClicked();
+    }
 }

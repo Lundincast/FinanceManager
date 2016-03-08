@@ -7,7 +7,9 @@ import com.lundincast.domain.executor.PostExecutionThread;
 import com.lundincast.domain.executor.ThreadExecutor;
 import com.lundincast.domain.repository.TransactionRepositoryDomain;
 import com.lundincast.presentation.dagger.modules.ApplicationModule;
+import com.lundincast.presentation.data.CategoryRepository;
 import com.lundincast.presentation.data.TransactionRepository;
+import com.lundincast.presentation.data.datasource.CategoryDataStore;
 import com.lundincast.presentation.data.datasource.TransactionDataStore;
 import com.lundincast.presentation.view.activity.BaseActivity;
 import com.lundincast.presentation.view.fragment.SettingsFragment;
@@ -35,4 +37,6 @@ public interface ApplicationComponent {
     TransactionDataStore transactionDataStore();
     TransactionRepositoryDomain transactionRepositoryDomain();
     TransactionRepository transactionRepository();
+    CategoryDataStore categoryDataStore();
+    CategoryRepository categoryRepository();
 }

@@ -18,7 +18,7 @@ import javax.inject.Inject;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject Navigator navigator;
+    @Inject public Navigator navigator;
     @Inject SharedPreferences sharedPreferences;
 
     @Override
@@ -33,7 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param containerViewId The container view to where add the fragment.
      * @param fragment The fragment to be added.
      */
-    protected void addFragment(int containerViewId, Fragment fragment) {
+    public void addFragment(int containerViewId, Fragment fragment) {
         FragmentTransaction fragmentTransaction = this.getFragmentManager().beginTransaction();
         fragmentTransaction.add(containerViewId, fragment);
         fragmentTransaction.commit();

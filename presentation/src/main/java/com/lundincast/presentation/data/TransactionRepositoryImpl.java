@@ -46,4 +46,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     public Observable<Transaction> transaction(int transactionId) {
         return null;
     }
+
+    @Override
+    public void saveTransaction(TransactionModel transactionModel) {
+        this.transactionDataStore.saveTransaction(transactionModel);
+    }
 }

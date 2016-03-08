@@ -27,13 +27,8 @@ public class TransactionListPresenter implements Presenter {
 
     private TransactionListView viewListView;
 
-//    private final UseCase getTransactionListUseCase;
-//    private final TransactionModelDataMapper transactionModelDataMapper;
-
     @Inject
     public TransactionListPresenter(TransactionRepository transactionRepository) {
-//        this.getTransactionListUseCase = getTransactionListUseCase;
-//        this.transactionModelDataMapper = transactionModelDataMapper;
         this.transactionRepository = transactionRepository;
     }
 
@@ -94,7 +89,6 @@ public class TransactionListPresenter implements Presenter {
 
     private void getTransactionList() {
         showTransactionsCollectionInView(transactionRepository.transactions());
-//        this.getTransactionListUseCase.execute(new TransactionListSubscriber());
     }
 
 

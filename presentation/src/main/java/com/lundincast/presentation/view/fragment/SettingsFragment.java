@@ -60,6 +60,17 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
+        // Set onClick listener on Categories button to launch CategoryListActivity
+        Preference categoryPref = findPreference("pref_key_categories");
+        categoryPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                SettingsActivity activity = (SettingsActivity) SettingsFragment.this.getActivity();
+                activity.navigator.navigateToListCategories(activity);
+                return false;
+            }
+        });
+
         timeOfDayPref = (Preference) findPreference("pref_key_time_day");
         // Retrieve time of day from sharedPref and set summary
         int hour = sharedPreferences.getInt("hour_of_day_alarm", 23);
@@ -96,7 +107,7 @@ public class SettingsFragment extends PreferenceFragment {
         if(versionName != null) {
             appVersionPref.setSummary(String.valueOf("App version " + versionName));
         } else {
-            appVersionPref.setSummary("App version 1.0.0");
+            appVersionPref.setSummary("");
         }
 
     }

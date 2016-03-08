@@ -17,6 +17,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.CreateTransactionActivity"
+            android:label="" >
+        </activity>
+        <activity android:name=".view.activity.CategoryListActivity"
+            android:label="">
+        </activity>
         <activity android:name=".view.activity.SettingsActivity"
             android:label="" >
         </activity>

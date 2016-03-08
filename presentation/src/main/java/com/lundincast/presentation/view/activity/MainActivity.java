@@ -20,11 +20,13 @@ import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.view.fragment.TransactionListFragment;
+import com.melnykov.fab.FloatingActionButton;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Main application screen. This is the app entry point.
@@ -104,6 +106,14 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
     @Override
     public void onTransactionClicked(TransactionModel transactionModel) {
         // TODO
+    }
+
+    /**
+     *
+     * Launch create transaction activity on fab clicked
+     */
+    public void onFabClicked() {
+        this.navigator.navigateToCreateTransaction(this);
     }
 
     @Override

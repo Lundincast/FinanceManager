@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -30,21 +31,11 @@ public class DiskTransactionDataStore implements TransactionDataStore {
     @Override
     public List<TransactionModel> transactionEntityList() throws IOException {
 
-        // Create transaction just for testing
-        realm.beginTransaction();
-        TransactionModel transaction = realm.createObject(TransactionModel.class);
-        transaction.setTransactionId(2);
-        transaction.setComment("test");
-        transaction.setDate(new Date());
-        transaction.setPrice(12);
-        transaction.setCategory(null);
-        realm.commitTransaction();
-
         // retrieve all transactions
         RealmResults<TransactionModel> result = realm.where(TransactionModel.class)
                 .findAll();
 
-        // convert to a Collection<TransactionModel> obeject
+        // convert to a Collection<TransactionModel> object
         List<TransactionModel> transactionModelCollection = new ArrayList<>();
         for (TransactionModel transactionModel : result) {
             transactionModelCollection.add(transactionModel);
@@ -56,5 +47,20 @@ public class DiskTransactionDataStore implements TransactionDataStore {
     @Override
     public Observable<TransactionEntity> transactionEntityDetails(int transactionId) {
         return null;
+    }
+
+    @Override
+    public void saveTransaction(final TransactionModel transactionModel) {
+        RealmAsyncTask transaction = realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                TransactionModel transactionModel1 = realm.createObject(TransactionModel.class);
+                transactionModel1.setTransactionId(realm.where(TransactionModel.class).max("transactionId").intValue() + 1);
+                transactionModel1.setPrice(transactionModel.getPrice());
+                transactionModel1.setCategory(transactionModel.getCategory());
+                transactionModel1.setDate(transactionModel.getDate());
+                transactionModel1.setComment(transactionModel.getComment());
+            }
+        }, null);
     }
 }

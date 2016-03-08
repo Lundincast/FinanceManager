@@ -7,7 +7,11 @@ import android.preference.PreferenceManager;
 import com.lundincast.data.executor.JobExecutor;
 import com.lundincast.data.repository.TransacDataRepository;
 import com.lundincast.data.repository.datasource.TransacDataStore;
+import com.lundincast.presentation.data.CategoryRepository;
+import com.lundincast.presentation.data.CategoryRepositoryImpl;
 import com.lundincast.presentation.data.TransactionRepositoryImpl;
+import com.lundincast.presentation.data.datasource.CategoryDataStore;
+import com.lundincast.presentation.data.datasource.DiskCategoryDataStore;
 import com.lundincast.presentation.data.datasource.DiskTransactionDataStore;
 import com.lundincast.presentation.data.datasource.TransactionDataStore;
 import com.lundincast.domain.executor.PostExecutionThread;
@@ -79,6 +83,16 @@ public class ApplicationModule {
     @Provides @Singleton
     TransactionRepository provideTransactionRepository(TransactionRepositoryImpl transactionDataRepository) {
         return transactionDataRepository;
+    }
+
+    @Provides @Singleton
+    CategoryDataStore provideCategoryDataStore(Realm realm) {
+        return new DiskCategoryDataStore(realm);
+    }
+
+    @Provides @Singleton
+    CategoryRepository provideCategoryRepository(CategoryRepositoryImpl categoryDataRepository) {
+        return categoryDataRepository;
     }
 
     @Provides @Singleton
