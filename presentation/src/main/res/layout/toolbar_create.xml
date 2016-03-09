@@ -11,26 +11,26 @@
         android:id="@+id/iv_back"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_arrow_back_white_24dp" />
+        android:src="@drawable/ic_arrow_back_white_24dp"/>
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingLeft="15dp"
-        android:text="@string/pref_title_categories"
+        android:text="@string/new_category"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
     <ImageView
-        android:id="@+id/iv_add_icon"
+        android:id="@+id/iv_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:padding="7dp"
-        android:src="@drawable/ic_add_white_24dp"
+        android:src="@drawable/ic_done_white_24dp"
         android:clickable="true"
-        android:contentDescription="@string/filter_list" />
+        android:contentDescription="@string/done" />
 
 
 </android.support.v7.widget.Toolbar>

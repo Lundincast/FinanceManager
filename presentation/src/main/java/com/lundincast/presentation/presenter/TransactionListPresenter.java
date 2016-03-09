@@ -84,6 +84,7 @@ public class TransactionListPresenter implements Presenter {
     }
 
     private void showTransactionsCollectionInView(List<TransactionModel> transactionList) {
+        this.hideViewLoading();
         this.viewListView.renderTransactionList(transactionList);
     }
 

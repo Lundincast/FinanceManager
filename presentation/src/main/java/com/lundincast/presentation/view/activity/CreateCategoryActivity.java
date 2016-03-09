@@ -5,35 +5,40 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.dagger.components.DaggerCategoryComponent;
+import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.presenter.CreateCategoryPresenter;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * Activity to display the list of categories.
+ * Activity that allows user to create a new category
  */
-public class CategoryListActivity extends BaseActivity implements HasComponent<CategoryComponent> {
+public class CreateCategoryActivity extends BaseActivity implements HasComponent<CategoryComponent> {
 
     public static Intent getCallingIntent(Context context) {
-        return new Intent(context, CategoryListActivity.class);
+        return new Intent(context, CreateCategoryActivity.class);
     }
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.iv_back) ImageView iv_back;
-    @Bind(R.id.iv_add_icon) ImageView iv_add_icon;
+
 
     private CategoryComponent categoryComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_category);
+        setContentView(R.layout.activity_create_category);
         ButterKnife.bind(this);
 
         setUpToolbar();
@@ -56,11 +61,6 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
     @OnClick(R.id.iv_back)
     void onBackClicked() {
         finish();
-    }
-
-    @OnClick(R.id.iv_add_icon)
-    void onAddIconClicked() {
-        this.navigator.navigateToCreateActivity(this);
     }
 
     @Override

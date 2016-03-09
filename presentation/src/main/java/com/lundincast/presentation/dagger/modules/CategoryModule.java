@@ -2,6 +2,7 @@ package com.lundincast.presentation.dagger.modules;
 
 import com.lundincast.presentation.data.CategoryRepository;
 import com.lundincast.presentation.presenter.CategoryListPresenter;
+import com.lundincast.presentation.presenter.CreateCategoryPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,5 +18,10 @@ public class CategoryModule {
     @Provides
     CategoryListPresenter provideCategoryListPresenter(CategoryRepository categoryRepository) {
         return new CategoryListPresenter(categoryRepository);
+    }
+
+    @Provides
+    CreateCategoryPresenter provideCreateCategoryPresenter(CategoryRepository categoryRepository) {
+        return new CreateCategoryPresenter(categoryRepository);
     }
 }
