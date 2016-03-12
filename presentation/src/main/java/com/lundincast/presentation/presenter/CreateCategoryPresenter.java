@@ -13,9 +13,6 @@ public class CreateCategoryPresenter implements Presenter {
 
     private final CategoryRepository categoryRepository;
 
-    public String categoryName = "test";
-    public String categoryColor = "red";
-
     @Inject
     public CreateCategoryPresenter(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -36,14 +33,17 @@ public class CreateCategoryPresenter implements Presenter {
 
     }
 
-    public void saveCategory() {
-        if (categoryName.equals("")) {
-            // TODO display error message
-        } else {
+    public void saveCategory(Long categoryId, String categoryName, String categoryColor) {
+        if (!categoryName.equals("")) {
             CategoryModel categoryModel = new CategoryModel();
-            categoryModel.setName(this.categoryName);
-            categoryModel.setColor(this.categoryColor);
+            categoryModel.setId(categoryId);
+            categoryModel.setName(categoryName);
+            categoryModel.setColor(categoryColor);
             this.categoryRepository.saveCategory(categoryModel);
         }
+    }
+
+    public void deleteCategory(Long categoryId) {
+        this.categoryRepository.deleteCategory(categoryId);
     }
 }

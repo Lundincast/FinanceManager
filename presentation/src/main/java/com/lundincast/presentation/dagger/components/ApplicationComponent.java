@@ -18,6 +18,7 @@ import com.lundincast.presentation.view.fragment.TransactionListFragment;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.realm.Realm;
 
 /**
  * A component whose lifetime is the life of the application.
@@ -34,6 +35,7 @@ public interface ApplicationComponent {
     ThreadExecutor threadExecutor();
     PostExecutionThread postExecutionThread();
     SharedPreferences sharedPreferences();
+    Realm provideRealm();
     TransactionDataStore transactionDataStore();
     TransactionRepositoryDomain transactionRepositoryDomain();
     TransactionRepository transactionRepository();

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -44,12 +45,27 @@ public class DiskCategoryDataStore implements CategoryDataStore {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                CategoryModel category = realm.createObject(CategoryModel.class);
-                category.setId(realm.where(CategoryModel.class).max("Id").intValue() + 1);
+                CategoryModel category = new CategoryModel();
+                if (categoryModel.getId() == -1) {
+                    category.setId(realm.where(CategoryModel.class).max("id").intValue() + 1);
+                } else {
+                    category.setId(categoryModel.getId());
+                }
                 category.setName(categoryModel.getName());
                 category.setColor(categoryModel.getColor());
+                realm.copyToRealmOrUpdate(category);
             }
         }, null);
+    }
 
+    @Override
+    public void deleteCategory(final long categoryId) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                CategoryModel category = realm.where(CategoryModel.class).equalTo("id", categoryId).findFirst();
+                category.removeFromRealm();
+            }
+        }, null);
     }
 }

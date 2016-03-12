@@ -21,11 +21,15 @@ import com.lundincast.presentation.view.utilities.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 
 /**
  * {@link Presenter} that controls communication between views and models of the presentation
@@ -40,11 +44,14 @@ public class CategoryListFragment extends BaseFragment implements CategoryListVi
         void onCategoryClicked(final CategoryModel categoryModel);
     }
 
-    @Inject
-    CategoryListPresenter categoryListPresenter;
+    @Inject Realm realm;
+    @Inject CategoryListPresenter categoryListPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
     @Bind(R.id.rv_categories) RecyclerView rv_categories;
+
+    private RealmResults<CategoryModel> categoryList;
+    private RealmChangeListener categoryListResultListener;
 
     private CategoriesAdapter categoriesAdapter;
     private CategoriesLayoutManager categoriesLayoutManager;
@@ -78,6 +85,24 @@ public class CategoryListFragment extends BaseFragment implements CategoryListVi
         super.onActivityCreated(savedInstanceState);
         this.initialize();
         this.loadCategoryList();
+        this.hideLoading();
+        // TODO refactor for proper MVP implementation,
+        List<CategoryModel> categoryModelList = new ArrayList<>();
+        for (CategoryModel categoryModel : categoryList) {
+            categoryModelList.add(categoryModel);
+        }
+        this.renderCategoryList(categoryModelList);
+        this.categoryListResultListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                List<CategoryModel> categoryModelList = new ArrayList<>();
+                for (CategoryModel categoryModel : categoryList) {
+                    categoryModelList.add(categoryModel);
+                }
+                CategoryListFragment.this.renderCategoryList(categoryModelList);
+            }
+        };
+        categoryList.addChangeListener(categoryListResultListener);
     }
 
     @Override public void onResume() {
@@ -162,7 +187,8 @@ public class CategoryListFragment extends BaseFragment implements CategoryListVi
      * Loads all categories.
      */
     private void loadCategoryList() {
-        this.categoryListPresenter.initialize();
+//        this.categoryListPresenter.initialize();
+        categoryList = realm.where(CategoryModel.class).findAll();
     }
 
     private CategoriesAdapter.OnItemClickListener onItemClickListener =

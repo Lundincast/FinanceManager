@@ -6,10 +6,10 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_create" />
+        layout="@layout/toolbar_create_or_update" />
 
     <fragment
-        android:name="com.lundincast.presentation.view.fragment.CreateCategoryFragment"
+        android:name="com.lundincast.presentation.view.fragment.CreateOrUpdateCategoryFragment"
         android:id="@+id/createActivityFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

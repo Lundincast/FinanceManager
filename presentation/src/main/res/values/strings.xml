@@ -14,4 +14,5 @@
     <string name="name">Name</string>
     <string name="enter_name">Enter name</string>
     <string name="color">color</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -18,4 +18,9 @@ public interface CategoryRepository {
      * Save a {@link CategoryModel} in database
      */
     void saveCategory(final CategoryModel categoryModel);
+
+    /**
+     * Delete a {@link CategoryModel} by id in database
+     */
+    void deleteCategory(final long categoryId);
 }

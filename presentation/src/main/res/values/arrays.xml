@@ -19,7 +19,7 @@
     </string-array>
 
 
-    <string-array name="colors_array">
+    <string-array name="colors_name">
         <item>Red</item>
         <item>Blue</item>
         <item>Dark blue</item>

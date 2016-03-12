@@ -77,6 +77,7 @@ public class CategoryListPresenter implements Presenter {
     }
 
     private void showCategoryCollectionInView(List<CategoryModel> categoryList) {
+        this.hideViewLoading();
         this.viewListView.renderCategoryList(categoryList);
     }
 

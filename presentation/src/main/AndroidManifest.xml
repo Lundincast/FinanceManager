@@ -23,7 +23,7 @@
         <activity android:name=".view.activity.CategoryListActivity"
             android:label="">
         </activity>
-        <activity android:name=".view.activity.CreateCategoryActivity"
+        <activity android:name=".view.activity.CreateOrUpdateCategoryActivity"
             android:label="">
         </activity>
         <activity android:name=".view.activity.SettingsActivity"

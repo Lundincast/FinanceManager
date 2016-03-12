@@ -10,6 +10,8 @@ import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.dagger.components.DaggerCategoryComponent;
+import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.view.fragment.CategoryListFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -18,7 +20,8 @@ import butterknife.OnClick;
 /**
  * Activity to display the list of categories.
  */
-public class CategoryListActivity extends BaseActivity implements HasComponent<CategoryComponent> {
+public class CategoryListActivity extends BaseActivity implements HasComponent<CategoryComponent>,
+                                                                CategoryListFragment.CategoryListListener {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, CategoryListActivity.class);
@@ -60,11 +63,16 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
 
     @OnClick(R.id.iv_add_icon)
     void onAddIconClicked() {
-        this.navigator.navigateToCreateActivity(this);
+        this.navigator.navigateToCreateOrUpdateCategory(this, -1);
     }
 
     @Override
     public CategoryComponent getComponent() {
         return categoryComponent;
+    }
+
+    @Override
+    public void onCategoryClicked(CategoryModel categoryModel) {
+        this.navigator.navigateToCreateOrUpdateCategory(this, categoryModel.getId());
     }
 }

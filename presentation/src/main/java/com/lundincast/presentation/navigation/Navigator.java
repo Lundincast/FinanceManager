@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.lundincast.presentation.view.activity.CategoryListActivity;
-import com.lundincast.presentation.view.activity.CreateCategoryActivity;
+import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.view.activity.SettingsActivity;
 
@@ -61,9 +61,9 @@ public class Navigator {
      *
      * @param context A Context needed to open the destiny activity.
      */
-    public void navigateToCreateActivity(Context context) {
+    public void navigateToCreateOrUpdateCategory(Context context, long categoryId) {
         if (context != null) {
-            Intent intentToLaunch = CreateCategoryActivity.getCallingIntent(context);
+            Intent intentToLaunch = CreateOrUpdateCategoryActivity.getCallingIntent(context, categoryId);
             context.startActivity(intentToLaunch);
         }
     }

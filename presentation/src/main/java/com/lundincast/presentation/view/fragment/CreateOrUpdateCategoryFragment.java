@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,37 +18,39 @@ import android.widget.Toast;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.CreateCategoryPresenter;
-import com.lundincast.presentation.view.activity.CreateCategoryActivity;
+import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import io.realm.Realm;
 
 /**
  * A {@link Fragment} subclass for creating new category
  */
-public class CreateCategoryFragment extends BaseFragment
+public class CreateOrUpdateCategoryFragment extends BaseFragment
                                 implements AdapterView.OnItemSelectedListener {
 
     @Bind(R.id.et_category_name) EditText et_category_name;
     @Bind(R.id.sp_category_color) Spinner sp_category_color;
     // View in activity can't be accessed from fragment
+    ImageView iv_delete;
     ImageView iv_done;
-    private CreateCategoryActivity activity;
+    String color = "red";
+    CreateOrUpdateCategoryActivity activity;
+    private ArrayAdapter<CharSequence> spinnerAdapter;
 
+    @Inject Realm realm;
     @Inject CreateCategoryPresenter createCategoryPresenter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_create_category, container, false);
-
-        return fragmentView;
+        return inflater.inflate(R.layout.fragment_create_category, container, false);
     }
 
     @Override
@@ -60,15 +61,42 @@ public class CreateCategoryFragment extends BaseFragment
         initializeSpinner();
 
         // get iv_done view from activity and set onClick listener
-        activity = (CreateCategoryActivity) getActivity();
+        activity = (CreateOrUpdateCategoryActivity) getActivity();
         iv_done = (ImageView) activity.findViewById(R.id.iv_done);
+        sp_category_color.setOnItemSelectedListener(this);
         iv_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateCategoryFragment.this.createCategoryPresenter.saveCategory();
-                CreateCategoryFragment.this.activity.finish();
+                if (et_category_name.getText().toString().equals("")) {
+                    Toast.makeText(getActivity(), "Category name cannot be empty!", Toast.LENGTH_SHORT).show();
+                } else {
+                    CreateOrUpdateCategoryFragment.this.createCategoryPresenter.saveCategory(activity.categoryId, et_category_name.getText().toString(), color);
+                    activity.finish();
+                }
             }
         });
+
+        if (activity.categoryId != -1) {
+            // set category details
+            CategoryModel category = realm.where(CategoryModel.class).equalTo("id", activity.categoryId).findFirst();
+            et_category_name.setText(category.getName());
+            this.color = category.getColor();
+            sp_category_color.setSelection(spinnerAdapter.getPosition(category.getColor()));
+            // set delete option in activity toolbar
+            iv_delete = (ImageView) activity.findViewById(R.id.iv_delete);
+            iv_delete.setVisibility(View.VISIBLE);
+            iv_delete.setClickable(true);
+            iv_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CreateOrUpdateCategoryFragment.this.createCategoryPresenter.deleteCategory(activity.categoryId);
+                    activity.finish();
+                }
+            });
+        }
+
+
+
     }
 
     private void initializeInjection() {
@@ -77,15 +105,15 @@ public class CreateCategoryFragment extends BaseFragment
 
     private void initializeSpinner() {
         // create an ArrayAdapter using the colors string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.colors_array,
+        spinnerAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.colors_name,
                 android.R.layout.simple_spinner_item);
 
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // Apply the adapter to the spinner
-        sp_category_color.setAdapter(adapter);
+        sp_category_color.setAdapter(spinnerAdapter);
 
         // set Spinner's listeners
         sp_category_color.setOnItemSelectedListener(this);
@@ -102,7 +130,7 @@ public class CreateCategoryFragment extends BaseFragment
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+        color = (String) parent.getItemAtPosition(position);
     }
 
     @Override
@@ -110,4 +138,9 @@ public class CreateCategoryFragment extends BaseFragment
 
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        this.realm = null;
+    }
 }

@@ -42,4 +42,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public void saveCategory(CategoryModel categoryModel) {
         this.categoryDataStore.saveCategory(categoryModel);
     }
+
+    @Override
+    public void deleteCategory(long categoryId) {
+        this.categoryDataStore.deleteCategory(categoryId);
+    }
 }
