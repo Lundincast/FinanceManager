@@ -2,6 +2,7 @@ package com.lundincast.presentation.data;
 
 import com.lundincast.domain.Transaction;
 import com.lundincast.domain.repository.TransactionRepositoryDomain;
+import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.data.datasource.TransactionDataStore;
 import com.lundincast.presentation.model.TransactionModel;
 
@@ -16,7 +17,7 @@ import rx.Observable;
 /**
  * {@link TransactionRepositoryDomain} for retrieving transaction data.
  */
-@Singleton
+@PerActivity
 public class TransactionRepositoryImpl implements TransactionRepository {
 
     private final TransactionDataStore transactionDataStore;

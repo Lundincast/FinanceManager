@@ -7,17 +7,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.dagger.modules.TransactionModule;
 import com.lundincast.presentation.model.TransactionModel;
+import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.view.fragment.TransactionListFragment;
 import com.melnykov.fab.FloatingActionButton;
@@ -42,6 +46,8 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
     @Bind(R.id.iv_filter_list_icon) ImageView iv_filter_list_icon;
     @Bind(R.id.tab_layout) TabLayout tabLayout;
     @Bind(R.id.viewpager) ViewPager viewPager;
+
+    @Inject Navigator navigator;
 
     private TransactionComponent transactionComponent;
 
@@ -92,9 +98,10 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
     }
 
     private void initializeInjector() {
+        this.getApplicationComponent().inject(this);
         this.transactionComponent = DaggerTransactionComponent.builder()
                 .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
+                .transactionModule(new TransactionModule())
                 .build();
     }
 
@@ -105,7 +112,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
 
     @Override
     public void onTransactionClicked(TransactionModel transactionModel) {
-        // TODO
+        this.navigator.navigateToCreateTransaction(this, transactionModel.getTransactionId());
     }
 
     /**
@@ -113,7 +120,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
      * Launch create transaction activity on fab clicked
      */
     public void onFabClicked() {
-        this.navigator.navigateToCreateTransaction(this);
+        this.navigator.navigateToCreateTransaction(this, -1);
     }
 
     @Override

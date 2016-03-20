@@ -47,7 +47,11 @@ public class DiskCategoryDataStore implements CategoryDataStore {
             public void execute(Realm realm) {
                 CategoryModel category = new CategoryModel();
                 if (categoryModel.getId() == -1) {
-                    category.setId(realm.where(CategoryModel.class).max("id").intValue() + 1);
+                    if (realm.where(CategoryModel.class).findFirst() == null) {
+                        category.setId(1);
+                    } else {
+                        category.setId(realm.where(CategoryModel.class).max("id").intValue() + 1);
+                    }
                 } else {
                     category.setId(categoryModel.getId());
                 }

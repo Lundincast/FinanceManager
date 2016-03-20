@@ -18,13 +18,9 @@ import javax.inject.Inject;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject public Navigator navigator;
-    @Inject SharedPreferences sharedPreferences;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getApplicationComponent().inject(this);
     }
 
     /**
@@ -33,9 +29,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param containerViewId The container view to where add the fragment.
      * @param fragment The fragment to be added.
      */
-    public void addFragment(int containerViewId, Fragment fragment) {
+    public void addFragment(int containerViewId, Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = this.getFragmentManager().beginTransaction();
-        fragmentTransaction.add(containerViewId, fragment);
+        fragmentTransaction.add(containerViewId, fragment, tag);
         fragmentTransaction.commit();
     }
 

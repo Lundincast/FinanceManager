@@ -1,5 +1,6 @@
 package com.lundincast.presentation.data;
 
+import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.data.datasource.CategoryDataStore;
 import com.lundincast.presentation.model.CategoryModel;
 
@@ -12,7 +13,7 @@ import javax.inject.Singleton;
 /**
  * {@link CategoryRepository} implementation for retrieving category data.
  */
-@Singleton
+@PerActivity
 public class CategoryRepositoryImpl implements CategoryRepository {
 
     private final CategoryDataStore categoryDataStore;

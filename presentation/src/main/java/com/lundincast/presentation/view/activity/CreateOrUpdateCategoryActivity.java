@@ -10,6 +10,7 @@ import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.dagger.components.DaggerCategoryComponent;
+import com.lundincast.presentation.dagger.modules.CategoryModule;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -73,8 +74,7 @@ public class CreateOrUpdateCategoryActivity extends BaseActivity implements HasC
 
     private void initializeInjector() {
         this.categoryComponent = DaggerCategoryComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
+                .categoryModule(new CategoryModule())
                 .build();
     }
 

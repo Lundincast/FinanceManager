@@ -10,8 +10,12 @@ import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.dagger.components.DaggerCategoryComponent;
+import com.lundincast.presentation.dagger.modules.CategoryModule;
 import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.fragment.CategoryListFragment;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,6 +34,8 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.iv_back) ImageView iv_back;
     @Bind(R.id.iv_add_icon) ImageView iv_add_icon;
+
+    @Inject Navigator navigator;
 
     private CategoryComponent categoryComponent;
 
@@ -50,9 +56,9 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
     }
 
     private void initializeInjector() {
+        this.getApplicationComponent().inject(this);
         this.categoryComponent = DaggerCategoryComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
+                .categoryModule(new CategoryModule())
                 .build();
     }
 

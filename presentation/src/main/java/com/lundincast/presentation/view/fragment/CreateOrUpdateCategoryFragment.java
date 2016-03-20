@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lundincast.presentation.R;
@@ -43,7 +45,7 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment
     CreateOrUpdateCategoryActivity activity;
     private ArrayAdapter<CharSequence> spinnerAdapter;
 
-    @Inject Realm realm;
+    private Realm realm;
     @Inject CreateCategoryPresenter createCategoryPresenter;
 
     @Nullable
@@ -57,11 +59,16 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initializeInjection();
+
+        // TODO
+        this.realm = Realm.getDefaultInstance();
+
         ButterKnife.bind(this, getView());
         initializeSpinner();
 
-        // get iv_done view from activity and set onClick listener
         activity = (CreateOrUpdateCategoryActivity) getActivity();
+
+        // get iv_done view from activity and set onClick listener
         iv_done = (ImageView) activity.findViewById(R.id.iv_done);
         sp_category_color.setOnItemSelectedListener(this);
         iv_done.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +84,9 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment
         });
 
         if (activity.categoryId != -1) {
+            // Toolbar title by default is "New category". Set to "Edit category" in this case.
+            TextView tv_title = (TextView) activity.findViewById(R.id.tv_title);
+            tv_title.setText("Edit category");
             // set category details
             CategoryModel category = realm.where(CategoryModel.class).equalTo("id", activity.categoryId).findFirst();
             et_category_name.setText(category.getName());

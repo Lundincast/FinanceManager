@@ -1,6 +1,9 @@
 package com.lundincast.presentation.view.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,12 +34,18 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<TransactionModel> transactionsCollection;
     private final LayoutInflater layoutInflater;
 
+    private String[] colorsArray;
+    private String[] colorValue;
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+
     private OnItemClickListener onItemClickListener;
 
     public TransactionsAdapter(Context context, List<TransactionModel> transactionCollection) {
         this.validateTransactionsCollection(transactionCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.transactionsCollection = transactionCollection;
+        this.colorsArray = context.getResources().getStringArray(R.array.colors_name);
+        this.colorValue = context.getResources().getStringArray(R.array.colors_value);
     }
 
     @Override
@@ -50,10 +61,27 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TransactionViewHolder viewHolder = (TransactionViewHolder) holder;
 
         final TransactionModel transactionModel = this.transactionsCollection.get(position);
-        viewHolder.ivTransactionCategory.setImageDrawable(null);
-        viewHolder.tvTransactionDate.setText(transactionModel.getDate().toString());
+        // extract category information to set category icon color
+//        String colorName = transactionModel.getCategory().getColor();
+        CategoryModel categoryModel = transactionModel.getCategory();
+        String colorName = categoryModel.getColor();
+        String colorCode = null;
+        int it = 0;
+        for (String s: colorsArray) {
+            if (s.equals(colorName)) {
+                colorCode = colorValue[it];
+                break;
+            }
+            it++;
+        }
+        // set circle drawable color
+        LayerDrawable bgDrawable = (LayerDrawable) viewHolder.ivTransactionCategory.getBackground();
+        final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
+        shape.setColor(Color.parseColor(colorCode));
+
+        viewHolder.tvTransactionDate.setText(this.sdf.format(transactionModel.getDate()));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
-        viewHolder.tvTransactionPrice.setText(String.valueOf(transactionModel.getPrice()));
+        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + " €");
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

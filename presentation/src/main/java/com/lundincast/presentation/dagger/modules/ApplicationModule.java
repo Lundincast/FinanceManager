@@ -67,36 +67,7 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    Realm provideRealm () {
-        RealmConfiguration config = new RealmConfiguration.Builder(provideApplicationContext())
-                .name("financemanager.realm")
-                .schemaVersion(1)
-                .build();
-        return Realm.getInstance(config);
-    }
-
-    @Provides @Singleton
-    TransactionDataStore provideTransactionDataStore(Realm realm) {
-        return new DiskTransactionDataStore(realm);
-    }
-
-    @Provides @Singleton
-    TransactionRepository provideTransactionRepository(TransactionRepositoryImpl transactionDataRepository) {
-        return transactionDataRepository;
-    }
-
-    @Provides @Singleton
-    CategoryDataStore provideCategoryDataStore(Realm realm) {
-        return new DiskCategoryDataStore(realm);
-    }
-
-    @Provides @Singleton
-    CategoryRepository provideCategoryRepository(CategoryRepositoryImpl categoryDataRepository) {
-        return categoryDataRepository;
-    }
-
-    @Provides @Singleton
-    TransacDataStore provideTransacDataStore(Realm realm) {
+    TransacDataStore provideTransacDataStore() {
         return new com.lundincast.data.repository.datasource.DiskTransactionDataStore();
     }
 

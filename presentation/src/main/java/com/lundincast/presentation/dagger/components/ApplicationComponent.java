@@ -11,7 +11,11 @@ import com.lundincast.presentation.data.CategoryRepository;
 import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.data.datasource.CategoryDataStore;
 import com.lundincast.presentation.data.datasource.TransactionDataStore;
+import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.activity.BaseActivity;
+import com.lundincast.presentation.view.activity.CategoryListActivity;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
+import com.lundincast.presentation.view.activity.MainActivity;
 import com.lundincast.presentation.view.fragment.SettingsFragment;
 import com.lundincast.presentation.view.fragment.TransactionListFragment;
 
@@ -27,18 +31,14 @@ import io.realm.Realm;
 @Component(modules = ApplicationModule.class)
 public interface ApplicationComponent {
 
-    void inject(BaseActivity baseActivity);
+    void inject(MainActivity mainActivity);
+    void inject(CategoryListActivity categoryListActivity);
     void inject(SettingsFragment settingsFragment);
 
     //Exposed to sub-graphs.
     Context context();
+    SharedPreferences sharedPreferences();
     ThreadExecutor threadExecutor();
     PostExecutionThread postExecutionThread();
-    SharedPreferences sharedPreferences();
-    Realm provideRealm();
-    TransactionDataStore transactionDataStore();
     TransactionRepositoryDomain transactionRepositoryDomain();
-    TransactionRepository transactionRepository();
-    CategoryDataStore categoryDataStore();
-    CategoryRepository categoryRepository();
 }

@@ -1,7 +1,10 @@
 package com.lundincast.presentation.view.activity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,33 +15,59 @@ import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.dagger.modules.TransactionModule;
+import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.CreateTransactionPresenter;
+import com.lundincast.presentation.view.TransactionDetailsView;
+import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFragment;
+import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
+import com.lundincast.presentation.view.fragment.TransactionDetailsFragment;
+import com.melnykov.fab.FloatingActionButton;
+
+import java.util.Date;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 
 /**
  * Activity that allows user to create a new transaction
  */
-public class CreateTransactionActivity extends BaseActivity implements HasComponent<TransactionComponent> {
+public class CreateTransactionActivity extends BaseActivity implements HasComponent<TransactionComponent>,
+                                                                        TransactionDetailsView {
 
-    public static Intent getCallingIntent(Context context) {
-        return new Intent(context, CreateTransactionActivity.class);
+    private static final String INTENT_EXTRA_PARAM_TRANSACTION_ID = "com.lundincast.INTENT_PARAM_TRANSACTION_ID";
+    private static final String INSTANCE_STATE_PARAM_TRANSACTION_ID = "com.lundincast.STATE_PARAM_TRANSACTION_ID";
+
+    public static Intent getCallingIntent(Context context, int transactionId) {
+        Intent callingIntent = new Intent(context, CreateTransactionActivity.class);
+        callingIntent.putExtra(INTENT_EXTRA_PARAM_TRANSACTION_ID, transactionId);
+
+        return callingIntent;
     }
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.iv_back) ImageView iv_back;
     @Bind(R.id.tv_transaction_price) TextView tv_transaction_price;
+    @Bind(R.id.fab) FloatingActionButton fab;
 
-    @Inject public CreateTransactionPresenter createTransactionPresenter;
+    @Inject SharedPreferences sharedPreferences;
+    @Inject CreateTransactionPresenter createTransactionPresenter;
 
+    public int transactionId = -1;
     private TransactionComponent transactionComponent;
 
-    public String price = "0.00";
+    private enum FlowStep {Price, Category, Details, Final}
+    private FlowStep step;
+    private FlowStep previousStep = null;
+
     private String currPref;
+    public String mPrice = "0";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +77,19 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
         setUpToolbar();
 
+        initializeInjector();
+        initializeActivity(savedInstanceState);
+
         // Initialize currency setting from shared preferences
         currPref = this.sharedPreferences.getString("pref_key_currency", "1");
 
-        initializeInjector();
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        if (outState != null) {
+            outState.putLong(INSTANCE_STATE_PARAM_TRANSACTION_ID, this.transactionId);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     private void setUpToolbar() {
@@ -59,11 +97,55 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         setSupportActionBar(toolbar);
     }
 
+    /**
+     * Initializes this activity.
+     */
+    private void initializeActivity(Bundle savedInstanceState) {
+        this.createTransactionPresenter.setView(this);
+        // Load transaction Id from intent or savedInstanceState if available.
+        if (savedInstanceState == null) {
+            this.transactionId = getIntent().getIntExtra(INTENT_EXTRA_PARAM_TRANSACTION_ID, -1);
+        } else {
+            this.transactionId = savedInstanceState.getInt(INTENT_EXTRA_PARAM_TRANSACTION_ID);
+        }
+        this.createTransactionPresenter.initialize(this.transactionId);
+
+        // Load fragment depending if we are creating or updating a transaction and maintain step tracker
+        if (transactionId == -1) {
+            addFragment(R.id.fl_transaction_details_container, new NumericKeyboardFragment(), "NumericKeyboardFragment");
+            step = FlowStep.Price;
+        } else {
+            addFragment(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment");
+            step = FlowStep.Final;
+        }
+    }
+
     private void initializeInjector() {
         this.transactionComponent = DaggerTransactionComponent.builder()
                 .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
+                .transactionModule(new TransactionModule())
                 .build();
+        this.transactionComponent.inject(this);
+    }
+
+    @Override
+    public void renderTransactionPrice(String price) {
+        tv_transaction_price.setText(price);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public Context getContext() {
+        return null;
     }
 
     @OnClick(R.id.iv_back)
@@ -71,26 +153,68 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         finish();
     }
 
+    @OnClick(R.id.tv_transaction_price)
+    void onPriceClicked() {
+        FragmentManager fm = getFragmentManager();
+        Fragment keyboardFragment = fm.findFragmentByTag("NumericKeyboardFragment");
+        if (keyboardFragment == null) {
+            previousStep = step;
+            fm.beginTransaction()
+                    .replace(R.id.fl_transaction_details_container, new NumericKeyboardFragment(), "NumericKeyboardFragment")
+                    .commit();
+            step = FlowStep.Price;
+        }
+    }
+
+    @OnClick(R.id.fab)
+    void onFabClicked() {
+        switch (step) {
+            case Price:
+                this.createTransactionPresenter.setmPrice(Double.valueOf(mPrice));
+                if (previousStep == FlowStep.Category || previousStep == null) {
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
+                            .commit();
+                    step = FlowStep.Category;
+                } else {
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(),"TransactionDetailsFragment")
+                            .commit();
+                    step = FlowStep.Final;
+
+                }
+                break;
+            case Final:
+                this.createTransactionPresenter.saveTransaction();
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
+
     public void priceTypingListener(View v) {
         TextView tv = (TextView) v;
         String inputValue = tv.getText().toString();
-        if (price.equals("0")) {
-            price = "";
+        if (mPrice.equals("0")) {
+            mPrice = "";
         }
-        if (!price.equals("")) {
+        if (!mPrice.equals("")) {
             if (inputValue.equals(".")) {
-                if (!price.contains(".")) {
-                    price += inputValue;
+                if (!mPrice.contains(".")) {
+                    mPrice += inputValue;
                 }
             } else {
-                if (!price.contains(".")) {
-                    price += inputValue;
+                if (!mPrice.contains(".")) {
+                    mPrice += inputValue;
                 } else {
-                    if (price.length() < 3) {
-                        price += inputValue;
+                    if (mPrice.length() < 3) {
+                        mPrice += inputValue;
                     } else {
-                        if (price.charAt(price.length() - 3) != '.') {
-                            price += inputValue;
+                        if (mPrice.charAt(mPrice.length() - 3) != '.') {
+                            mPrice += inputValue;
                         }
                     }
                 }
@@ -98,27 +222,27 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         } else {
             if (!inputValue.equals("0")) {
                 if (inputValue.equals(".")) {
-                    price = "0.";
+                    mPrice = "0.";
                 } else {
-                    price = inputValue;
+                    mPrice = inputValue;
                 }
             }
         }
-        // Format price with 2 decimal and display it
+        // Format mPrice with 2 decimal and display it
         String formattedPrice = null;
-        if (!price.contains(".")) {
-            if (price.equals("")) {
+        if (!mPrice.contains(".")) {
+            if (mPrice.equals("")) {
                 formattedPrice = "0.00";
             } else {
-                formattedPrice = price + ".00";
+                formattedPrice = mPrice + ".00";
             }
         } else {
-            if (price.charAt(price.length() - 1) == '.') {
-                formattedPrice = price + "00";
-            } else if (price.charAt(price.length() - 2) == '.') {
-                formattedPrice = price + "0";
+            if (mPrice.charAt(mPrice.length() - 1) == '.') {
+                formattedPrice = mPrice + "00";
+            } else if (mPrice.charAt(mPrice.length() - 2) == '.') {
+                formattedPrice = mPrice + "0";
             } else {
-                formattedPrice = price;
+                formattedPrice = mPrice;
             }
         }
         if (currPref.equals("2")) {
@@ -130,22 +254,22 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     }
 
     public void priceBackListener(View v) {
-        if (price.length() > 0) {
-            price = price.substring(0, price.length() - 1);
+        if (mPrice.length() > 0) {
+            mPrice = mPrice.substring(0, mPrice.length() - 1);
             String formattedPrice = null;
-            if (!price.contains(".")) {
-                if (!price.equals("")) {
-                    formattedPrice = price + ".00";
+            if (!mPrice.contains(".")) {
+                if (!mPrice.equals("")) {
+                    formattedPrice = mPrice + ".00";
                 } else {
                     formattedPrice = " 0.00";
                 }
             } else {
-                if (price.charAt(price.length() - 1) == '.') {
-                    formattedPrice = price + "00";
-                } else if (price.charAt(price.length() - 2) == '.') {
-                    formattedPrice = price + "0";
+                if (mPrice.charAt(mPrice.length() - 1) == '.') {
+                    formattedPrice = mPrice + "00";
+                } else if (mPrice.charAt(mPrice.length() - 2) == '.') {
+                    formattedPrice = mPrice + "0";
                 } else {
-                    formattedPrice = price;
+                    formattedPrice = mPrice;
                 }
             }
             if (currPref.equals("2")) {
@@ -155,6 +279,43 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
             }
             tv_transaction_price.setText(formattedPrice);
         }
+    }
+
+    public CategoryModel getCategory() {
+        return this.createTransactionPresenter.getmCategory();
+    }
+
+    public void onCategorySet(CategoryModel categoryModel) {
+        this.createTransactionPresenter.setmCategory(categoryModel);
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(),"TransactionDetailsFragment")
+                .commit();
+        step = FlowStep.Final;
+    }
+
+    public void onCategoryClickedinDetails() {
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
+                .commit();
+        step = FlowStep.Category;
+    }
+
+    public Date getDate() {
+        return this.createTransactionPresenter.getmDate();
+    }
+
+    public void onDateSet(Date date) {
+        this.createTransactionPresenter.setmDate(date);
+    }
+
+    public String getComment() {
+        return this.createTransactionPresenter.getmComment();
+    }
+
+    public void onCommentSet(String comment) {
+        this.createTransactionPresenter.setmComment(comment);
     }
 
     @Override

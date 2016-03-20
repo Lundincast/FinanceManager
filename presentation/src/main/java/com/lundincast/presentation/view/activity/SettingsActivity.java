@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.view.fragment.SettingsFragment;
@@ -23,6 +24,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.tv_title) TextView tv_title;
     @Bind(R.id.iv_back) ImageView iv_back;
 
     @Override
@@ -32,9 +34,10 @@ public class SettingsActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        tv_title.setText(R.string.settings);
 
         // Display SettingsFragment
-        this.addFragment(R.id.fl_settings, new SettingsFragment());
+        this.addFragment(R.id.fl_settings, new SettingsFragment(), "SettingsFragment");
     }
 
     @OnClick(R.id.iv_back)

@@ -4,6 +4,7 @@ import com.lundincast.domain.Transaction;
 import com.lundincast.domain.interactor.DefaultSubscriber;
 import com.lundincast.domain.interactor.UseCase;
 import com.lundincast.presentation.dagger.PerActivity;
+import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.mapper.TransactionModelDataMapper;
 import com.lundincast.presentation.model.TransactionModel;
@@ -16,12 +17,26 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+import io.realm.Sort;
+
 /**
  * {@link Presenter} that controls communication between views and models of the presentation
  * layer.
  */
 @PerActivity
 public class TransactionListPresenter implements Presenter {
+
+    private Realm realm;
+    private RealmResults<TransactionModel> transactionList;
+    private RealmChangeListener transactionListResultListener = new RealmChangeListener() {
+        @Override
+        public void onChange() {
+            TransactionListPresenter.this.showTransactionsCollectionInView(transactionList);
+        }
+    };
 
     private final TransactionRepository transactionRepository;
 
@@ -30,6 +45,7 @@ public class TransactionListPresenter implements Presenter {
     @Inject
     public TransactionListPresenter(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
+        this.realm = Realm.getDefaultInstance();
     }
 
     /**
@@ -43,7 +59,7 @@ public class TransactionListPresenter implements Presenter {
 
     @Override
     public void resume() {
-
+        transactionList.addChangeListener(transactionListResultListener);
     }
 
     @Override
@@ -53,14 +69,19 @@ public class TransactionListPresenter implements Presenter {
 
     @Override
     public void destroy() {
-
+        transactionList.removeChangeListener(transactionListResultListener);
     }
 
     /**
-     * Initializes the presenter by retrieving the transaction list.
+     * Initializes the presenter by injecting dependencies and retrieving the transaction list.
      */
     public void initialize() {
+        this.initializeDependencies();
         this.loadTransactionList();
+    }
+
+    private void initializeDependencies() {
+        ((TransactionListFragment) viewListView).getComponent(TransactionComponent.class).inject(this);
     }
 
     /**
@@ -89,7 +110,9 @@ public class TransactionListPresenter implements Presenter {
     }
 
     private void getTransactionList() {
-        showTransactionsCollectionInView(transactionRepository.transactions());
+        transactionList = realm.where(TransactionModel.class).findAll();
+        transactionList.sort("date", Sort.DESCENDING);
+        showTransactionsCollectionInView(transactionList);
     }
 
 

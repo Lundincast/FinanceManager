@@ -4,12 +4,16 @@ import com.lundincast.domain.interactor.GetTransactionList;
 import com.lundincast.domain.interactor.UseCase;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.data.TransactionRepository;
+import com.lundincast.presentation.data.TransactionRepositoryImpl;
+import com.lundincast.presentation.data.datasource.DiskTransactionDataStore;
+import com.lundincast.presentation.data.datasource.TransactionDataStore;
 import com.lundincast.presentation.presenter.CreateTransactionPresenter;
 
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
 
 /**
  * Dagger module that provides transaction related collaborators.
@@ -30,8 +34,19 @@ public class TransactionModule {
         return getTransactionList;
     }
 
-    @Provides
-    CreateTransactionPresenter provideCreateTransactionPresenter(TransactionRepository transactionRepository) {
+    @Provides @PerActivity
+    TransactionDataStore provideTransactionDataStore() {
+        return new DiskTransactionDataStore(Realm.getDefaultInstance());
+    }
+
+    @Provides @PerActivity
+    TransactionRepository provideTransactionRepository(TransactionDataStore transactionDataStore) {
+        return new TransactionRepositoryImpl(transactionDataStore);
+    }
+
+    @Provides @PerActivity
+    CreateTransactionPresenter provideCreateTransactionPresenter(
+            TransactionRepository transactionRepository) {
         return new CreateTransactionPresenter(transactionRepository);
     }
 }

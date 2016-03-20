@@ -16,6 +16,7 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.activity.SettingsActivity;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import butterknife.Bind;
  */
 public class SettingsFragment extends PreferenceFragment {
 
+    @Inject Navigator navigator;
     @Inject SharedPreferences sharedPreferences;
 
     Preference timeOfDayPref;
@@ -65,8 +67,7 @@ public class SettingsFragment extends PreferenceFragment {
         categoryPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                SettingsActivity activity = (SettingsActivity) SettingsFragment.this.getActivity();
-                activity.navigator.navigateToListCategories(activity);
+                SettingsFragment.this.navigator.navigateToListCategories(getActivity());
                 return false;
             }
         });

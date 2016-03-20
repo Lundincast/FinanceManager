@@ -1,6 +1,7 @@
 package com.lundincast.presentation.data.datasource;
 
 import com.lundincast.data.entity.TransactionEntity;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 
 import java.io.IOException;
@@ -51,15 +52,25 @@ public class DiskTransactionDataStore implements TransactionDataStore {
 
     @Override
     public void saveTransaction(final TransactionModel transactionModel) {
-        RealmAsyncTask transaction = realm.executeTransaction(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                TransactionModel transactionModel1 = realm.createObject(TransactionModel.class);
-                transactionModel1.setTransactionId(realm.where(TransactionModel.class).max("transactionId").intValue() + 1);
-                transactionModel1.setPrice(transactionModel.getPrice());
-                transactionModel1.setCategory(transactionModel.getCategory());
-                transactionModel1.setDate(transactionModel.getDate());
-                transactionModel1.setComment(transactionModel.getComment());
+                TransactionModel transaction = new TransactionModel();
+                if (transactionModel.getTransactionId() == -1) {
+                    if (realm.where(TransactionModel.class).findFirst() == null) {
+                        transaction.setTransactionId(1);
+                    } else {
+                        transaction.setTransactionId(realm.where(TransactionModel.class).max("transactionId").intValue() + 1);
+                    }
+                } else {
+                    transaction.setTransactionId(transactionModel.getTransactionId());
+                }
+                transaction.setPrice(transactionModel.getPrice());
+                CategoryModel category = realm.where(CategoryModel.class).equalTo("id", transactionModel.getCategory().getId()).findFirst();
+                transaction.setCategory(category);
+                transaction.setDate(transactionModel.getDate());
+                transaction.setComment(transactionModel.getComment());
+                realm.copyToRealmOrUpdate(transaction);
             }
         }, null);
     }

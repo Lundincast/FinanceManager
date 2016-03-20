@@ -5,9 +5,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.lundincast.presentation.R;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -21,8 +24,8 @@ public class NumericKeyboardFragment extends BaseFragment {
 
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_numeric_keyboard, container, false);
-        ButterKnife.bind(this, fragmentView);
 
         return fragmentView;
     }
+
 }
