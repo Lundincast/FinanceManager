@@ -31,6 +31,9 @@ public class CreateTransactionPresenter implements Presenter {
     private CategoryModel mCategory = null;
     private Date mDate = new Date();
     private String mComment = "";
+    private boolean mPending;
+    private int mDueToOrBy;
+    private String mDueName;
 
     @Inject
     public CreateTransactionPresenter(TransactionRepository transactionRepository) {
@@ -71,6 +74,30 @@ public class CreateTransactionPresenter implements Presenter {
         this.mComment = comment;
     }
 
+    public boolean ismPending() {
+        return mPending;
+    }
+
+    public void setmPending(boolean mPending) {
+        this.mPending = mPending;
+    }
+
+    public int getmDueToOrBy() {
+        return mDueToOrBy;
+    }
+
+    public void setmDueToOrBy(int mDueToOrBy) {
+        this.mDueToOrBy = mDueToOrBy;
+    }
+
+    public String getmDueName() {
+        return mDueName;
+    }
+
+    public void setmDueName(String mDueName) {
+        this.mDueName = mDueName;
+    }
+
     @Override
     public void resume() {
 
@@ -95,6 +122,9 @@ public class CreateTransactionPresenter implements Presenter {
             this.mCategory = transactionModel.getCategory();
             this.mDate = transactionModel.getDate();
             this.mComment = transactionModel.getComment();
+            this.mPending = transactionModel.isPending();
+            this.mDueToOrBy = transactionModel.getDueToOrBy();
+            this.mDueName = transactionModel.getDueName();
         }
         showTransactionPriceInView();
     }
@@ -109,6 +139,9 @@ public class CreateTransactionPresenter implements Presenter {
         transaction.setCategory(realm.copyFromRealm(mCategory));
         transaction.setDate(mDate);
         transaction.setComment(mComment);
+        transaction.setPending(mPending);
+        transaction.setDueToOrBy(mDueToOrBy);
+        transaction.setDueName(mDueName);
         this.transactionRepository.saveTransaction(transaction);
     }
 }

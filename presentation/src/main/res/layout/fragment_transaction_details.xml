@@ -21,7 +21,8 @@
                 android:layout_height="30dp"
                 android:background="@drawable/circle"
                 android:layout_above="@+id/iv_calendar_icon"
-                android:layout_toLeftOf="@+id/tv_category_name" />
+                android:layout_toLeftOf="@+id/tv_category_name"
+                android:layout_toStartOf="@+id/tv_category_name" />
 
             <TextView
                 android:id="@+id/tv_category_name"
@@ -135,27 +136,31 @@
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:text="Due"
-                android:textSize="20sp"
-                android:layout_below="@+id/iv_comment"
+                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
             <Spinner
                 android:id="@+id/sp_due_by_to"
+                android:entries="@array/due_options"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/cb_due"
-                android:layout_alignRight="@+id/et_transaction_comment"
-                android:layout_alignEnd="@+id/et_transaction_comment" />
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/iv_time_icon"
+                android:layout_toRightOf="@+id/iv_comment"
+                android:layout_toEndOf="@+id/iv_comment" />
 
             <EditText
-                android:enabled="false"
+                android:id="@+id/et_due_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/cb_due"
-                android:layout_toRightOf="@+id/sp_due_by_to"
-                android:hint="Enter a name"/>
+                android:hint="Enter a name"
+                android:layout_alignBottom="@+id/cb_due"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/cb_due"
+                android:layout_alignLeft="@+id/iv_time_icon"
+                android:layout_alignStart="@+id/iv_time_icon" />
 
         </RelativeLayout>
 

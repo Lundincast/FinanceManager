@@ -70,6 +70,9 @@ public class DiskTransactionDataStore implements TransactionDataStore {
                 transaction.setCategory(category);
                 transaction.setDate(transactionModel.getDate());
                 transaction.setComment(transactionModel.getComment());
+                transaction.setPending(transactionModel.isPending());
+                transaction.setDueToOrBy(transactionModel.getDueToOrBy());
+                transaction.setDueName(transactionModel.getDueName());
                 realm.copyToRealmOrUpdate(transaction);
             }
         }, null);

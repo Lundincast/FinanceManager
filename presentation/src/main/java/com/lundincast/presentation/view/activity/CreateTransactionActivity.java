@@ -318,6 +318,30 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         this.createTransactionPresenter.setmComment(comment);
     }
 
+    public boolean isPending() {
+        return this.createTransactionPresenter.ismPending();
+    }
+
+    public void setPending(boolean isPending) {
+        this.createTransactionPresenter.setmPending(isPending);
+    }
+
+    public int getDueToOrBy() {
+        return this.createTransactionPresenter.getmDueToOrBy();
+    }
+
+    public void setDueToOrBy(int dueToOrBy) {
+        this.createTransactionPresenter.setmDueToOrBy(dueToOrBy);
+    }
+
+    public String getDueName() {
+        return this.createTransactionPresenter.getmDueName();
+    }
+
+    public void setDueName(String dueName) {
+        this.createTransactionPresenter.setmDueName(dueName);
+    }
+
     @Override
     public TransactionComponent getComponent() {
         return transactionComponent;

@@ -13,11 +13,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="feedbackoptions">
-        <item>Rate App</item>
-        <item>Report a bug</item>
-    </string-array>
-
 
     <string-array name="colors_name">
         <item>Red</item>
@@ -45,6 +40,12 @@
         <item>#E879A4</item>
         <item>#775530</item>
         <item>#7E0B80</item>
+    </string-array>
+
+
+    <string-array name="due_options">
+        <item>Due to</item>
+        <item>Due by</item>
     </string-array>
 
 </resources>
