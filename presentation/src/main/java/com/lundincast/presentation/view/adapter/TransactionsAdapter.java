@@ -82,6 +82,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         viewHolder.tvTransactionDate.setText(this.sdf.format(transactionModel.getDate()));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
         viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + " €");
+        if (transactionModel.isPending()) {
+            viewHolder.iv_warning_icon.setVisibility(View.VISIBLE);
+        }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +127,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @Bind(R.id.tv_transaction_date) TextView tvTransactionDate;
         @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
         @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
+        @Bind(R.id.iv_warning_icon) ImageView iv_warning_icon;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);

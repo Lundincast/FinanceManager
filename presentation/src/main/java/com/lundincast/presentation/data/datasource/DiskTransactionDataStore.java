@@ -6,6 +6,7 @@ import com.lundincast.presentation.model.TransactionModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +70,11 @@ public class DiskTransactionDataStore implements TransactionDataStore {
                 CategoryModel category = realm.where(CategoryModel.class).equalTo("id", transactionModel.getCategory().getId()).findFirst();
                 transaction.setCategory(category);
                 transaction.setDate(transactionModel.getDate());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(transactionModel.getDate());
+                transaction.setDay(cal.get(Calendar.DAY_OF_MONTH));
+                transaction.setMonth(cal.get(Calendar.MONTH));
+                transaction.setYear(cal.get(Calendar.YEAR));
                 transaction.setComment(transactionModel.getComment());
                 transaction.setPending(transactionModel.isPending());
                 transaction.setDueToOrBy(transactionModel.getDueToOrBy());

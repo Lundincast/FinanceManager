@@ -29,7 +29,7 @@ import io.realm.Sort;
 @PerActivity
 public class TransactionListPresenter implements Presenter {
 
-    private Realm realm;
+    private final Realm realm;
     private RealmResults<TransactionModel> transactionList;
     private RealmChangeListener transactionListResultListener = new RealmChangeListener() {
         @Override
@@ -38,13 +38,10 @@ public class TransactionListPresenter implements Presenter {
         }
     };
 
-    private final TransactionRepository transactionRepository;
-
     private TransactionListView viewListView;
 
     @Inject
-    public TransactionListPresenter(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public TransactionListPresenter() {
         this.realm = Realm.getDefaultInstance();
     }
 
@@ -73,15 +70,10 @@ public class TransactionListPresenter implements Presenter {
     }
 
     /**
-     * Initializes the presenter by injecting dependencies and retrieving the transaction list.
+     * Initializes the presenter by retrieving the transaction list.
      */
     public void initialize() {
-        this.initializeDependencies();
         this.loadTransactionList();
-    }
-
-    private void initializeDependencies() {
-        ((TransactionListFragment) viewListView).getComponent(TransactionComponent.class).inject(this);
     }
 
     /**
