@@ -1,21 +1,20 @@
 package com.lundincast.presentation.presenter;
 
-import com.lundincast.domain.Transaction;
-import com.lundincast.domain.interactor.DefaultSubscriber;
-import com.lundincast.domain.interactor.UseCase;
+import android.content.Context;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+
+import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.PerActivity;
-import com.lundincast.presentation.dagger.components.TransactionComponent;
-import com.lundincast.presentation.data.TransactionRepository;
-import com.lundincast.presentation.mapper.TransactionModelDataMapper;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.TransactionListView;
 import com.lundincast.presentation.view.fragment.TransactionListFragment;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -39,6 +38,9 @@ public class TransactionListPresenter implements Presenter {
     };
 
     private TransactionListView viewListView;
+
+    // Necessary to support multi language
+    String allWordString;
 
     @Inject
     public TransactionListPresenter() {
@@ -107,21 +109,35 @@ public class TransactionListPresenter implements Presenter {
         showTransactionsCollectionInView(transactionList);
     }
 
-
-    public final class TransactionListSubscriber extends DefaultSubscriber<List<Transaction>> {
-
-        @Override
-        public void onCompleted() {
-            TransactionListPresenter.this.hideViewLoading();
+    public void filterListByCategory(CharSequence categoryName) {
+        RealmResults<TransactionModel> filteredTransactionList = null;
+        if (categoryName.toString() == allWordString) {
+            filteredTransactionList = realm.where(TransactionModel.class).findAll();
+        } else {
+            filteredTransactionList = realm.where(TransactionModel.class)
+                            .equalTo("category.name", categoryName.toString())
+                            .findAll();
         }
-
-        @Override
-        public void onError(Throwable e) {
-            TransactionListPresenter.this.hideViewLoading();
+        if (filteredTransactionList != null) {
+            filteredTransactionList.sort("date", Sort.DESCENDING);
         }
-
-        @Override
-        public void onNext(List<Transaction> transactions) {
-        }
+        showTransactionsCollectionInView(filteredTransactionList);
     }
+
+    public void buildCategoryAdapterForFilterDialog() {
+        ArrayList<String> categoryNameList= new ArrayList<>();
+        RealmResults<CategoryModel> categoryModels = realm.where(CategoryModel.class).findAll();
+        // Add manually the "all" option so that user can come back to all transactions
+        allWordString = ((TransactionListFragment)viewListView).getResources().getString(R.string.all);
+        categoryNameList.add(allWordString);
+        for (CategoryModel categoryModel : categoryModels) {
+            categoryNameList.add(categoryModel.getName());
+        }
+
+        this.viewListView.showFilterTransactionDialog(new ArrayAdapter<>(
+                                                ((TransactionListFragment)viewListView).getActivity(),
+                                                R.layout.dialog_list_entry,
+                                                categoryNameList));
+    }
+
 }

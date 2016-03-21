@@ -1,5 +1,7 @@
 package com.lundincast.presentation.view;
 
+import android.widget.ListAdapter;
+
 import com.lundincast.presentation.model.TransactionModel;
 
 import java.util.Collection;
@@ -23,4 +25,11 @@ public interface TransactionListView extends LoadDataView {
      * @param transactionModel The transaction that will be shown.
      */
     void viewTransaction(TransactionModel transactionModel);
+
+    /**
+     * Render a dialog to filter a transaction list by category
+     *
+     * @param adapter The adapter that provides the list entries
+     */
+    void showFilterTransactionDialog(ListAdapter adapter);
 }

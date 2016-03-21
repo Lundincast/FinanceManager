@@ -7,10 +7,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
 import com.lundincast.presentation.view.TransactionListView;
@@ -138,6 +144,19 @@ public class TransactionListFragment extends BaseFragment implements Transaction
 
         // Attach fab to RecyclerView
         fab.attachToRecyclerView(this.rv_transactions);
+
+        // Set listener on filter icon click event in Main Activity
+        ImageView filterIcon = (ImageView) ((MainActivity) getActivity()).findViewById(R.id.iv_filter_list_icon);
+        if (filterIcon != null) {
+            filterIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (TransactionListFragment.this.transactionListPresenter != null) {
+                        TransactionListFragment.this.transactionListPresenter.buildCategoryAdapterForFilterDialog();
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -169,6 +188,22 @@ public class TransactionListFragment extends BaseFragment implements Transaction
      */
     private void loadTransactionList() {
         this.transactionListPresenter.initialize();
+    }
+
+    public void showFilterTransactionDialog(ListAdapter adapter) {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.filter_by_category)
+                .titleColorRes(R.color.colorPrimary)
+                .adapter(adapter, new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        if (TransactionListFragment.this.transactionListPresenter != null) {
+                            TransactionListFragment.this.transactionListPresenter.filterListByCategory(text);
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     private TransactionsAdapter.OnItemClickListener onItemClickListener =
