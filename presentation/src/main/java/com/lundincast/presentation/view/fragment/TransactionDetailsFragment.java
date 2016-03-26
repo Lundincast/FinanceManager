@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
@@ -67,20 +66,11 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         String[] colorsArray = getActivity().getResources().getStringArray(R.array.colors_name);
         String[] colorValue = getActivity().getResources().getStringArray(R.array.colors_value);
         CategoryModel category = ((CreateTransactionActivity) getActivity()).getCategory();
-        String colorName = category.getColor();
-        String colorCode = null;
-        int it = 0;
-        for (String s: colorsArray) {
-            if (s.equals(colorName)) {
-                colorCode = colorValue[it];
-                break;
-            }
-            it++;
-        }
+        int color = category.getColor();
         // set circle drawable color
         LayerDrawable bgDrawable = (LayerDrawable) iv_category_icon.getBackground();
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
-        shape.setColor(Color.parseColor(colorCode));
+        shape.setColor(color);
         // Set category name
         tv_category_name.setText(category.getName());
 

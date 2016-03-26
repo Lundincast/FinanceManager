@@ -32,17 +32,12 @@ public class CategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private List<CategoryModel> categoryCollection;
     private final LayoutInflater layoutInflater;
 
-    private String[] colorsArray;
-    private String[] colorValue;
-
     private OnItemClickListener onItemClickListener;
 
     public CategoriesAdapter(Context context, List<CategoryModel> categoryCollection) {
         this.validateCategoryCollection(categoryCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.categoryCollection = categoryCollection;
-        this.colorsArray = context.getResources().getStringArray(R.array.colors_name);
-        this.colorValue = context.getResources().getStringArray(R.array.colors_value);
     }
 
     @Override
@@ -60,20 +55,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         final CategoryModel categoryModel = this.categoryCollection.get(position);
         viewHolder.tv_category_name.setText(categoryModel.getName());
         // get color code from color name
-        String colorName = categoryModel.getColor();
-        String colorCode = null;
-        int it = 0;
-        for (String s: colorsArray) {
-            if (s.equals(colorName)) {
-                colorCode = colorValue[it];
-                break;
-            }
-            it++;
-        }
+        int color = categoryModel.getColor();
         // set circle drawable color
         LayerDrawable bgDrawable = (LayerDrawable) viewHolder.iv_category_icon.getBackground();
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
-        shape.setColor(Color.parseColor(colorCode));
+        shape.setColor(color);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

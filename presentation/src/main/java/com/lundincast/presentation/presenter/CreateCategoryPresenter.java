@@ -33,7 +33,7 @@ public class CreateCategoryPresenter implements Presenter {
 
     }
 
-    public void saveCategory(Long categoryId, String categoryName, String categoryColor) {
+    public void saveCategory(Long categoryId, String categoryName, int categoryColor) {
         if (!categoryName.equals("")) {
             CategoryModel categoryModel = new CategoryModel();
             categoryModel.setId(categoryId);

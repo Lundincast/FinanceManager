@@ -11,7 +11,7 @@ public class CategoryModel extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
-    private String color;
+    private int color;
 
     public long getId() {
         return id;
@@ -29,11 +29,11 @@ public class CategoryModel extends RealmObject {
         this.name = name;
     }
 
-    public String getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         this.color = color;
     }
 }

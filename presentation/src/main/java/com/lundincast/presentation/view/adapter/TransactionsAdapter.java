@@ -1,9 +1,10 @@
 package com.lundincast.presentation.view.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +34,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private List<TransactionModel> transactionsCollection;
     private final LayoutInflater layoutInflater;
+    private String currencyPref;
 
-    private String[] colorsArray;
-    private String[] colorValue;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
     private OnItemClickListener onItemClickListener;
@@ -44,8 +44,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.validateTransactionsCollection(transactionCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.transactionsCollection = transactionCollection;
-        this.colorsArray = context.getResources().getStringArray(R.array.colors_name);
-        this.colorValue = context.getResources().getStringArray(R.array.colors_value);
+        this.currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
+                                                  .getString("pref_key_currency", "1");
     }
 
     @Override
@@ -64,24 +64,24 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         // extract category information to set category icon color
 //        String colorName = transactionModel.getCategory().getColor();
         CategoryModel categoryModel = transactionModel.getCategory();
-        String colorName = categoryModel.getColor();
-        String colorCode = null;
-        int it = 0;
-        for (String s: colorsArray) {
-            if (s.equals(colorName)) {
-                colorCode = colorValue[it];
-                break;
-            }
-            it++;
-        }
+        int color = categoryModel.getColor();
         // set circle drawable color
         LayerDrawable bgDrawable = (LayerDrawable) viewHolder.ivTransactionCategory.getBackground();
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
-        shape.setColor(Color.parseColor(colorCode));
+        shape.setColor(color);
 
         viewHolder.tvTransactionDate.setText(this.sdf.format(transactionModel.getDate()));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
-        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + " €");
+        // determine currency from preferences
+        String currency;
+        if (currencyPref.equals("2")) {
+            currency = " $";
+        } else if (currencyPref.equals("3")) {
+            currency = " £";
+        } else {
+            currency = " €";
+        }
+        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + currency);
         if (transactionModel.isPending()) {
             viewHolder.iv_warning_icon.setVisibility(View.VISIBLE);
         }

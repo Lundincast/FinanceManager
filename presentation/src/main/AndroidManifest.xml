@@ -30,6 +30,12 @@
             android:label="" >
         </activity>
 
+        <service android:name=".services.NotificationService"
+            android:enabled="true">
+        </service>
+
+        <receiver android:name=".broadcastreceivers.NotificationAlarmReceiver" />
+
     </application>
 
 </manifest>

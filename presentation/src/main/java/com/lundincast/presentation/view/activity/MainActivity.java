@@ -1,21 +1,23 @@
 package com.lundincast.presentation.view.activity;
 
+import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.broadcastreceivers.NotificationAlarmReceiver;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
@@ -24,13 +26,13 @@ import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.view.fragment.TransactionListFragment;
-import com.melnykov.fab.FloatingActionButton;
+
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Main application screen. This is the app entry point.

@@ -2,6 +2,7 @@ package com.lundincast.presentation.view.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -100,6 +101,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Override public void onPause() {
         super.onPause();
         this.transactionListPresenter.pause();
+
     }
 
     @Override public void onDestroy() {

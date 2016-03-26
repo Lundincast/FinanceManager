@@ -1,5 +1,6 @@
 package com.lundincast.presentation.presenter;
 
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 
 import com.github.mikephil.charting.data.Entry;
@@ -152,16 +153,11 @@ public class OverviewPresenter implements Presenter {
 
         // build colors array from resources
         int[] colorsArray = new int[categoryNames.size()];
-        String colorValue;
         for (int i = 0; i < categoryNames.size(); i++) {
             CategoryModel category = realm.where(CategoryModel.class).equalTo("name", categoryNames.get(i)).findFirst();
-            if (category.getColor().contains(" ")) {
-                colorValue = category.getColor().replaceAll(" ", "_");
-            } else {
-                colorValue = category.getColor();
-            }
-            colorsArray[i] = viewOverView.getActivity().getResources()
-                                         .getIdentifier(colorValue, "color", viewOverView.getActivity().getPackageName());
+            int intColor = category.getColor();
+            String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
+            colorsArray[i] = Color.parseColor(hexColor);
         }
 
         dataSet.setColors(colorsArray);
