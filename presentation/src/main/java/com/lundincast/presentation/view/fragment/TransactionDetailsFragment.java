@@ -22,7 +22,10 @@ import android.widget.TextView;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
+import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,17 +38,17 @@ import butterknife.OnClick;
 /**
  * A {@link Fragment} subclass for showing transaction details
  */
-public class TransactionDetailsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener {
+public class TransactionDetailsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener,
+                                                                        TimePickerDialog.OnTimeSetListener {
 
     @Bind(R.id.iv_category_icon) ImageView iv_category_icon;
     @Bind(R.id.tv_category_name) TextView tv_category_name;
     @Bind(R.id.tv_transaction_date) TextView tv_transaction_date;
+    @Bind(R.id.tv_transaction_time) TextView tv_transaction_time;
     @Bind(R.id.et_transaction_comment) EditText et_transaction_comment;
     @Bind(R.id.cb_due) CheckBox cb_due;
     @Bind(R.id.sp_due_by_to) Spinner sp_due_by_to;
     @Bind(R.id.et_due_name) EditText et_due_name;
-
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     @Nullable
     @Override
@@ -74,11 +77,12 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         // Set category name
         tv_category_name.setText(category.getName());
 
-        // Set date as in activity's presenter
+        // Set date and time as in activity's presenter
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
-        tv_transaction_date.setText(sdf.format(cal.getTime()));
+        tv_transaction_date.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
+        tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
 
         // Set comment as in activity's presenter
         et_transaction_comment.setText(((CreateTransactionActivity) getActivity()).getComment());
@@ -173,15 +177,43 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         dpd.show(getFragmentManager(), "Datepickerdialog");
     }
 
+    @OnClick(R.id.tv_transaction_time)
+    void onTimeClicked() {
+        Calendar cal = Calendar.getInstance();
+        Date date = ((CreateTransactionActivity) getActivity()).getDate();
+        cal.setTime(date);
+        TimePickerDialog tpd = TimePickerDialog.newInstance(
+                this,
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
+                true
+        );
+        tpd.show(getFragmentManager(), "TimepickerDialog");
+    }
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = Calendar.getInstance();
+        cal.setTime(((CreateTransactionActivity) getActivity()).getDate());
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, monthOfYear);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        // assign selected date to mPrice variable in parent activity
+        // assign selected date to mDate variable in parent activity
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // format date and display
-        tv_transaction_date.setText(sdf.format(cal.getTime()));
+        tv_transaction_date.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
+    }
+
+    @Override
+    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute, int second) {
+        Calendar cal = Calendar.getInstance();
+        Date date = ((CreateTransactionActivity) getActivity()).getDate();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        cal.set(Calendar.MINUTE, minute);
+        // assign updated time to mDate in parent activity. We can reuse onDateSet here.
+        ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
+        // Display time on screen
+        tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
     }
 }

@@ -12,19 +12,28 @@
         android:background="@drawable/circle" />
 
     <TextView
+        android:id="@+id/tv_day_of_week"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iv_transaction_category"
+        android:paddingLeft="10dp"
+        android:textColor="@color/black" />
+
+    <TextView
         android:id="@+id/tv_transaction_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/iv_transaction_category"
+        android:layout_toRightOf="@id/tv_day_of_week"
         android:paddingLeft="10dp"
         android:text="Test date"
+        android:textStyle="italic"
         />
 
     <TextView
         android:id="@+id/tv_transaction_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_transaction_date"
+        android:layout_below="@id/tv_day_of_week"
         android:layout_toRightOf="@id/iv_transaction_category"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"

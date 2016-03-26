@@ -15,8 +15,10 @@ import android.widget.TextView;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
+import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,8 +37,6 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<TransactionModel> transactionsCollection;
     private final LayoutInflater layoutInflater;
     private String currencyPref;
-
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
     private OnItemClickListener onItemClickListener;
 
@@ -70,7 +70,10 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
         shape.setColor(color);
 
-        viewHolder.tvTransactionDate.setText(this.sdf.format(transactionModel.getDate()));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(transactionModel.getDate());
+        viewHolder.tvDayOfWeek.setText(FullMonthDateFormatter.getShortDayOfWeekName(cal));
+        viewHolder.tvTransactionDate.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
         // determine currency from preferences
         String currency;
@@ -124,6 +127,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.iv_transaction_category) ImageView ivTransactionCategory;
+        @Bind(R.id.tv_day_of_week) TextView tvDayOfWeek;
         @Bind(R.id.tv_transaction_date) TextView tvTransactionDate;
         @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
         @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
