@@ -60,6 +60,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     private TransactionsLayoutManager transactionsLayoutManager;
 
     private TransactionListListener transactionListListener;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
 
     public TransactionListFragment() {
         super();
@@ -89,6 +90,17 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         super.onActivityCreated(savedInstanceState);
         this.initialize();
         this.loadTransactionList();
+
+        preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals("pref_key_currency")) {
+                    TransactionListFragment.this.transactionsAdapter.setCurrencyPref(getActivity());
+                    TransactionListFragment.this.transactionsAdapter.notifyDataSetChanged();
+                }
+            }
+        };
+        ((MainActivity) getActivity()).sharedPreferences.registerOnSharedPreferenceChangeListener(preferencesListener);
     }
 
     @Override public void onResume() {
@@ -107,6 +119,8 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Override public void onDestroy() {
         super.onDestroy();
         this.transactionListPresenter.destroy();
+
+        ((MainActivity) getActivity()).sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferencesListener);
     }
 
     @Override public void onDestroyView() {

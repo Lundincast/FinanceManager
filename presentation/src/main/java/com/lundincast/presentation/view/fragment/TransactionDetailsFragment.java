@@ -82,7 +82,11 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
         tv_transaction_date.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
-        tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+        if (cal.get(Calendar.MINUTE) <= 9) {
+            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+        } else {
+            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+        }
 
         // Set comment as in activity's presenter
         et_transaction_comment.setText(((CreateTransactionActivity) getActivity()).getComment());

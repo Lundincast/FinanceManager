@@ -78,11 +78,10 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         setUpToolbar();
 
         initializeInjector();
-        initializeActivity(savedInstanceState);
-
         // Initialize currency setting from shared preferences
         currPref = this.sharedPreferences.getString("pref_key_currency", "1");
 
+        initializeActivity(savedInstanceState);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -130,7 +129,13 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
     @Override
     public void renderTransactionPrice(String price) {
-        tv_transaction_price.setText(price);
+        if (currPref.equals("1")) {
+            tv_transaction_price.setText(price + " €");
+        } else if (currPref.equals("2")) {
+            tv_transaction_price.setText(price + " $");
+        } else {
+            tv_transaction_price.setText(price + " £");
+        }
     }
 
     @Override
@@ -245,12 +250,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 formattedPrice = mPrice;
             }
         }
-        if (currPref.equals("2")) {
-            formattedPrice += " $";
-        } else {
-            formattedPrice += " €";
-        }
-        tv_transaction_price.setText(formattedPrice);
+        this.renderTransactionPrice(formattedPrice);
     }
 
     public void priceBackListener(View v) {
@@ -272,12 +272,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                     formattedPrice = mPrice;
                 }
             }
-            if (currPref.equals("2")) {
-                formattedPrice += " $";
-            } else {
-                formattedPrice += " €";
-            }
-            tv_transaction_price.setText(formattedPrice);
+            this.renderTransactionPrice(formattedPrice);
         }
     }
 

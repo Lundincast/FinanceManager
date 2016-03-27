@@ -44,8 +44,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.validateTransactionsCollection(transactionCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.transactionsCollection = transactionCollection;
-        this.currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
-                                                  .getString("pref_key_currency", "1");
+        this.setCurrencyPref(context);
     }
 
     @Override
@@ -121,6 +120,11 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (transactionsCollection == null) {
             throw new IllegalArgumentException("The transaction list cannot be null");
         }
+    }
+
+    public void setCurrencyPref(Context context) {
+        this.currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString("pref_key_currency", "1");
     }
 
 

@@ -45,11 +45,13 @@ public class SettingsFragment extends PreferenceFragment implements TimePickerDi
 
         // set currency preference
         ListPreference currencyPref = (ListPreference) findPreference("pref_key_currency");
-        String test = sharedPreferences.getString("pref_key_currency", "1");
-        if (test.equals("2")) {
-            currencyPref.setSummary("Dollar");
+        String currencyValue = sharedPreferences.getString("pref_key_currency", "1");
+        if (currencyValue.equals("2")) {
+            currencyPref.setSummary("USD - Dollar");
+        } else if (currencyValue.equals("3")) {
+            currencyPref.setSummary("GBP - British Pound");
         } else {
-            currencyPref.setSummary("Euro");
+            currencyPref.setSummary("EUR - Euro");
         }
 
         // set currency dialog listener to get chosen value and display it

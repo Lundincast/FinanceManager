@@ -50,8 +50,10 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
     @Bind(R.id.viewpager) ViewPager viewPager;
 
     @Inject Navigator navigator;
+    @Inject public SharedPreferences sharedPreferences;
 
     private TransactionComponent transactionComponent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
