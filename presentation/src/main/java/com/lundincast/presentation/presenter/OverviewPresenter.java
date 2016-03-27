@@ -2,6 +2,8 @@ package com.lundincast.presentation.presenter;
 
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -35,12 +37,6 @@ public class OverviewPresenter implements Presenter {
 
     private final Realm realm;
     private RealmResults<TransactionModel> transactionListByMonth;
-    private RealmChangeListener transactionListByMonthListener = new RealmChangeListener() {
-        @Override
-        public void onChange() {
-            OverviewPresenter.this.generatePieData();
-        }
-    };
 
     private OverviewFragment viewOverView;
 
@@ -60,7 +56,6 @@ public class OverviewPresenter implements Presenter {
 
     @Override
     public void resume() {
-        transactionListByMonth.addChangeListener(transactionListByMonthListener);
     }
 
     @Override
@@ -70,7 +65,6 @@ public class OverviewPresenter implements Presenter {
 
     @Override
     public void destroy() {
-        transactionListByMonth.removeChangeListener(transactionListByMonthListener);
     }
 
     /**
@@ -86,6 +80,7 @@ public class OverviewPresenter implements Presenter {
     private void loadTransactionList() {
         this.showViewLoading();
         this.getMonthlyOverallTransactionList();
+        this.setTimeframeSpinner();
     }
 
     private void showViewLoading() {
@@ -104,19 +99,29 @@ public class OverviewPresenter implements Presenter {
     private void getMonthlyOverallTransactionList() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        transactionListByMonth = realm.where(TransactionModel.class)
-                                      .equalTo("month", cal.get(Calendar.MONTH))
-                                      .equalTo("year", cal.get(Calendar.YEAR))
-                                      .findAll();
-        this.generatePieData();
+
+        this.generatePieData(cal);
     }
 
-    private void generatePieData() {
+    private void setTimeframeSpinner() {
+        ArrayList<String> values = new ArrayList<>();
+        values.add("This month");
+        values.add("Last month");
+        this.viewOverView.setSpinnerDataAndRender(values);
+    }
+
+    private void generatePieData(Calendar cal) {
         // There may be a better way to do this. HashMap<K,V> looked attractive but
         // it doesn't accept a double as value
 
         ArrayList<String> categoryNames = new ArrayList<String>();
         int position;
+
+        // get data from db depending on date
+        transactionListByMonth = realm.where(TransactionModel.class)
+                .equalTo("month", cal.get(Calendar.MONTH))
+                .equalTo("year", cal.get(Calendar.YEAR))
+                .findAll();
 
         // Build categoryNames array from transactionListByMonth RealmResult
         for (TransactionModel transaction : transactionListByMonth) {
@@ -164,7 +169,17 @@ public class OverviewPresenter implements Presenter {
         dataSet.setSliceSpace(3f);
 
         PieData pieData = new PieData(categoryNames, dataSet);
+        pieData.setDrawValues(false);
 
         this.renderMonthlyPieChart(pieData, totalSpent);
+    }
+
+    public void updatePieChartData(AdapterView<?> parent, View view, int position, long id) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        if (position == 1) {
+            cal.add(Calendar.MONTH, -1);
+        }
+        this.generatePieData(cal);
     }
 }

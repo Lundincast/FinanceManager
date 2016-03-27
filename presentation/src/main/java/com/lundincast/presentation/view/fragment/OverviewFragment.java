@@ -1,21 +1,32 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.presenter.OverviewPresenter;
 import com.lundincast.presentation.view.OverviewView;
+import com.lundincast.presentation.view.activity.MainActivity;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -25,12 +36,19 @@ import butterknife.ButterKnife;
 /**
  * A {@link Fragment} subclass for "Overview" tab in Main Activity
  */
-public class OverviewFragment extends BaseFragment implements OverviewView {
+public class OverviewFragment extends BaseFragment implements OverviewView,
+                                                              OnChartValueSelectedListener,
+                                                              AdapterView.OnItemSelectedListener {
 
     @Inject OverviewPresenter overviewPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
     @Bind(R.id.piechart_monthly_distribution) PieChart piechart_monthly;
+    @Bind(R.id.sp_distribution_timeframe) Spinner sp_distribution_timeframe;
+
+    private double totalPrice;
+    private double displayedPriceValue;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
 
     @Nullable
     @Override
@@ -41,19 +59,19 @@ public class OverviewFragment extends BaseFragment implements OverviewView {
 
         // set up chart
         piechart_monthly.setDescription("");
-
         // radius of the center hole in percent of maximum radius
         piechart_monthly.setHoleRadius(80f);
         piechart_monthly.setTransparentCircleRadius(55f);
         // Disable text on slice
         piechart_monthly.setDrawSliceText(false);
         // Set center text properties
-        piechart_monthly.setCenterTextColor(Color.parseColor("#FF9100"));
+        piechart_monthly.setCenterTextColor(Color.BLACK);
         piechart_monthly.setCenterTextSize(30f);
         piechart_monthly.setDrawCenterText(true);
         // Disable legend
         Legend l = piechart_monthly.getLegend();
         l.setEnabled(false);
+
 
         return fragmentView;
     }
@@ -63,6 +81,34 @@ public class OverviewFragment extends BaseFragment implements OverviewView {
         super.onActivityCreated(savedInstanceState);
         this.initialize();
         this.loadData();
+
+        preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals("pref_key_currency")) {
+                    OverviewFragment.this.setPieChartCenterText(displayedPriceValue);
+                }
+            }
+        };
+        ((MainActivity) getActivity()).sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+    }
+
+    @Override public void onPause() {
+        super.onPause();
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        ((MainActivity) getActivity()).sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     /**
@@ -88,13 +134,67 @@ public class OverviewFragment extends BaseFragment implements OverviewView {
 
     @Override
     public void setMonthlyPieChartData(PieData pieData, double monthlyTotal) {
+        this.totalPrice = monthlyTotal;
         piechart_monthly.setData(pieData);
-        piechart_monthly.setCenterText(String.format("%.2f", monthlyTotal) + " €");
+        this.setPieChartCenterText(monthlyTotal);
         piechart_monthly.notifyDataSetChanged();
         piechart_monthly.invalidate();
+        piechart_monthly.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
+        piechart_monthly.setOnChartValueSelectedListener(this);
+        this.displayedPriceValue = monthlyTotal;
     }
+
+    private void setPieChartCenterText(double priceValue) {
+        String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
+        if (currencyPref.equals("1")) {
+            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " €");
+        } else if (currencyPref.equals("2")) {
+            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " $");
+        } else {
+            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " £");
+        }
+        this.displayedPriceValue = priceValue;
+    }
+
+    @Override
+    public void setSpinnerDataAndRender(ArrayList<String> data) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                                                                android.R.layout.simple_spinner_item,
+                                                                data);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_distribution_timeframe.setAdapter(adapter);
+        sp_distribution_timeframe.setOnItemSelectedListener(this);
+    }
+
 
     private void loadData() {
         this.overviewPresenter.initialize();
+    }
+
+    // Callbacks for spinner selection
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // un-highlight chart item just in case
+        piechart_monthly.highlightValue(null);
+        this.overviewPresenter.updatePieChartData(parent, view, position, id);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Do nothing here
+    }
+
+    // Callbacks for pieChart selection
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        Integer colorEntry = piechart_monthly.getData().getDataSet().getColors().get(e.getXIndex());
+        piechart_monthly.setCenterTextColor(colorEntry);
+        this.setPieChartCenterText(e.getVal());
+    }
+
+    @Override
+    public void onNothingSelected() {
+        this.setPieChartCenterText(totalPrice);
+        piechart_monthly.setCenterTextColor(Color.BLACK);
     }
 }

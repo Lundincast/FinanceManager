@@ -7,7 +7,7 @@
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:padding="10dp" >
 
@@ -27,10 +27,39 @@
             </ProgressBar>
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/piechart_monthly_distribution"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:padding="10dp" >
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/piechart_monthly_distribution"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/tv_distribution_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/piechart_monthly_distribution"
+                android:padding="15dp"
+                android:text="Distribution"
+                android:textSize="20sp"
+                android:textColor="@color/colorAccent"/>
+
+            <Spinner
+                android:id="@+id/sp_distribution_timeframe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/piechart_monthly_distribution"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="15dp"
+                android:layout_toRightOf="@+id/tv_distribution_label"
+                android:layout_toEndOf="@+id/tv_distribution_label" />
+
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 
