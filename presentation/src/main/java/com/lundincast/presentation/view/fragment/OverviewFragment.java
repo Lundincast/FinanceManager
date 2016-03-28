@@ -14,8 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.highlight.Highlight;
@@ -45,6 +49,9 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
     @Bind(R.id.piechart_monthly_distribution) PieChart piechart_monthly;
     @Bind(R.id.sp_distribution_timeframe) Spinner sp_distribution_timeframe;
+    @Bind(R.id.ll_barchart_loading) LinearLayout ll_barchart_loading;
+    @Bind(R.id.barchart_category_history) BarChart barchart_category_history;
+    @Bind(R.id.sp_category_list) Spinner sp_category_list;
 
     private double totalPrice;
     private double displayedPriceValue;
@@ -57,7 +64,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         View fragmentView = inflater.inflate(R.layout.fragment_overview, container, false);
         ButterKnife.bind(this, fragmentView);
 
-        // set up chart
+        // set up PieChart
         piechart_monthly.setDescription("");
         // radius of the center hole in percent of maximum radius
         piechart_monthly.setHoleRadius(80f);
@@ -72,6 +79,23 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         Legend l = piechart_monthly.getLegend();
         l.setEnabled(false);
 
+        // set up BarChart
+        barchart_category_history.setDescription("");
+        barchart_category_history.setDrawBarShadow(false);
+        barchart_category_history.setDrawValueAboveBar(true);
+        barchart_category_history.setDrawGridBackground(false);
+
+        XAxis xAxis = barchart_category_history.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setSpaceBetweenLabels(2);
+
+        YAxis rightAxis = barchart_category_history.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setLabelCount(8, false);
+
+        Legend leg = barchart_category_history.getLegend();
+        leg.setEnabled(false);
 
         return fragmentView;
     }
@@ -127,6 +151,16 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         this.ll_loading.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showBarChartLoading() {
+        this.ll_barchart_loading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideBarChartLoading() {
+        this.ll_barchart_loading.setVisibility(View.GONE);
+    }
+
     private void initialize() {
         this.getComponent(TransactionComponent.class).inject(this);
         this.overviewPresenter.setView(this);
@@ -143,6 +177,8 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         piechart_monthly.setOnChartValueSelectedListener(this);
         this.displayedPriceValue = monthlyTotal;
     }
+
+
 
     private void setPieChartCenterText(double priceValue) {
         String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
@@ -166,6 +202,24 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         sp_distribution_timeframe.setOnItemSelectedListener(this);
     }
 
+    @Override
+    public void setCategoryBarChartData(BarData data) {
+        barchart_category_history.setData(data);
+        barchart_category_history.notifyDataSetChanged();
+        barchart_category_history.invalidate();
+        barchart_category_history.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
+    }
+
+    @Override
+    public void setCategorySpinnerDataAndRender(ArrayList<String> data) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                                                                    android.R.layout.simple_spinner_item,
+                                                                    data);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_category_list.setAdapter(adapter);
+        sp_category_list.setOnItemSelectedListener(this);
+    }
+
 
     private void loadData() {
         this.overviewPresenter.initialize();
@@ -174,9 +228,17 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     // Callbacks for spinner selection
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // un-highlight chart item just in case
-        piechart_monthly.highlightValue(null);
-        this.overviewPresenter.updatePieChartData(parent, view, position, id);
+        switch (parent.getId()) {
+            case R.id.sp_distribution_timeframe:
+                // un-highlight chart item just in case
+                piechart_monthly.highlightValue(null);
+                this.overviewPresenter.updatePieChartData(parent, view, position, id);
+                break;
+            case R.id.sp_category_list:
+                this.overviewPresenter.updateCategoryBarChartData(parent, view, position, id);
+                break;
+        }
+
     }
 
     @Override

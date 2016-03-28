@@ -4,17 +4,25 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.lundincast.domain.Category;
+import com.lundincast.domain.Transaction;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.OverviewView;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
+import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -81,6 +89,8 @@ public class OverviewPresenter implements Presenter {
         this.showViewLoading();
         this.getMonthlyOverallTransactionList();
         this.setTimeframeSpinner();
+        this.getCategoryHistoryData();
+        this.setCategorySpinner();
     }
 
     private void showViewLoading() {
@@ -91,9 +101,22 @@ public class OverviewPresenter implements Presenter {
         this.viewOverView.hideLoading();
     }
 
+    private void showBarChartViewLoading() {
+        this.viewOverView.showBarChartLoading();
+    }
+
+    private void hideBarChartViewLoading() {
+        this.viewOverView.hideBarChartLoading();
+    }
+
     private void renderMonthlyPieChart(PieData pieData, double monthlyTotal) {
         this.hideViewLoading();
         this.viewOverView.setMonthlyPieChartData(pieData, monthlyTotal);
+    }
+
+    private void renderCategoryBarChart(BarData data) {
+        this.hideBarChartViewLoading();
+        this.viewOverView.setCategoryBarChartData(data);
     }
 
     private void getMonthlyOverallTransactionList() {
@@ -108,6 +131,20 @@ public class OverviewPresenter implements Presenter {
         values.add("This month");
         values.add("Last month");
         this.viewOverView.setSpinnerDataAndRender(values);
+    }
+
+    private void getCategoryHistoryData() {
+
+        this.generateBarChartData("Housing ");   // TODO useless ??
+    }
+
+    private void setCategorySpinner() {
+        ArrayList<String> values = new ArrayList<>();
+        RealmResults<CategoryModel> categories = realm.where(CategoryModel.class).findAll();
+        for (CategoryModel category : categories) {
+            values.add(category.getName());
+        }
+        this.viewOverView.setCategorySpinnerDataAndRender(values);
     }
 
     private void generatePieData(Calendar cal) {
@@ -181,5 +218,62 @@ public class OverviewPresenter implements Presenter {
             cal.add(Calendar.MONTH, -1);
         }
         this.generatePieData(cal);
+    }
+
+    private void generateBarChartData(String categoryName) {
+        Calendar today = Calendar.getInstance();
+        today.setTime(new Date());
+
+        Calendar sixMonthAgo = Calendar.getInstance();
+        sixMonthAgo.add(Calendar.MONTH, -6);
+
+        RealmResults<TransactionModel> resultList = realm.where(TransactionModel.class)
+                                                    .equalTo("category.name", categoryName)
+                                                    .between("date", sixMonthAgo.getTime(), today.getTime())
+                                                    .findAll();
+
+        // create months array
+        ArrayList<String> xVals = new ArrayList<>();
+        sixMonthAgo.add(Calendar.MONTH, 1);
+        for (int i = 0; i < 6; i++) {
+            xVals.add(FullMonthDateFormatter.getShortMonthName(sixMonthAgo.get(Calendar.MONTH)));
+            sixMonthAgo.add(Calendar.MONTH, 1);
+        }
+
+        // fill yTotals by adding transaction price to total per month
+        double[] yTotals = new double[xVals.size()];
+        Calendar cal2 = Calendar.getInstance();
+        for (TransactionModel transaction : resultList) {
+            cal2.setTime(transaction.getDate());
+            String monthName = FullMonthDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
+            yTotals[xVals.indexOf(monthName)] += transaction.getPrice();
+        }
+
+        // fill yVals with totals
+        ArrayList<BarEntry> yVals = new ArrayList<>();
+        for (int i = 0; i < xVals.size(); i++) {
+            yVals.add(new BarEntry((float) yTotals[i], i));
+        }
+
+        BarDataSet set = new BarDataSet(yVals, "DataSet");
+
+        // set color for this set
+        CategoryModel category = realm.where(CategoryModel.class).equalTo("name", categoryName).findFirst();
+        int intColor = category.getColor();
+        String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
+        set.setColor(Color.parseColor(hexColor));
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set);
+
+        BarData data = new BarData(xVals, dataSets);
+        data.setValueTextSize(10f);
+
+        this.renderCategoryBarChart(data);
+    }
+
+    public void updateCategoryBarChartData(AdapterView<?> parent, View view, int position, long id) {
+        TextView tv = (TextView) view;
+        this.generateBarChartData(tv.getText().toString());
     }
 }

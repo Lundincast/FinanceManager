@@ -1,5 +1,6 @@
 package com.lundincast.presentation.view;
 
+import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.PieData;
 
 import java.util.ArrayList;
@@ -19,4 +20,24 @@ public interface OverviewView extends LoadDataView {
      * Set data to timeframe spinner for rendering
      */
     void setSpinnerDataAndRender(ArrayList<String> data);
+
+    /**
+     * Set data to Category BarChart for rendering
+     */
+    void setCategoryBarChartData(BarData data);
+
+    /**
+     * Set data to category chooser spinner for rendering
+     */
+    void setCategorySpinnerDataAndRender(ArrayList<String> data);
+
+    /**
+     * Show a view with a progress bar indicating a loading process.
+     */
+    void showBarChartLoading();
+
+    /**
+     * Hide a loading view.
+     */
+    void hideBarChartLoading();
 }

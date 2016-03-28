@@ -16,6 +16,14 @@ public class FullMonthDateFormatter {
 
     public FullMonthDateFormatter() {}
 
+    public static String getCompleteMonthName(int index) {
+        return monthsComplete[index];
+    }
+
+    public static String getShortMonthName(int index) {
+        return shortMonthName[index];
+    }
+
     public static String getShortFormattedDate(Calendar cal) {
         String formattedDate = null;
         if (dateIsToday(cal)) {
