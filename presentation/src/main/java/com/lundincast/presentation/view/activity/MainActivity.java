@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.broadcastreceivers.NotificationAlarmReceiver;
@@ -22,6 +23,7 @@ import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.dagger.modules.TransactionModule;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.navigation.Navigator;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
@@ -33,6 +35,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 /**
  * Main application screen. This is the app entry point.
@@ -61,12 +64,15 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        initializeInjector();
+
         setUpToolbar();
         setUpTabLayout();
         setUpViewPager();
 
-        initializeInjector();
+        checkFirstRun();
     }
+
 
     private void setUpToolbar() {
         toolbar.showOverflowMenu();
@@ -147,6 +153,100 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkFirstRun() {
+
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final int DOESNT_EXIST = -1;
+
+        // Get current version code
+        int currentVersionCode = 0;
+        try {
+            currentVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+            // handle exception
+            e.printStackTrace();
+            return;
+        }
+
+        // Get saved version code
+        int savedVersionCode = sharedPreferences.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+            // This is just a normal run
+            Toast.makeText(this, "Normal run", Toast.LENGTH_SHORT).show();
+        } else if (savedVersionCode == DOESNT_EXIST) {
+            // This is a new install (or the user cleared the shared preferences)
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    CategoryModel housing = realm.createObject(CategoryModel.class);
+                    housing.setId(1);
+                    housing.setName("Housing");
+                    housing.setColor(-769226);
+                    CategoryModel atWork = realm.createObject(CategoryModel.class);
+                    atWork.setId(2);
+                    atWork.setName("At work");
+                    atWork.setColor(-5317);
+                    CategoryModel atTheSupermarket = realm.createObject(CategoryModel.class);
+                    atTheSupermarket.setId(3);
+                    atTheSupermarket.setName("At the supermarket");
+                    atTheSupermarket.setColor(-7617718);
+                    CategoryModel transport = realm.createObject(CategoryModel.class);
+                    transport.setId(4);
+                    transport.setName("Transport");
+                    transport.setColor(-4342339);
+                    CategoryModel foodAndDrinks = realm.createObject(CategoryModel.class);
+                    foodAndDrinks.setId(5);
+                    foodAndDrinks.setName("Food & Drinks");
+                    foodAndDrinks.setColor(-6543440);
+                    CategoryModel tobacco = realm.createObject(CategoryModel.class);
+                    tobacco.setId(6);
+                    tobacco.setName("Tobacco");
+                    tobacco.setColor(-7508381);
+                    CategoryModel sport = realm.createObject(CategoryModel.class);
+                    sport.setId(7);
+                    sport.setName("Sport");
+                    sport.setColor(-26624);
+                    CategoryModel books = realm.createObject(CategoryModel.class);
+                    books.setId(8);
+                    books.setName("Books & Press");
+                    books.setColor(-16537100);
+                    CategoryModel phone = realm.createObject(CategoryModel.class);
+                    phone.setId(9);
+                    phone.setName("Phone");
+                    phone.setColor(-1739917);
+                    CategoryModel miscellaneous = realm.createObject(CategoryModel.class);
+                    miscellaneous.setId(10);
+                    miscellaneous.setName("Miscellaneous");
+                    miscellaneous.setColor(-10453621);
+                    CategoryModel entertainment = realm.createObject(CategoryModel.class);
+                    entertainment.setId(11);
+                    entertainment.setName("Entertainment");
+                    entertainment.setColor(-10929);
+                    CategoryModel travel = realm.createObject(CategoryModel.class);
+                    travel.setId(12);
+                    travel.setName("Travel");
+                    travel.setColor(-11677471);
+                    CategoryModel technology = realm.createObject(CategoryModel.class);
+                    technology.setId(13);
+                    technology.setName("Technology");
+                    technology.setColor(-8497214);
+                    CategoryModel education = realm.createObject(CategoryModel.class);
+                    education.setId(14);
+                    education.setName("Education");
+                    education.setColor(-1499549);
+                }
+            }, null);
+        } else if (currentVersionCode > savedVersionCode) {
+            // This is an upgrade
+            Toast.makeText(this, "First start after update", Toast.LENGTH_SHORT).show();
+        }
+
+        // Update the shared preferences with the current version code
+        sharedPreferences.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
     }
 
 

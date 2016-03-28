@@ -181,15 +181,17 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
 
     private void setPieChartCenterText(double priceValue) {
-        String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
-        if (currencyPref.equals("1")) {
-            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " €");
-        } else if (currencyPref.equals("2")) {
-            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " $");
-        } else {
-            piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " £");
+        if (priceValue != 0) {
+            String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
+            if (currencyPref.equals("1")) {
+                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " €");
+            } else if (currencyPref.equals("2")) {
+                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " $");
+            } else {
+                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " £");
+            }
+            this.displayedPriceValue = priceValue;
         }
-        this.displayedPriceValue = priceValue;
     }
 
     @Override

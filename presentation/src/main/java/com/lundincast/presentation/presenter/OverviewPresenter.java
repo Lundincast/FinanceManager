@@ -259,9 +259,11 @@ public class OverviewPresenter implements Presenter {
 
         // set color for this set
         CategoryModel category = realm.where(CategoryModel.class).equalTo("name", categoryName).findFirst();
-        int intColor = category.getColor();
-        String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
-        set.setColor(Color.parseColor(hexColor));
+        if (category != null) {
+            int intColor = category.getColor();
+            String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
+            set.setColor(Color.parseColor(hexColor));
+        }
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set);
