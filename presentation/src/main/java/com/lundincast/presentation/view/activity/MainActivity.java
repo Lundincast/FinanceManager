@@ -175,7 +175,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         // Check for first run or upgrade
         if (currentVersionCode == savedVersionCode) {
             // This is just a normal run
-            Toast.makeText(this, "Normal run", Toast.LENGTH_SHORT).show();
+
         } else if (savedVersionCode == DOESNT_EXIST) {
             // This is a new install (or the user cleared the shared preferences)
             Realm realm = Realm.getDefaultInstance();
@@ -242,7 +242,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             }, null);
         } else if (currentVersionCode > savedVersionCode) {
             // This is an upgrade
-            Toast.makeText(this, "First start after update", Toast.LENGTH_SHORT).show();
+
         }
 
         // Update the shared preferences with the current version code

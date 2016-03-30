@@ -20,9 +20,16 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:background="@drawable/circle"
-                android:layout_above="@+id/iv_calendar_icon"
-                android:layout_toLeftOf="@+id/tv_category_name"
-                android:layout_toStartOf="@+id/tv_category_name" />
+                android:layout_alignRight="@+id/iv_calendar_icon"
+                android:layout_alignEnd="@+id/iv_calendar_icon"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/tv_category_name"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="11dp"
+                android:layout_marginRight="11dp"
+                android:layout_above="@+id/iv_calendar_icon" />
 
             <TextView
                 android:id="@+id/tv_category_name"
@@ -59,7 +66,7 @@
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="left"
+                android:gravity="center_vertical"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
@@ -68,8 +75,7 @@
                 android:layout_toRightOf="@+id/iv_comment"
                 android:layout_alignTop="@+id/iv_calendar_icon"
                 android:layout_alignBottom="@+id/iv_time_icon"
-                android:layout_toStartOf="@+id/iv_time_icon"
-                android:layout_toLeftOf="@+id/iv_time_icon" />
+                android:layout_alignRight="@+id/iv_time_icon" />
 
             <ImageView
                 android:id="@+id/iv_time_icon"
@@ -82,9 +88,8 @@
                 android:src="@drawable/ic_access_time_black_24dp"
                 android:layout_below="@+id/tv_category_name"
                 android:layout_toLeftOf="@+id/tv_transaction_time"
-                android:layout_toStartOf="@+id/tv_transaction_time"
-                android:layout_marginRight="33dp"
-                android:layout_marginEnd="33dp" />
+                android:layout_marginRight="48dp"
+                android:layout_marginEnd="48dp" />
 
             <TextView
                 android:id="@+id/tv_transaction_time"
@@ -92,15 +97,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_category_name"
-                android:gravity="left"
+                android:layout_alignRight="@+id/et_transaction_comment"
+                android:layout_alignEnd="@+id/et_transaction_comment"
+                android:layout_alignBottom="@+id/iv_time_icon"
+                android:gravity="center_vertical"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:text="12:35"
-                android:layout_alignRight="@+id/et_transaction_comment"
-                android:layout_alignEnd="@+id/et_transaction_comment"
-                android:layout_alignBottom="@+id/iv_time_icon" />
+                android:text="12:35" />
 
             <ImageView
                 android:id="@+id/iv_comment"
@@ -129,17 +134,26 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 
-            <CheckBox
-                android:id="@+id/cb_due"
+            <LinearLayout
+                android:id="@+id/linearLayout1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:layout_weight="0.08"
+                android:layout_height="fill_parent"
+                android:layout_alignEnd="@+id/iv_comment"
+                android:layout_alignRight="@+id/iv_comment"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignBottom="@+id/sp_due_by_to"
+                android:layout_alignTop="@+id/sp_due_by_to">
+
+                <CheckBox
+                    android:id="@+id/cb_due"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical" />
+
+            </LinearLayout>
 
             <Spinner
                 android:id="@+id/sp_due_by_to"
@@ -148,20 +162,25 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/iv_time_icon"
-                android:layout_toRightOf="@+id/iv_comment"
-                android:layout_toEndOf="@+id/iv_comment" />
+                android:layout_toEndOf="@+id/linearLayout1"
+                android:layout_below="@+id/et_transaction_comment"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_toRightOf="@+id/linearLayout1" />
 
             <EditText
                 android:id="@+id/et_due_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="Enter a name"
-                android:layout_alignBottom="@+id/cb_due"
+                android:layout_alignBottom="@+id/sp_due_by_to"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignTop="@+id/cb_due"
+                android:layout_alignTop="@+id/sp_due_by_to"
                 android:layout_alignLeft="@+id/iv_time_icon"
-                android:layout_alignStart="@+id/iv_time_icon" />
+                android:layout_alignStart="@+id/iv_time_icon"
+                android:layout_below="@+id/et_transaction_comment"/>
 
         </RelativeLayout>
 
