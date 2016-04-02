@@ -20,6 +20,17 @@ public interface TransactionListView extends LoadDataView {
     void renderTransactionList(Collection<TransactionModel> transactionModelCollection);
 
     /**
+     * Display a message when empty list
+     *
+     */
+    void showEmptyListMessage();
+
+    /**
+     * Hide the empty list message
+     */
+    void hideEmptyListMessage();
+
+    /**
      * View a {@link TransactionModel} details.
      *
      * @param transactionModel The transaction that will be shown.

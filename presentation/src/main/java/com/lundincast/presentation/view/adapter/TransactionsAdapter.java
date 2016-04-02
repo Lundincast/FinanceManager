@@ -1,7 +1,6 @@
 package com.lundincast.presentation.view.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.preference.PreferenceManager;
@@ -17,7 +16,6 @@ import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -85,7 +83,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + currency);
         if (transactionModel.isPending()) {
-            viewHolder.iv_warning_icon.setVisibility(View.VISIBLE);
+            viewHolder.iv_pending_icon.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.iv_pending_icon.setVisibility(View.GONE);
         }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +135,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @Bind(R.id.tv_transaction_date) TextView tvTransactionDate;
         @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
         @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
-        @Bind(R.id.iv_warning_icon) ImageView iv_warning_icon;
+        @Bind(R.id.iv_pending_icon) ImageView iv_pending_icon;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);

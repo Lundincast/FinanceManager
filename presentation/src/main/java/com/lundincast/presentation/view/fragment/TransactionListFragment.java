@@ -8,16 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
-import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
 import com.lundincast.presentation.view.TransactionListView;
@@ -35,8 +32,6 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for "List" tab in Main Activity
@@ -50,9 +45,11 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         void onTransactionClicked(final TransactionModel transactionModel);
     }
 
+
     @Inject TransactionListPresenter transactionListPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
+    @Bind(R.id.ll_empty_list) LinearLayout ll_empty_list;
     @Bind(R.id.rv_transactions) RecyclerView rv_transactions;
     @Bind(R.id.fab) FloatingActionButton fab;
 
@@ -142,6 +139,16 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Override
     public void hideLoading() {
         this.ll_loading.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showEmptyListMessage() {
+        this.ll_empty_list.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideEmptyListMessage() {
+        this.ll_empty_list.setVisibility(View.GONE);
     }
 
     private void initialize() {

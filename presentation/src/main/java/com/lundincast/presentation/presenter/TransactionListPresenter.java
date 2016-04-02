@@ -98,8 +98,17 @@ public class TransactionListPresenter implements Presenter {
         this.viewListView.hideLoading();
     }
 
+    private void showEmptyListMessage() { this.viewListView.showEmptyListMessage(); }
+
+    private void hideEmptyListMessage() { this.viewListView.hideEmptyListMessage(); }
+
     private void showTransactionsCollectionInView(List<TransactionModel> transactionList) {
         this.hideViewLoading();
+        if (transactionList == null || transactionList.size() == 0) {
+            this.showEmptyListMessage();
+        } else {
+            this.hideEmptyListMessage();
+        }
         this.viewListView.renderTransactionList(transactionList);
     }
 

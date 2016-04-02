@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_report_issue"
+        android:title="@string/report_an_issue"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
+
 </menu>

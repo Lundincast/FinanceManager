@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -14,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -87,6 +89,11 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                if (tab.getPosition() == 0) {
+                    iv_filter_list_icon.setVisibility(View.VISIBLE);
+                } else {
+                    iv_filter_list_icon.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -150,6 +157,10 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             this.navigator.navigateToSettings(this);
+        } else if (id == R.id.action_report_issue) {
+            Uri issuesWebpage = Uri.parse("https://github.com/Lundincast/FinanceManager/issues");
+            Intent intent = new Intent(Intent.ACTION_VIEW, issuesWebpage);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

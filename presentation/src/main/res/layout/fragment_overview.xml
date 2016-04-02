@@ -100,7 +100,7 @@
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/barchart_category_history"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="250dp"
                 android:padding="10dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"

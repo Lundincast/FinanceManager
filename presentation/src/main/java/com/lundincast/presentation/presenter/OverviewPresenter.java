@@ -1,7 +1,6 @@
 package com.lundincast.presentation.presenter;
 
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -13,22 +12,15 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.lundincast.domain.Category;
-import com.lundincast.domain.Transaction;
-import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
-import com.lundincast.presentation.view.OverviewView;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -45,6 +37,9 @@ public class OverviewPresenter implements Presenter {
 
     private final Realm realm;
     private RealmResults<TransactionModel> transactionListByMonth;
+    private RealmChangeListener transactionListByMonthListener;
+    private RealmResults<TransactionModel> transactionListByCategory;
+    private RealmChangeListener transactionListByCategoryListener;
 
     private OverviewFragment viewOverView;
 
@@ -64,15 +59,31 @@ public class OverviewPresenter implements Presenter {
 
     @Override
     public void resume() {
+        transactionListByMonthListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                OverviewPresenter.this.generatePieData();
+            }
+        };
+        transactionListByMonth.addChangeListener(transactionListByMonthListener);
+        transactionListByCategoryListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                OverviewPresenter.this.generateBarChartData("Housing");
+            }
+        };
+        transactionListByCategory.addChangeListener(transactionListByCategoryListener);
     }
 
     @Override
     public void pause() {
-
+        transactionListByMonth.removeChangeListener(transactionListByMonthListener);
+        transactionListByCategory.removeChangeListener(transactionListByCategoryListener);
     }
 
     @Override
     public void destroy() {
+
     }
 
     /**
@@ -87,9 +98,9 @@ public class OverviewPresenter implements Presenter {
      */
     private void loadTransactionList() {
         this.showViewLoading();
-        this.getMonthlyOverallTransactionList();
+        this.getMonthlyOverallTransactionList(null);
         this.setTimeframeSpinner();
-        this.getCategoryHistoryData();
+        this.getCategoryHistoryList();
         this.setCategorySpinner();
     }
 
@@ -116,14 +127,26 @@ public class OverviewPresenter implements Presenter {
 
     private void renderCategoryBarChart(BarData data) {
         this.hideBarChartViewLoading();
-        this.viewOverView.setCategoryBarChartData(data);
+        if (data != null) {
+            this.viewOverView.setCategoryBarChartData(data);
+        }
     }
 
-    private void getMonthlyOverallTransactionList() {
+    private void getMonthlyOverallTransactionList(Calendar setCal) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        if (setCal == null) {
+            cal.setTime(new Date());
+        } else {
+            cal.setTime(setCal.getTime());
+        }
 
-        this.generatePieData(cal);
+        // get data from db depending on date
+        transactionListByMonth = realm.where(TransactionModel.class)
+                .equalTo("month", cal.get(Calendar.MONTH))
+                .equalTo("year", cal.get(Calendar.YEAR))
+                .findAll();
+
+        this.generatePieData();
     }
 
     private void setTimeframeSpinner() {
@@ -133,9 +156,9 @@ public class OverviewPresenter implements Presenter {
         this.viewOverView.setSpinnerDataAndRender(values);
     }
 
-    private void getCategoryHistoryData() {
+    private void getCategoryHistoryList() {
 
-        this.generateBarChartData("Housing ");   // TODO useless ??
+        this.generateBarChartData("Housing");   // TODO useless ??
     }
 
     private void setCategorySpinner() {
@@ -147,18 +170,14 @@ public class OverviewPresenter implements Presenter {
         this.viewOverView.setCategorySpinnerDataAndRender(values);
     }
 
-    private void generatePieData(Calendar cal) {
+    private void generatePieData() {
         // There may be a better way to do this. HashMap<K,V> looked attractive but
         // it doesn't accept a double as value
 
         ArrayList<String> categoryNames = new ArrayList<String>();
         int position;
 
-        // get data from db depending on date
-        transactionListByMonth = realm.where(TransactionModel.class)
-                .equalTo("month", cal.get(Calendar.MONTH))
-                .equalTo("year", cal.get(Calendar.YEAR))
-                .findAll();
+
 
         // Build categoryNames array from transactionListByMonth RealmResult
         for (TransactionModel transaction : transactionListByMonth) {
@@ -217,7 +236,7 @@ public class OverviewPresenter implements Presenter {
         if (position == 1) {
             cal.add(Calendar.MONTH, -1);
         }
-        this.generatePieData(cal);
+        this.getMonthlyOverallTransactionList(cal);
     }
 
     private void generateBarChartData(String categoryName) {
@@ -225,53 +244,58 @@ public class OverviewPresenter implements Presenter {
         today.setTime(new Date());
 
         Calendar sixMonthAgo = Calendar.getInstance();
-        sixMonthAgo.add(Calendar.MONTH, -6);
+        sixMonthAgo.add(Calendar.MONTH, -5);
+        sixMonthAgo.set(Calendar.DAY_OF_MONTH, 1);
 
-        RealmResults<TransactionModel> resultList = realm.where(TransactionModel.class)
+        transactionListByCategory = realm.where(TransactionModel.class)
                                                     .equalTo("category.name", categoryName)
                                                     .between("date", sixMonthAgo.getTime(), today.getTime())
                                                     .findAll();
 
-        // create months array
-        ArrayList<String> xVals = new ArrayList<>();
-        sixMonthAgo.add(Calendar.MONTH, 1);
-        for (int i = 0; i < 6; i++) {
-            xVals.add(FullMonthDateFormatter.getShortMonthName(sixMonthAgo.get(Calendar.MONTH)));
-            sixMonthAgo.add(Calendar.MONTH, 1);
+        if (transactionListByCategory.size() == 0) {
+            this.renderCategoryBarChart(null);
+        } else {
+            // create months array
+            ArrayList<String> xVals = new ArrayList<>();
+            for (int i = 0; i < 6; i++) {
+                xVals.add(FullMonthDateFormatter.getShortMonthName(sixMonthAgo.get(Calendar.MONTH)));
+                sixMonthAgo.add(Calendar.MONTH, 1);
+            }
+
+            // fill yTotals by adding transaction price to total per month
+            double[] yTotals = new double[xVals.size()];
+            Calendar cal2 = Calendar.getInstance();
+            for (TransactionModel transaction : transactionListByCategory) {
+                cal2.setTime(transaction.getDate());
+                String monthName = FullMonthDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
+
+                yTotals[xVals.indexOf(monthName)] += transaction.getPrice();
+            }
+
+            // fill yVals with totals
+            ArrayList<BarEntry> yVals = new ArrayList<>();
+            for (int i = 0; i < xVals.size(); i++) {
+                yVals.add(new BarEntry((float) yTotals[i], i));
+            }
+
+            BarDataSet set = new BarDataSet(yVals, "DataSet");
+
+            // set color for this set
+            CategoryModel category = realm.where(CategoryModel.class).equalTo("name", categoryName).findFirst();
+            if (category != null) {
+                int intColor = category.getColor();
+                String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
+                set.setColor(Color.parseColor(hexColor));
+            }
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(set);
+
+            BarData data = new BarData(xVals, dataSets);
+            data.setValueTextSize(10f);
+
+            this.renderCategoryBarChart(data);
         }
-
-        // fill yTotals by adding transaction price to total per month
-        double[] yTotals = new double[xVals.size()];
-        Calendar cal2 = Calendar.getInstance();
-        for (TransactionModel transaction : resultList) {
-            cal2.setTime(transaction.getDate());
-            String monthName = FullMonthDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
-            yTotals[xVals.indexOf(monthName)] += transaction.getPrice();
-        }
-
-        // fill yVals with totals
-        ArrayList<BarEntry> yVals = new ArrayList<>();
-        for (int i = 0; i < xVals.size(); i++) {
-            yVals.add(new BarEntry((float) yTotals[i], i));
-        }
-
-        BarDataSet set = new BarDataSet(yVals, "DataSet");
-
-        // set color for this set
-        CategoryModel category = realm.where(CategoryModel.class).equalTo("name", categoryName).findFirst();
-        if (category != null) {
-            int intColor = category.getColor();
-            String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
-            set.setColor(Color.parseColor(hexColor));
-        }
-
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        dataSets.add(set);
-
-        BarData data = new BarData(xVals, dataSets);
-        data.setValueTextSize(10f);
-
-        this.renderCategoryBarChart(data);
     }
 
     public void updateCategoryBarChartData(AdapterView<?> parent, View view, int position, long id) {

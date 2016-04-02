@@ -44,6 +44,8 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
                                                               OnChartValueSelectedListener,
                                                               AdapterView.OnItemSelectedListener {
 
+
+
     @Inject OverviewPresenter overviewPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
@@ -72,7 +74,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         // Disable text on slice
         piechart_monthly.setDrawSliceText(false);
         // Set center text properties
-        piechart_monthly.setCenterTextColor(Color.BLACK);
+        piechart_monthly.setCenterTextColor(Color.DKGRAY);
         piechart_monthly.setCenterTextSize(30f);
         piechart_monthly.setDrawCenterText(true);
         // Disable legend
@@ -82,7 +84,6 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         // set up BarChart
         barchart_category_history.setDescription("");
         barchart_category_history.setDrawBarShadow(false);
-        barchart_category_history.setDrawValueAboveBar(true);
         barchart_category_history.setDrawGridBackground(false);
 
         XAxis xAxis = barchart_category_history.getXAxis();
@@ -92,7 +93,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
         YAxis rightAxis = barchart_category_history.getAxisRight();
         rightAxis.setDrawGridLines(false);
-        rightAxis.setLabelCount(8, false);
+        rightAxis.setDrawLabels(false);
 
         Legend leg = barchart_category_history.getLegend();
         leg.setEnabled(false);
@@ -119,15 +120,18 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
     @Override public void onResume() {
         super.onResume();
+        this.overviewPresenter.resume();
     }
 
     @Override public void onPause() {
         super.onPause();
+        this.overviewPresenter.pause();
     }
 
     @Override public void onDestroy() {
         super.onDestroy();
         ((MainActivity) getActivity()).sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+        this.overviewPresenter.destroy();
     }
 
     @Override public void onDestroyView() {
@@ -169,12 +173,14 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     @Override
     public void setMonthlyPieChartData(PieData pieData, double monthlyTotal) {
         this.totalPrice = monthlyTotal;
-        piechart_monthly.setData(pieData);
-        this.setPieChartCenterText(monthlyTotal);
-        piechart_monthly.notifyDataSetChanged();
-        piechart_monthly.invalidate();
-        piechart_monthly.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
-        piechart_monthly.setOnChartValueSelectedListener(this);
+        if (monthlyTotal != 0) {
+            piechart_monthly.setData(pieData);
+            this.setPieChartCenterText(monthlyTotal);
+            piechart_monthly.notifyDataSetChanged();
+            piechart_monthly.invalidate();
+            piechart_monthly.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
+            piechart_monthly.setOnChartValueSelectedListener(this);
+        }
         this.displayedPriceValue = monthlyTotal;
     }
 
@@ -219,6 +225,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
                                                                     data);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp_category_list.setAdapter(adapter);
+        sp_category_list.setSelection(0, false);
         sp_category_list.setOnItemSelectedListener(this);
     }
 
