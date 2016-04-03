@@ -22,6 +22,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.lundincast.presentation.R;
@@ -30,6 +31,9 @@ import com.lundincast.presentation.presenter.OverviewPresenter;
 import com.lundincast.presentation.view.OverviewView;
 import com.lundincast.presentation.view.activity.MainActivity;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -85,11 +89,15 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         barchart_category_history.setDescription("");
         barchart_category_history.setDrawBarShadow(false);
         barchart_category_history.setDrawGridBackground(false);
+        barchart_category_history.setTouchEnabled(false);
 
         XAxis xAxis = barchart_category_history.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceBetweenLabels(2);
+
+        YAxis leftAxis = barchart_category_history.getAxisLeft();
+        leftAxis.setSpaceBottom(0);
 
         YAxis rightAxis = barchart_category_history.getAxisRight();
         rightAxis.setDrawGridLines(false);

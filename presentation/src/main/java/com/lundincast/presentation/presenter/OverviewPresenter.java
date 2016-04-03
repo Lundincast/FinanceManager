@@ -11,13 +11,18 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,6 +45,8 @@ public class OverviewPresenter implements Presenter {
     private RealmChangeListener transactionListByMonthListener;
     private RealmResults<TransactionModel> transactionListByCategory;
     private RealmChangeListener transactionListByCategoryListener;
+    private RealmResults<CategoryModel> categoryList;
+    private RealmChangeListener categoryListListener;
 
     private OverviewFragment viewOverView;
 
@@ -69,10 +76,17 @@ public class OverviewPresenter implements Presenter {
         transactionListByCategoryListener = new RealmChangeListener() {
             @Override
             public void onChange() {
-                OverviewPresenter.this.generateBarChartData("Housing");
+                OverviewPresenter.this.generateBarChartData(categoryList.get(0).getName());
             }
         };
         transactionListByCategory.addChangeListener(transactionListByCategoryListener);
+        categoryListListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                OverviewPresenter.this.setCategorySpinner();
+            }
+        };
+        categoryList.addChangeListener(categoryListListener);
     }
 
     @Override
@@ -100,8 +114,8 @@ public class OverviewPresenter implements Presenter {
         this.showViewLoading();
         this.getMonthlyOverallTransactionList(null);
         this.setTimeframeSpinner();
-        this.getCategoryHistoryList();
         this.setCategorySpinner();
+        this.getCategoryHistoryList();
     }
 
     private void showViewLoading() {
@@ -158,13 +172,13 @@ public class OverviewPresenter implements Presenter {
 
     private void getCategoryHistoryList() {
 
-        this.generateBarChartData("Housing");   // TODO useless ??
+        this.generateBarChartData(categoryList.get(0).getName());
     }
 
     private void setCategorySpinner() {
         ArrayList<String> values = new ArrayList<>();
-        RealmResults<CategoryModel> categories = realm.where(CategoryModel.class).findAll();
-        for (CategoryModel category : categories) {
+        categoryList = realm.where(CategoryModel.class).findAll();
+        for (CategoryModel category : categoryList) {
             values.add(category.getName());
         }
         this.viewOverView.setCategorySpinnerDataAndRender(values);
@@ -287,6 +301,7 @@ public class OverviewPresenter implements Presenter {
                 String hexColor = String.format("#%06X", (0xFFFFFF & intColor));
                 set.setColor(Color.parseColor(hexColor));
             }
+            set.setValueFormatter(new CustomValueFormatter());
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set);
@@ -302,4 +317,21 @@ public class OverviewPresenter implements Presenter {
         TextView tv = (TextView) view;
         this.generateBarChartData(tv.getText().toString());
     }
+
+
+    public class CustomValueFormatter implements ValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return format(value);
+        }
+
+        private String format(Number n) {
+            NumberFormat format = DecimalFormat.getInstance();
+            format.setMinimumFractionDigits(0);
+            format.setMaximumFractionDigits(2);
+            return format.format(n);
+        }
+    }
+
 }

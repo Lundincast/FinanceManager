@@ -1,7 +1,6 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.Fragment;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -218,6 +216,10 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         // assign updated time to mDate in parent activity. We can reuse onDateSet here.
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // Display time on screen
-        tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+        if (cal.get(Calendar.MINUTE) <= 9) {
+            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+        } else {
+            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+        }
     }
 }

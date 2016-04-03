@@ -32,4 +32,5 @@
     <string name="distribution">Distribution</string>
     <string name="category">Category :</string>
     <string name="report_an_issue">Report an issue</string>
+    <string name="app_icon">app icon</string>
 </resources>

@@ -1,8 +1,6 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -10,27 +8,20 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.CreateCategoryPresenter;
 import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
-import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 
 import javax.inject.Inject;
 
@@ -93,6 +84,7 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
             // set category details
             CategoryModel category = realm.where(CategoryModel.class).equalTo("id", activity.categoryId).findFirst();
             et_category_name.setText(category.getName());
+            activity.color = category.getColor();
             // set category circle drawable color
             LayerDrawable bgDrawable = (LayerDrawable) iv_category_icon.getBackground();
             GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
