@@ -1,6 +1,7 @@
 package com.lundincast.presentation.presenter;
 
 import android.graphics.Color;
+import android.media.audiofx.Equalizer;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -41,14 +42,21 @@ import io.realm.RealmResults;
 public class OverviewPresenter implements Presenter {
 
     private final Realm realm;
+    private RealmChangeListener realmChangeListener = new RealmChangeListener() {
+        @Override
+        public void onChange() {
+            loadTransactionList();
+        }
+    };
     private RealmResults<TransactionModel> transactionListByMonth;
     private RealmChangeListener transactionListByMonthListener;
     private RealmResults<TransactionModel> transactionListByCategory;
     private RealmChangeListener transactionListByCategoryListener;
-    private RealmResults<CategoryModel> categoryList;
-    private RealmChangeListener categoryListListener;
 
     private OverviewFragment viewOverView;
+
+    private ArrayList<String> categorySpinnerList;
+    private String currentCategorySpinnerChoice;
 
     @Inject
     public OverviewPresenter() {
@@ -70,23 +78,21 @@ public class OverviewPresenter implements Presenter {
             @Override
             public void onChange() {
                 OverviewPresenter.this.generatePieData();
+                OverviewPresenter.this.setTimeframeSpinner();
+                OverviewPresenter.this.setCategorySpinner();
+                OverviewPresenter.this.generateBarChartData(currentCategorySpinnerChoice);
             }
         };
-        transactionListByMonth.addChangeListener(transactionListByMonthListener);
+//        transactionListByMonth.addChangeListener(transactionListByMonthListener);
         transactionListByCategoryListener = new RealmChangeListener() {
             @Override
             public void onChange() {
-                OverviewPresenter.this.generateBarChartData(categoryList.get(0).getName());
-            }
-        };
-        transactionListByCategory.addChangeListener(transactionListByCategoryListener);
-        categoryListListener = new RealmChangeListener() {
-            @Override
-            public void onChange() {
                 OverviewPresenter.this.setCategorySpinner();
+                OverviewPresenter.this.generateBarChartData(currentCategorySpinnerChoice);
             }
         };
-        categoryList.addChangeListener(categoryListListener);
+//        transactionListByCategory.addChangeListener(transactionListByCategoryListener);
+        realm.addChangeListener(realmChangeListener);
     }
 
     @Override
@@ -141,9 +147,7 @@ public class OverviewPresenter implements Presenter {
 
     private void renderCategoryBarChart(BarData data) {
         this.hideBarChartViewLoading();
-        if (data != null) {
-            this.viewOverView.setCategoryBarChartData(data);
-        }
+        this.viewOverView.setCategoryBarChartData(data);
     }
 
     private void getMonthlyOverallTransactionList(Calendar setCal) {
@@ -165,23 +169,45 @@ public class OverviewPresenter implements Presenter {
 
     private void setTimeframeSpinner() {
         ArrayList<String> values = new ArrayList<>();
-        values.add("This month");
-        values.add("Last month");
+        if (transactionListByMonth.size() != 0) {
+            values.add("This month");
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        if (realm.where(TransactionModel.class).equalTo("month", cal.get(Calendar.MONTH) - 1)
+                                               .equalTo("year", cal.get(Calendar.YEAR)).findFirst() != null) {
+            values.add("Last month");
+        }
         this.viewOverView.setSpinnerDataAndRender(values);
     }
 
     private void getCategoryHistoryList() {
-
-        this.generateBarChartData(categoryList.get(0).getName());
+        if (categorySpinnerList.size() == 0) {
+            this.generateBarChartData(null);
+        } else if (currentCategorySpinnerChoice != null) {
+            this.generateBarChartData(currentCategorySpinnerChoice);
+        } else {
+            this.generateBarChartData(categorySpinnerList.get(0));
+        }
     }
 
     private void setCategorySpinner() {
-        ArrayList<String> values = new ArrayList<>();
-        categoryList = realm.where(CategoryModel.class).findAll();
-        for (CategoryModel category : categoryList) {
-            values.add(category.getName());
+        categorySpinnerList = new ArrayList<>();
+        Calendar today = Calendar.getInstance();
+        today.setTime(new Date());
+        Calendar sixMonthAgo = Calendar.getInstance();
+        sixMonthAgo.add(Calendar.MONTH, -5);
+        sixMonthAgo.set(Calendar.DAY_OF_MONTH, 1);
+        RealmResults<TransactionModel> lastSixMonthsTransactionList = realm.where(TransactionModel.class)
+                                                                           .between("date", sixMonthAgo.getTime(), today.getTime())
+                                                                           .findAll();
+        for (TransactionModel transaction : lastSixMonthsTransactionList) {
+            String categoryName = transaction.getCategory().getName();
+            if (!categorySpinnerList.contains(categoryName)) {
+                categorySpinnerList.add(categoryName);
+            }
         }
-        this.viewOverView.setCategorySpinnerDataAndRender(values);
+        this.viewOverView.setCategorySpinnerDataAndRender(categorySpinnerList);
     }
 
     private void generatePieData() {
@@ -315,7 +341,12 @@ public class OverviewPresenter implements Presenter {
 
     public void updateCategoryBarChartData(AdapterView<?> parent, View view, int position, long id) {
         TextView tv = (TextView) view;
-        this.generateBarChartData(tv.getText().toString());
+        this.currentCategorySpinnerChoice = tv.getText().toString();
+        if (currentCategorySpinnerChoice != null) {
+            this.generateBarChartData(currentCategorySpinnerChoice);
+        } else {
+            this.generateBarChartData(tv.getText().toString());
+        }
     }
 
 

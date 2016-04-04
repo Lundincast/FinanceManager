@@ -79,6 +79,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
     private void setUpToolbar() {
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     private void setUpTabLayout() {
@@ -250,7 +251,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
                     education.setName("Education");
                     education.setColor(-1499549);
                 }
-            }, null);
+            });
         } else if (currentVersionCode > savedVersionCode) {
             // This is an upgrade
 

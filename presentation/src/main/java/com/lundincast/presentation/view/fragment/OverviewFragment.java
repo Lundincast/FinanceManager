@@ -223,7 +223,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         barchart_category_history.setData(data);
         barchart_category_history.notifyDataSetChanged();
         barchart_category_history.invalidate();
-        barchart_category_history.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
+        barchart_category_history.animateXY(800, 1000, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
     }
 
     @Override

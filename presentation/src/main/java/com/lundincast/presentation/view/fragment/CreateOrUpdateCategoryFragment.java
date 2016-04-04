@@ -92,14 +92,14 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
 
             // set delete option in activity toolbar
             iv_delete = (ImageView) activity.findViewById(R.id.iv_delete);
-            iv_delete.setVisibility(View.VISIBLE);
-            iv_delete.setClickable(true);
-            iv_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CreateOrUpdateCategoryFragment.this.displayDeleteConfirmationDialog();
-                }
-            });
+//            iv_delete.setVisibility(View.VISIBLE);
+//            iv_delete.setClickable(true);
+//            iv_delete.setOnClickListener(new View.OnClickListener() {     TODO restore this after safe deletion implementation
+//                @Override
+//                public void onClick(View v) {
+//                    CreateOrUpdateCategoryFragment.this.displayDeleteConfirmationDialog();
+//                }
+//            });
         } else {
             LayerDrawable bgDrawable = (LayerDrawable) iv_category_icon.getBackground();
             GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
