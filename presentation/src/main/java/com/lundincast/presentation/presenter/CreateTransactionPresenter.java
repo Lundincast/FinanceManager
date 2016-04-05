@@ -144,4 +144,8 @@ public class CreateTransactionPresenter implements Presenter {
         transaction.setDueName(mDueName);
         this.transactionRepository.saveTransaction(transaction);
     }
+
+    public void deleteTransaction(int transactionId) {
+        this.transactionRepository.deleteTransaction(transactionId);
+    }
 }

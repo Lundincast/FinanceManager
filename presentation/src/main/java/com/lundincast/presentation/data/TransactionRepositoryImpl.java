@@ -52,4 +52,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     public void saveTransaction(TransactionModel transactionModel) {
         this.transactionDataStore.saveTransaction(transactionModel);
     }
+
+    @Override
+    public void deleteTransaction(int transactionId) {
+        this.transactionDataStore.deleteTransaction(transactionId);
+    }
 }

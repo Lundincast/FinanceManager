@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
@@ -52,6 +55,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.iv_back) ImageView iv_back;
+    @Bind(R.id.iv_delete) ImageView iv_delete;
     @Bind(R.id.tv_transaction_price) TextView tv_transaction_price;
     @Bind(R.id.fab) FloatingActionButton fab;
 
@@ -94,6 +98,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     private void setUpToolbar() {
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
+        iv_delete.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -156,6 +161,32 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     @OnClick(R.id.iv_back)
     void onBackClicked() {
         finish();
+    }
+
+    @OnClick(R.id.iv_delete)
+    void onDeleteIconClicked() {
+        // Display dialog to ask user confirmation to delete category
+        new MaterialDialog.Builder(this)
+                .title(R.string.delete_transaction_title_question)
+                .content(R.string.delete_transaction_complete_question)
+                .positiveText(R.string.delete)
+                .negativeText(R.string.cancel)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        CreateTransactionActivity.this.createTransactionPresenter.deleteTransaction(
+                                                            CreateTransactionActivity.this.transactionId);
+                        dialog.dismiss();
+                        CreateTransactionActivity.this.finish();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     @OnClick(R.id.tv_transaction_price)

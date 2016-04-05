@@ -19,6 +19,8 @@
     <string name="delete">Delete</string>
     <string name="delete_category_complete_question">Are you sure you want to delete this category ?</string>
     <string name="delete_category_title_question">Delete category ?</string>
+    <string name="delete_transaction_complete_question">Are you sure you want to delete this transaction ?</string>
+    <string name="delete_transaction_title_question">Delete transaction ? </string>
     <string name="done">Done</string>
     <string name="edit_category">Edit category</string>
     <string name="enter_name">Enter name</string>
@@ -33,4 +35,5 @@
     <string name="category">Category :</string>
     <string name="report_an_issue">Report an issue</string>
     <string name="app_icon">app icon</string>
+    <string name="delete_transaction">Delete transaction</string>
 </resources>

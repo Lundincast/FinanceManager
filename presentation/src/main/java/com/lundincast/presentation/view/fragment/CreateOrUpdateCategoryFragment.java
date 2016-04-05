@@ -20,6 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.CreateCategoryPresenter;
 import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
 
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for creating new category
@@ -44,6 +46,7 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
 
     private CreateOrUpdateCategoryActivity activity;
     private Realm realm;
+    private CategoryModel categoryModel;
     private String color;
 
     @Nullable
@@ -82,24 +85,24 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
             TextView tv_title = (TextView) activity.findViewById(R.id.tv_title);
             tv_title.setText(R.string.edit_category);
             // set category details
-            CategoryModel category = realm.where(CategoryModel.class).equalTo("id", activity.categoryId).findFirst();
-            et_category_name.setText(category.getName());
-            activity.color = category.getColor();
+            categoryModel = realm.where(CategoryModel.class).equalTo("id", activity.categoryId).findFirst();
+            et_category_name.setText(categoryModel.getName());
+            activity.color = categoryModel.getColor();
             // set category circle drawable color
             LayerDrawable bgDrawable = (LayerDrawable) iv_category_icon.getBackground();
             GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
-            shape.setColor(category.getColor());
+            shape.setColor(categoryModel.getColor());
 
             // set delete option in activity toolbar
             iv_delete = (ImageView) activity.findViewById(R.id.iv_delete);
-//            iv_delete.setVisibility(View.VISIBLE);
-//            iv_delete.setClickable(true);
-//            iv_delete.setOnClickListener(new View.OnClickListener() {     TODO restore this after safe deletion implementation
-//                @Override
-//                public void onClick(View v) {
-//                    CreateOrUpdateCategoryFragment.this.displayDeleteConfirmationDialog();
-//                }
-//            });
+            iv_delete.setVisibility(View.VISIBLE);
+            iv_delete.setClickable(true);
+            iv_delete.setOnClickListener(new View.OnClickListener() {     // TODO restore this after safe deletion implementation
+                @Override
+                public void onClick(View v) {
+                    CreateOrUpdateCategoryFragment.this.displayDeleteConfirmationDialog();
+                }
+            });
         } else {
             LayerDrawable bgDrawable = (LayerDrawable) iv_category_icon.getBackground();
             GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
@@ -127,10 +130,21 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
     }
 
     public void displayDeleteConfirmationDialog() {
+        // get list of transactions under that category
+        RealmResults<TransactionModel> transactionList = realm.where(TransactionModel.class)
+                                                              .equalTo("category.name", this.categoryModel.getName())
+                                                              .findAll();
+        String contentText;
+        if (transactionList.size() != 0) {
+            contentText = transactionList.size() + " transactions pertain to this category. Note that " +
+                    "deleting a category will also delete all transactions associated with it.";
+        } else {
+            contentText = getResources().getString(R.string.delete_category_complete_question);
+        }
         // Display dialog to ask user confirmation to delete category
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.delete_category_title_question)
-                .content(R.string.delete_category_complete_question)
+                .content(contentText)
                 .positiveText(R.string.delete)
                 .negativeText(R.string.cancel)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {

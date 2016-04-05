@@ -83,4 +83,14 @@ public class DiskTransactionDataStore implements TransactionDataStore {
             }
         }, null);
     }
+
+    @Override
+    public void deleteTransaction(final int transactionId) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst().removeFromRealm();
+            }
+        }, null);
+    }
 }

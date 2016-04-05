@@ -30,4 +30,9 @@ public interface TransactionDataStore {
      * Save a {@link TransactionModel} in database
      */
     void saveTransaction(final TransactionModel transactionModel);
+
+    /**
+     * Delete a {@link TransactionModel} in database
+     */
+    void deleteTransaction(final int transactionId);
 }

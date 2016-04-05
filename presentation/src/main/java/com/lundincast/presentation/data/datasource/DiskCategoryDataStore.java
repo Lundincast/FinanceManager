@@ -2,6 +2,7 @@ package com.lundincast.presentation.data.datasource;
 
 import com.lundincast.presentation.data.datasource.CategoryDataStore;
 import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.model.TransactionModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,6 +69,9 @@ public class DiskCategoryDataStore implements CategoryDataStore {
             @Override
             public void execute(Realm realm) {
                 CategoryModel category = realm.where(CategoryModel.class).equalTo("id", categoryId).findFirst();
+                // delete all transactions under this category
+                realm.where(TransactionModel.class).equalTo("category.name", category.getName()).findAll().clear();
+                // delete cateory
                 category.removeFromRealm();
             }
         }, null);
