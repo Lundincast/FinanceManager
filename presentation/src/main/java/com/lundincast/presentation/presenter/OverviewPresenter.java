@@ -142,7 +142,7 @@ public class OverviewPresenter implements Presenter {
 
     private void renderMonthlyPieChart(PieData pieData, double monthlyTotal) {
         this.hideViewLoading();
-        this.viewOverView.setMonthlyPieChartData(pieData, monthlyTotal);
+        this.viewOverView.setMonthlyPieChartData(pieData, null, monthlyTotal, 0);
     }
 
     private void renderCategoryBarChart(BarData data) {

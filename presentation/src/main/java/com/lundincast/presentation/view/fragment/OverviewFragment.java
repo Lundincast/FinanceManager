@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.OverviewPresenter;
 import com.lundincast.presentation.view.OverviewView;
 import com.lundincast.presentation.view.activity.MainActivity;
@@ -40,6 +44,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 /**
  * A {@link Fragment} subclass for "Overview" tab in Main Activity
@@ -61,6 +66,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
     private double totalPrice;
     private double displayedPriceValue;
+    private double displayedPercentage;
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
 
     @Nullable
@@ -119,7 +125,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if (key.equals("pref_key_currency")) {
-                    OverviewFragment.this.setPieChartCenterText(displayedPriceValue);
+                    OverviewFragment.this.setPieChartCenterText(null, displayedPriceValue, displayedPercentage);
                 }
             }
         };
@@ -179,11 +185,11 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     }
 
     @Override
-    public void setMonthlyPieChartData(PieData pieData, double monthlyTotal) {
+    public void setMonthlyPieChartData(PieData pieData, String category, double monthlyTotal, double percent) {
         this.totalPrice = monthlyTotal;
         if (monthlyTotal != 0) {
             piechart_monthly.setData(pieData);
-            this.setPieChartCenterText(monthlyTotal);
+            this.setPieChartCenterText(category, monthlyTotal, percent);
             piechart_monthly.notifyDataSetChanged();
             piechart_monthly.invalidate();
             piechart_monthly.animateXY(800, 800, Easing.EasingOption.EaseOutSine, Easing.EasingOption.EaseOutSine);
@@ -194,17 +200,33 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
 
 
-    private void setPieChartCenterText(double priceValue) {
+    private void setPieChartCenterText(String category, double priceValue, double percent) {
         if (priceValue != 0) {
             String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
-            if (currencyPref.equals("1")) {
-                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " €");
-            } else if (currencyPref.equals("2")) {
-                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " $");
-            } else {
-                piechart_monthly.setCenterText(String.format("%.2f", priceValue) + " £");
+            String currencySymbol;
+            switch (currencyPref) {
+                case "1":
+                    currencySymbol = "€";
+                    break;
+                case "2":
+                    currencySymbol = "$";
+                    break;
+                default:
+                    currencySymbol = "£";
+                    break;
             }
-            this.displayedPriceValue = priceValue;
+            if (category == null) {
+                category = "TOTAL";
+            }
+            SpannableString centerText = new SpannableString(category.toUpperCase() + "\n" + String.format("%.2f", priceValue) + " " + currencySymbol);
+            centerText.setSpan(new RelativeSizeSpan(0.5f), 0, category.length(), 0);
+            if (percent != 0) {
+                SpannableString percentLine = new SpannableString(String.format("%.2f", percent) + " %");
+                percentLine.setSpan(new RelativeSizeSpan(0.5f), 0, percentLine.length(), 0);
+                piechart_monthly.setCenterText(TextUtils.concat(centerText, "\n", percentLine));
+            } else {
+                piechart_monthly.setCenterText(centerText);
+            }
         }
     }
 
@@ -249,6 +271,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
             case R.id.sp_distribution_timeframe:
                 // un-highlight chart item just in case
                 piechart_monthly.highlightValue(null);
+                piechart_monthly.setCenterTextColor(Color.BLACK);
                 this.overviewPresenter.updatePieChartData(parent, view, position, id);
                 break;
             case R.id.sp_category_list:
@@ -268,12 +291,15 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         Integer colorEntry = piechart_monthly.getData().getDataSet().getColors().get(e.getXIndex());
         piechart_monthly.setCenterTextColor(colorEntry);
-        this.setPieChartCenterText(e.getVal());
+        Realm realm = Realm.getDefaultInstance();
+        CategoryModel category = realm.where(CategoryModel.class).equalTo("color", colorEntry).findFirst();
+        this.setPieChartCenterText(category.getName(), e.getVal(), e.getVal() * 100 / totalPrice);
     }
 
     @Override
     public void onNothingSelected() {
-        this.setPieChartCenterText(totalPrice);
+        this.setPieChartCenterText(null, totalPrice, 0);
+        this.displayedPercentage = 0;
         piechart_monthly.setCenterTextColor(Color.BLACK);
     }
 }

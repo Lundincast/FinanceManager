@@ -14,7 +14,7 @@ public interface OverviewView extends LoadDataView {
     /**
      * Set data to Monthly PieChart for rendering
      */
-    void setMonthlyPieChartData(PieData pieData, double monthlyTotal);
+    void setMonthlyPieChartData(PieData pieData, String category, double monthlyTotal, double percent);
 
     /**
      * Set data to timeframe spinner for rendering
