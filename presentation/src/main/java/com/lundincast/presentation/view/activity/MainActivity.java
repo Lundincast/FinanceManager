@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.broadcastreceivers.NotificationAlarmReceiver;
 import com.lundincast.presentation.dagger.HasComponent;
@@ -254,7 +257,22 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             });
         } else if (currentVersionCode > savedVersionCode) {
             // This is an upgrade
-
+            // Display dialog to show changelog for new version
+            new MaterialDialog.Builder(this)
+                    .title(R.string.what_new)
+                    .content("Version 0.5.1\n" +
+                            "\n" +
+                            "1. NEW: Delete Transaction and Category implemented\n" +
+                            "2. NEW: PieChart center text now displays category name, total amount and percentage on slice click\n" +
+                            "3. NEW: This changelog dialog on app version upgrade\n" +
+                            "4. FIX: Transaction price can now be updated to 0 without crashing")
+                    .positiveText(R.string.ok)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
         }
 
         // Update the shared preferences with the current version code

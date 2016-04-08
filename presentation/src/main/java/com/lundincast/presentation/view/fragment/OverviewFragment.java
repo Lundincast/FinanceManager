@@ -271,7 +271,6 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
             case R.id.sp_distribution_timeframe:
                 // un-highlight chart item just in case
                 piechart_monthly.highlightValue(null);
-                piechart_monthly.setCenterTextColor(Color.BLACK);
                 this.overviewPresenter.updatePieChartData(parent, view, position, id);
                 break;
             case R.id.sp_category_list:

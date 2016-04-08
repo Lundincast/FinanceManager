@@ -33,7 +33,13 @@
     <string name="empty_list_message">You have not entered any expenses yet.</string>
     <string name="distribution">Distribution</string>
     <string name="category">Category :</string>
+    <string name="categories">Categories</string>
     <string name="report_an_issue">Report an issue</string>
     <string name="app_icon">app icon</string>
     <string name="delete_transaction">Delete transaction</string>
+
+    <!-- string for changelog dialog-->
+    <string name="what_new">What is new?</string>
+    <string name="ok">Ok</string>
+
 </resources>

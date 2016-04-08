@@ -206,6 +206,9 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     void onFabClicked() {
         switch (step) {
             case Price:
+                if (mPrice.equals("")) {
+                    mPrice = "0";
+                }
                 this.createTransactionPresenter.setmPrice(Double.valueOf(mPrice));
                 if (previousStep == FlowStep.Category || previousStep == null) {
                     getFragmentManager()
