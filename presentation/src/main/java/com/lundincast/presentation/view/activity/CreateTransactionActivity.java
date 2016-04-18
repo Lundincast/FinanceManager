@@ -2,6 +2,7 @@ package com.lundincast.presentation.view.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +21,6 @@ import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.dagger.modules.TransactionModule;
 import com.lundincast.presentation.model.CategoryModel;
-import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.CreateTransactionPresenter;
 import com.lundincast.presentation.view.TransactionDetailsView;
 import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFragment;
@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Realm;
 
 /**
  * Activity that allows user to create a new transaction
@@ -86,6 +85,15 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         currPref = this.sharedPreferences.getString("pref_key_currency", "1");
 
         initializeActivity(savedInstanceState);
+
+        // Retrieve intent and check for notificationId extra. If it exists, it means the activity
+        // has been started from a notification, so dismiss it.
+        Intent intent = getIntent();
+        int notificationId = intent.getIntExtra("notificationId", -1);
+        if (notificationId == 001) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+        }
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -209,7 +217,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 if (mPrice.equals("")) {
                     mPrice = "0";
                 }
-                this.createTransactionPresenter.setmPrice(Double.valueOf(mPrice));
+                this.createTransactionPresenter.setMPrice(Double.valueOf(mPrice));
                 if (previousStep == FlowStep.Category || previousStep == null) {
                     getFragmentManager()
                             .beginTransaction()
@@ -268,7 +276,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
             }
         }
         // Format mPrice with 2 decimal and display it
-        String formattedPrice = null;
+        String formattedPrice;
         if (!mPrice.contains(".")) {
             if (mPrice.equals("")) {
                 formattedPrice = "0.00";
@@ -290,7 +298,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     public void priceBackListener(View v) {
         if (mPrice.length() > 0) {
             mPrice = mPrice.substring(0, mPrice.length() - 1);
-            String formattedPrice = null;
+            String formattedPrice;
             if (!mPrice.contains(".")) {
                 if (!mPrice.equals("")) {
                     formattedPrice = mPrice + ".00";
@@ -311,7 +319,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     }
 
     public CategoryModel getCategory() {
-        return this.createTransactionPresenter.getmCategory();
+        return this.createTransactionPresenter.getMCategory();
     }
 
     public void onCategorySet(CategoryModel categoryModel) {
@@ -323,7 +331,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         step = FlowStep.Final;
     }
 
-    public void onCategoryClickedinDetails() {
+    public void onCategoryClickedInDetails() {
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")

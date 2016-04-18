@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.lundincast.presentation.R;
@@ -53,25 +54,39 @@ public class NotificationService extends Service {
             } else {
                 setupNotification();
             }
-
         }
+        stopSelf();
     }
 
     private void setupNotification() {
-        PendingIntent pendingAddIntent = PendingIntent.getActivity(
-                this, 0, new Intent(getApplicationContext(), CreateTransactionActivity.class), PendingIntent.FLAG_ONE_SHOT);
+        // Sets an ID for the notification
+        int mNotificationId = 001;
+
+        Intent addIntent = new Intent(getApplicationContext(), CreateTransactionActivity.class);
+        addIntent.putExtra("notificationId", mNotificationId);
+        // Adds the back stack
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(CreateTransactionActivity.class);
+        // Adds the Intent to the top of the stack
+        stackBuilder.addNextIntent(addIntent);
+        // Gets a PendingIntent containing the entire back stack
+        PendingIntent pendingAddIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // No need for back stack in this case
+        Intent listIntent = new Intent(getApplicationContext(), MainActivity.class);
+        listIntent.putExtra("notificationId", mNotificationId);
         PendingIntent pendingListIntent = PendingIntent.getActivity(
-                this, 0, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_ONE_SHOT);
+                this, 0, listIntent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_filter_list_white_24dp)
+                .setSmallIcon(R.drawable.ic_app_icon_24dp)
                 .setContentTitle("Too good to be true !")
                 .setContentText("Haven't you spent any money today ?")
+                .setAutoCancel(true)
+                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, new Intent(getApplicationContext(), MainActivity.class), 0))
                 .addAction(R.drawable.ic_add_white_24dp, "Add expense", pendingAddIntent)
                 .addAction(R.drawable.ic_filter_list_white_24dp, "View list", pendingListIntent);
 
-        // Sets an ID for the notification
-        int mNotificationId = 001;
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.

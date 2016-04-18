@@ -169,7 +169,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         fab.attachToRecyclerView(this.rv_transactions);
 
         // Set listener on filter icon click event in Main Activity
-        ImageView filterIcon = (ImageView) ((MainActivity) getActivity()).findViewById(R.id.iv_filter_list_icon);
+        ImageView filterIcon = (ImageView) getActivity().findViewById(R.id.iv_filter_list_icon);
         if (filterIcon != null) {
             filterIcon.setOnClickListener(new View.OnClickListener() {
                 @Override

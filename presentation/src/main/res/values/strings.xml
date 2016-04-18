@@ -40,6 +40,8 @@
 
     <!-- string for changelog dialog-->
     <string name="what_new">What is new?</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
+    <string name="enter_comment">Enter comment</string>
+    <string name="enter_a_name">Enter a name</string>
 
 </resources>

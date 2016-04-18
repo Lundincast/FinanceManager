@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp" >
@@ -25,7 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/tv_day_of_week"
         android:paddingLeft="10dp"
-        android:text="Test date"
         android:textStyle="italic"
         />
 
@@ -37,7 +37,6 @@
         android:layout_toRightOf="@id/iv_transaction_category"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"
-        android:text="Test comment"
         />
 
     <TextView
@@ -49,9 +48,9 @@
         android:layout_alignBottom="@+id/tv_transaction_comment"
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
-        android:text="test price"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:ignore="RelativeOverlap" />
 
     <ImageView
         android:id="@+id/iv_pending_icon"

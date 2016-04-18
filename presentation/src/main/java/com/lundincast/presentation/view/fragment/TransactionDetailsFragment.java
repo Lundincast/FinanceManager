@@ -64,8 +64,6 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         super.onActivityCreated(savedInstanceState);
 
         // Set category as in activity's presenter
-        String[] colorsArray = getActivity().getResources().getStringArray(R.array.colors_name);
-        String[] colorValue = getActivity().getResources().getStringArray(R.array.colors_value);
         CategoryModel category = ((CreateTransactionActivity) getActivity()).getCategory();
         int color = category.getColor();
         // set circle drawable color
@@ -162,7 +160,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
 
     @OnClick(R.id.tv_category_name)
     void onCategoryClicked() {
-        ((CreateTransactionActivity) getActivity()).onCategoryClickedinDetails();
+        ((CreateTransactionActivity) getActivity()).onCategoryClickedInDetails();
     }
 
     @OnClick(R.id.tv_transaction_date)

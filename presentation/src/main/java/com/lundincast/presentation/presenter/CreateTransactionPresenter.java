@@ -1,9 +1,7 @@
 package com.lundincast.presentation.presenter;
 
 import android.support.annotation.NonNull;
-import android.view.View;
 
-import com.lundincast.domain.Category;
 import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
@@ -26,7 +24,7 @@ public class CreateTransactionPresenter implements Presenter {
     private final TransactionRepository transactionRepository;
     private final Realm realm;
 
-    private int mTtransactionId = -1;
+    private int mTransactionId = -1;
     private double mPrice = 0;
     private CategoryModel mCategory = null;
     private Date mDate = new Date();
@@ -45,17 +43,16 @@ public class CreateTransactionPresenter implements Presenter {
         this.viewDetailsView = view;
     }
 
-    public void setmPrice(double price) {
+    public void setMPrice(double price) {
         this.mPrice = price;
     }
 
-    public CategoryModel getmCategory() {
+    public CategoryModel getMCategory() {
         return this.mCategory;
     }
 
     public void setmCategory(CategoryModel categoryModel) {
         this.mCategory = categoryModel;
-        int i = 0;
     }
 
     public Date getmDate() {
@@ -115,7 +112,7 @@ public class CreateTransactionPresenter implements Presenter {
 
     public void initialize(int transactionId) {
         if (transactionId != -1) {
-            this.mTtransactionId = transactionId;
+            this.mTransactionId = transactionId;
             TransactionModel transactionModel =
                     realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst();
             this.mPrice = transactionModel.getPrice();
@@ -134,7 +131,7 @@ public class CreateTransactionPresenter implements Presenter {
     }
 
     public void saveTransaction() {
-        TransactionModel transaction = new TransactionModel(mTtransactionId);
+        TransactionModel transaction = new TransactionModel(mTransactionId);
         transaction.setPrice(mPrice);
         transaction.setCategory(realm.copyFromRealm(mCategory));
         transaction.setDate(mDate);

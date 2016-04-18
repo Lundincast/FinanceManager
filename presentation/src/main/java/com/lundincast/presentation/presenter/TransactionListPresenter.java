@@ -119,8 +119,8 @@ public class TransactionListPresenter implements Presenter {
     }
 
     public void filterListByCategory(CharSequence categoryName) {
-        RealmResults<TransactionModel> filteredTransactionList = null;
-        if (categoryName.toString() == allWordString) {
+        RealmResults<TransactionModel> filteredTransactionList;
+        if (categoryName.toString().equals(allWordString)) {
             filteredTransactionList = realm.where(TransactionModel.class).findAll();
         } else {
             filteredTransactionList = realm.where(TransactionModel.class)

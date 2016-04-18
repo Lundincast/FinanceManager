@@ -25,7 +25,7 @@ public class FullMonthDateFormatter {
     }
 
     public static String getShortFormattedDate(Calendar cal) {
-        String formattedDate = null;
+        String formattedDate;
         if (dateIsToday(cal)) {
             formattedDate = "Today";
         } else if (dateIsYesterday(cal)) {
@@ -47,23 +47,15 @@ public class FullMonthDateFormatter {
     private static boolean dateIsToday(Calendar cal) {
         Calendar today = Calendar.getInstance();
         today.setTime(new Date());
-        if (today.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)
+        return today.get(Calendar.DAY_OF_MONTH) == cal.get(Calendar.DAY_OF_MONTH)
                 && today.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
-                && today.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) {
-            return true;
-        } else {
-            return false;
-        }
+                && today.get(Calendar.YEAR) == cal.get(Calendar.YEAR);
     }
 
     private static boolean dateIsYesterday(Calendar cal) {
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DAY_OF_YEAR, -1);
-        if (yesterday.get(Calendar.YEAR) == cal.get(Calendar.YEAR)
-                && yesterday.get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR)) {
-            return true;
-        } else {
-            return false;
-        }
+        return yesterday.get(Calendar.YEAR) == cal.get(Calendar.YEAR)
+                && yesterday.get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR);
     }
 }

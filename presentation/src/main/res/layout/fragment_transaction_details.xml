@@ -41,7 +41,6 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:textSize="18sp"
-                android:text="Housing"
                 android:layout_toRightOf="@+id/iv_calendar_icon"
                 android:layout_toStartOf="@+id/tv_transaction_time"
                 android:layout_alignRight="@+id/et_transaction_comment"
@@ -71,7 +70,6 @@
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:text="23 Feb, 2016"
                 android:layout_toRightOf="@+id/iv_comment"
                 android:layout_alignTop="@+id/iv_calendar_icon"
                 android:layout_alignBottom="@+id/iv_time_icon"
@@ -104,8 +102,7 @@
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:text="12:35" />
+                android:paddingRight="15dp" />
 
             <ImageView
                 android:id="@+id/iv_comment"
@@ -128,7 +125,7 @@
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:hint="Enter comment"
+                android:hint="@string/enter_comment"
                 android:layout_below="@+id/tv_transaction_time"
                 android:layout_toRightOf="@+id/iv_comment"
                 android:layout_alignParentRight="true"
@@ -173,7 +170,7 @@
                 android:id="@+id/et_due_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Enter a name"
+                android:hint="@string/enter_a_name"
                 android:layout_alignBottom="@+id/sp_due_by_to"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"

@@ -13,7 +13,7 @@ public class TransactionModel extends RealmObject {
     @PrimaryKey
     private int transactionId;
 
-    public TransactionModel() {};
+    public TransactionModel() {}
 
     public TransactionModel(int transactionId) {
         this.transactionId = transactionId;

@@ -4,7 +4,6 @@ import android.app.Activity;
 
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.dagger.modules.ActivityModule;
-import com.lundincast.presentation.presenter.TransactionListPresenter;
 
 import dagger.Component;
 

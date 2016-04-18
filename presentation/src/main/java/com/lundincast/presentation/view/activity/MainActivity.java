@@ -3,6 +3,7 @@ package com.lundincast.presentation.view.activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,6 +78,15 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         setUpViewPager();
 
         checkFirstRun();
+
+        // Retrieve intent and check for notificationId extra. If it exists, it means the activity
+        // has been started from a notification, so dismiss it.
+        Intent intent = getIntent();
+        int notificationId = intent.getIntExtra("notificationId", -1);
+        if (notificationId == 001) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+        }
     }
 
 
@@ -176,7 +187,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         final int DOESNT_EXIST = -1;
 
         // Get current version code
-        int currentVersionCode = 0;
+        int currentVersionCode;
         try {
             currentVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
         } catch (android.content.pm.PackageManager.NameNotFoundException e) {
@@ -188,6 +199,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
         // Get saved version code
         int savedVersionCode = sharedPreferences.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
         // Check for first run or upgrade
+        //noinspection StatementWithEmptyBody
         if (currentVersionCode == savedVersionCode) {
             // This is just a normal run
 
@@ -260,12 +272,10 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             // Display dialog to show changelog for new version
             new MaterialDialog.Builder(this)
                     .title(R.string.what_new)
-                    .content("Version 0.5.1\n" +
-                            "\n" +
-                            "1. NEW: Delete Transaction and Category implemented\n" +
-                            "2. NEW: PieChart center text now displays category name, total amount and percentage on slice click\n" +
-                            "3. NEW: This changelog dialog on app version upgrade\n" +
-                            "4. FIX: Transaction price can now be updated to 0 without crashing")
+                    .content(Html.fromHtml("Version 0.6.1<br />" +
+                            "<br />" +
+                            "<b>1. IMPROVEMENT:</b> General improvements in usability.<br />" +
+                            "<b>2. FIX:</b> Notification set up with new app icon and proper behaviour."))
                     .positiveText(R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

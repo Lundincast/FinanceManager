@@ -3,7 +3,6 @@ package com.lundincast.presentation.dagger.modules;
 import android.app.Activity;
 
 import com.lundincast.presentation.dagger.PerActivity;
-import com.lundincast.presentation.presenter.Presenter;
 
 import dagger.Module;
 import dagger.Provides;

@@ -88,7 +88,7 @@ public class SettingsFragment extends PreferenceFragment implements TimePickerDi
         });
 
         // Set time of day
-        timeOfDayPref = (Preference) findPreference("pref_key_time_day");
+        timeOfDayPref = findPreference("pref_key_time_day");
         // Retrieve time of day from sharedPref and set summary
         final int hour = sharedPreferences.getInt("hour_of_day_alarm", 23);
         final int minute = sharedPreferences.getInt("minute_of_day_alarm", 00);
