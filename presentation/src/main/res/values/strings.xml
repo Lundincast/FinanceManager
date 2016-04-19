@@ -31,6 +31,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="empty_list_message">You have not entered any expenses yet.</string>
+    <string name="empty_overheads_list_message">You have not entered any overheads yet.</string>
     <string name="distribution">Distribution</string>
     <string name="category">Category :</string>
     <string name="categories">Categories</string>
@@ -43,5 +44,6 @@
     <string name="ok">OK</string>
     <string name="enter_comment">Enter comment</string>
     <string name="enter_a_name">Enter a name</string>
+    <string name="overheads">Overheads</string>
 
 </resources>

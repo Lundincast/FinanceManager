@@ -5,6 +5,7 @@ import android.app.Application;
 import com.lundincast.presentation.dagger.components.ApplicationComponent;
 import com.lundincast.presentation.dagger.components.DaggerApplicationComponent;
 import com.lundincast.presentation.dagger.modules.ApplicationModule;
+import com.lundincast.presentation.model.Migration;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -31,7 +32,8 @@ public class AndroidApplication extends Application {
     private void setRealmDefaultConfig() {
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .name("financemanager.realm")
-                .schemaVersion(1)
+                .schemaVersion(2) // Must be bumped when the schema changes
+                .migration(new Migration()) // Migration to run instead of throwing an exception
                 .build();
         Realm.setDefaultConfiguration(config);
     }

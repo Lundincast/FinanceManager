@@ -8,6 +8,7 @@ import android.view.View;
 import com.lundincast.presentation.view.activity.CategoryListActivity;
 import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
+import com.lundincast.presentation.view.activity.OverheadsListActivity;
 import com.lundincast.presentation.view.activity.SettingsActivity;
 
 import javax.inject.Inject;
@@ -66,6 +67,18 @@ public class Navigator {
     public void navigateToCreateOrUpdateCategory(Context context, long categoryId) {
         if (context != null) {
             Intent intentToLaunch = CreateOrUpdateCategoryActivity.getCallingIntent(context, categoryId);
+            context.startActivity(intentToLaunch);
+        }
+    }
+
+    /**
+     * Goes to list overheads screen
+     *
+     * @param context A Context needed to open the destiny activity.
+     */
+    public void navigateToListOverheads(Context context) {
+        if (context != null) {
+            Intent intentToLaunch = OverheadsListActivity.getCallingIntent(context);
             context.startActivity(intentToLaunch);
         }
     }

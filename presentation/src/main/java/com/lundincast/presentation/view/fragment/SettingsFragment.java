@@ -75,6 +75,16 @@ public class SettingsFragment extends PreferenceFragment implements TimePickerDi
             }
         });
 
+        // Set onClick listener on Overheads button to launch OverheadsListActivity
+        Preference overheadsPref = findPreference("pref_key_recurring_expenses");
+        overheadsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                SettingsFragment.this.navigator.navigateToListOverheads(getActivity());
+                return false;
+            }
+        });
+
         // Set onClick listener on Daily reminder CheckBox to set up notification if checked
         CheckBoxPreference dailyReminder = (CheckBoxPreference) findPreference("pref_key_daily_reminder");
         dailyReminder.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

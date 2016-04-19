@@ -17,6 +17,9 @@
         <Preference
             android:key="pref_key_categories"
             android:title="@string/pref_title_categories" />
+        <Preference
+            android:key="pref_key_recurring_expenses"
+            android:title="@string/overheads" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Notifications"

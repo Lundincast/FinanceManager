@@ -38,6 +38,9 @@
         <activity android:name=".view.activity.SettingsActivity"
             android:label="" >
         </activity>
+        <activity android:name=".view.activity.OverheadsListActivity"
+            android:label="">
+        </activity>
 
         <service android:name=".services.NotificationService"
             android:enabled="true">
