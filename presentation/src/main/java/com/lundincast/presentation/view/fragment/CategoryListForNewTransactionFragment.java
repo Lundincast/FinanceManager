@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.view.CreateItemUtility;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.view.adapter.CategoriesAdapter;
 import com.lundincast.presentation.view.adapter.CategoriesLayoutManager;
@@ -106,7 +107,7 @@ public class CategoryListForNewTransactionFragment extends BaseFragment {
     }
 
     private void onCategorySelected(CategoryModel categoryModel) {
-        ((CreateTransactionActivity) getActivity()).onCategorySet(categoryModel);
+        ((CreateItemUtility) getActivity()).onCategorySet(categoryModel);
     }
 
     private CategoriesAdapter.OnItemClickListener onItemClickListener =

@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * {@link Presenter} that controls communication between views and models of the presentation
@@ -104,6 +105,7 @@ public class OverheadsListPresenter implements Presenter {
 
     private void getOverheadsList() {
         overheadsList = realm.where(OverheadModel.class).findAll();
+        overheadsList.sort("dayOfMonth", Sort.ASCENDING);
         showOverheadsCollectionInView(overheadsList);
     }
 }

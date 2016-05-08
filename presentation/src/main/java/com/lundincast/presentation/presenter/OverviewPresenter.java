@@ -1,7 +1,6 @@
 package com.lundincast.presentation.presenter;
 
 import android.graphics.Color;
-import android.media.audiofx.Equalizer;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -19,9 +18,8 @@ import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
-import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
+import com.lundincast.presentation.utils.CustomDateFormatter;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -298,7 +296,7 @@ public class OverviewPresenter implements Presenter {
             // create months array
             ArrayList<String> xVals = new ArrayList<>();
             for (int i = 0; i < 6; i++) {
-                xVals.add(FullMonthDateFormatter.getShortMonthName(sixMonthAgo.get(Calendar.MONTH)));
+                xVals.add(CustomDateFormatter.getShortMonthName(sixMonthAgo.get(Calendar.MONTH)));
                 sixMonthAgo.add(Calendar.MONTH, 1);
             }
 
@@ -307,7 +305,7 @@ public class OverviewPresenter implements Presenter {
             Calendar cal2 = Calendar.getInstance();
             for (TransactionModel transaction : transactionListByCategory) {
                 cal2.setTime(transaction.getDate());
-                String monthName = FullMonthDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
+                String monthName = CustomDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
 
                 yTotals[xVals.indexOf(monthName)] += transaction.getPrice();
             }

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
-import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
+import com.lundincast.presentation.utils.CustomDateFormatter;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -77,7 +77,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
-        tv_transaction_date.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
+        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
         if (cal.get(Calendar.MINUTE) <= 9) {
             tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
@@ -201,7 +201,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         // assign selected date to mDate variable in parent activity
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // format date and display
-        tv_transaction_date.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
+        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
     }
 
     @Override

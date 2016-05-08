@@ -19,6 +19,8 @@
     <string name="delete">Delete</string>
     <string name="delete_category_complete_question">Are you sure you want to delete this category ?</string>
     <string name="delete_category_title_question">Delete category ?</string>
+    <string name="delete_overhead_complete_question">Are you sure you want to delete this overhead ?</string>
+    <string name="delete_overhead_title_question">Delete overhead ?</string>
     <string name="delete_transaction_complete_question">Are you sure you want to delete this transaction ?</string>
     <string name="delete_transaction_title_question">Delete transaction ? </string>
     <string name="done">Done</string>

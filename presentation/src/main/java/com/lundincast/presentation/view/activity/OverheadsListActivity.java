@@ -71,6 +71,11 @@ public class OverheadsListActivity  extends BaseActivity implements HasComponent
         finish();
     }
 
+    @OnClick(R.id.iv_add_icon)
+    void onAddIconClicked() {
+        this.navigator.navigateToCreateOrUpdateOverhead(this, -1);
+    }
+
     @Override
     public OverheadsComponent getComponent() {
         return overheadsComponent;
@@ -78,6 +83,6 @@ public class OverheadsListActivity  extends BaseActivity implements HasComponent
 
     @Override
     public void onOverheadsClicked(OverheadModel overheadModel) {
-
+        this.navigator.navigateToCreateOrUpdateOverhead(this, overheadModel.getOverheadId());
     }
 }

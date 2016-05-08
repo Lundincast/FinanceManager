@@ -2,6 +2,7 @@ package com.lundincast.presentation.dagger.components;
 
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.dagger.modules.OverheadsModule;
+import com.lundincast.presentation.view.activity.CreateOverheadActivity;
 import com.lundincast.presentation.view.fragment.OverheadsListFragment;
 
 import dagger.Component;
@@ -15,4 +16,5 @@ import dagger.Component;
 public interface OverheadsComponent {
 
     void inject(OverheadsListFragment overheadsListFragment);
+    void inject(CreateOverheadActivity createOverheadActivity);
 }

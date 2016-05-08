@@ -1,4 +1,4 @@
-package com.lundincast.presentation.view.utilities;
+package com.lundincast.presentation.utils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Utility class for proper date formatting
  */
-public class FullMonthDateFormatter {
+public class CustomDateFormatter {
 
     private static String[] monthsComplete = {"January", "February", "March", "April", "May", "June", "July", "August",
             "September", "October", "November", "December"};
@@ -14,7 +14,7 @@ public class FullMonthDateFormatter {
             "Sep", "Oct", "Nov", "Dec"};
     private static String[] shortDaysOfWeekName = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 
-    public FullMonthDateFormatter() {}
+    public CustomDateFormatter() {}
 
     public static String getCompleteMonthName(int index) {
         return monthsComplete[index];

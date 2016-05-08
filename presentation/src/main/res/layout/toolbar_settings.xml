@@ -34,6 +34,6 @@
         android:src="@drawable/ic_delete_white_24dp"
         android:clickable="true"
         android:contentDescription="@string/delete_transaction"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </android.support.v7.widget.Toolbar>

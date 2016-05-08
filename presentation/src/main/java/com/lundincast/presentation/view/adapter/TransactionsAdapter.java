@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
-import com.lundincast.presentation.view.utilities.FullMonthDateFormatter;
+import com.lundincast.presentation.utils.CustomDateFormatter;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -69,8 +69,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(transactionModel.getDate());
-        viewHolder.tvDayOfWeek.setText(FullMonthDateFormatter.getShortDayOfWeekName(cal));
-        viewHolder.tvTransactionDate.setText(FullMonthDateFormatter.getShortFormattedDate(cal));
+        viewHolder.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
+        viewHolder.tvTransactionDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
         // determine currency from preferences
         String currency;

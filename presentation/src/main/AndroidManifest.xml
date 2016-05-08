@@ -41,12 +41,19 @@
         <activity android:name=".view.activity.OverheadsListActivity"
             android:label="">
         </activity>
+        <activity android:name=".view.activity.CreateOverheadActivity"
+            android:label="">
+        </activity>
 
         <service android:name=".services.NotificationService"
             android:enabled="true">
         </service>
+        <service android:name=".services.OverheadService"
+            android:enabled="true">
+        </service>
 
         <receiver android:name=".broadcastreceivers.NotificationAlarmReceiver" />
+        <receiver android:name=".broadcastreceivers.OverheadReceiver" />
 
     </application>
 

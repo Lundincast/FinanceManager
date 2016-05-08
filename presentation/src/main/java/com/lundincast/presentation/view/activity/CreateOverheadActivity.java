@@ -2,7 +2,6 @@ package com.lundincast.presentation.view.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,19 +16,17 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
-import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
-import com.lundincast.presentation.dagger.components.TransactionComponent;
-import com.lundincast.presentation.dagger.modules.TransactionModule;
+import com.lundincast.presentation.dagger.components.DaggerOverheadsComponent;
+import com.lundincast.presentation.dagger.components.OverheadsComponent;
+import com.lundincast.presentation.dagger.modules.OverheadsModule;
 import com.lundincast.presentation.model.CategoryModel;
-import com.lundincast.presentation.presenter.CreateTransactionPresenter;
+import com.lundincast.presentation.presenter.CreateOverheadPresenter;
 import com.lundincast.presentation.view.CreateItemUtility;
 import com.lundincast.presentation.view.TransactionDetailsView;
 import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFragment;
 import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
-import com.lundincast.presentation.view.fragment.TransactionDetailsFragment;
+import com.lundincast.presentation.view.fragment.OverheadDetailsFragment;
 import com.melnykov.fab.FloatingActionButton;
-
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -38,18 +35,18 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * Activity that allows user to create a new transaction
+ * Activity that allows user to create a new overhead
  */
-public class CreateTransactionActivity extends BaseActivity implements HasComponent<TransactionComponent>,
-                                                                        TransactionDetailsView,
-                                                                        CreateItemUtility {
+public class CreateOverheadActivity extends BaseActivity implements HasComponent<OverheadsComponent>,
+                                                                    TransactionDetailsView,
+                                                                    CreateItemUtility {
 
-    public static final String INTENT_EXTRA_PARAM_TRANSACTION_ID = "com.lundincast.INTENT_PARAM_TRANSACTION_ID";
-    private static final String INSTANCE_STATE_PARAM_TRANSACTION_ID = "com.lundincast.STATE_PARAM_TRANSACTION_ID";
+    private static final String INTENT_EXTRA_PARAM_OVERHEADS_ID = "com.lundincast.INTENT_PARAM_OVERHEADS_ID";
+    private static final String INSTANCE_STATE_PARAM_OVERHEADS_ID = "com.lundincast.STATE_PARAM_OVERHEADS_ID";
 
-    public static Intent getCallingIntent(Context context, int transactionId) {
-        Intent callingIntent = new Intent(context, CreateTransactionActivity.class);
-        callingIntent.putExtra(INTENT_EXTRA_PARAM_TRANSACTION_ID, transactionId);
+    public static Intent getCallingIntent(Context context, int overheadsId) {
+        Intent callingIntent = new Intent(context, CreateOverheadActivity.class);
+        callingIntent.putExtra(INTENT_EXTRA_PARAM_OVERHEADS_ID, overheadsId);
 
         return callingIntent;
     }
@@ -61,18 +58,17 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     @Bind(R.id.fab) FloatingActionButton fab;
 
     @Inject SharedPreferences sharedPreferences;
-    @Inject CreateTransactionPresenter createTransactionPresenter;
+    @Inject CreateOverheadPresenter createOverheadPresenter;
 
-    public int transactionId = -1;
-    private TransactionComponent transactionComponent;
+    public int overheadId = -1;
+    private OverheadsComponent overheadsComponent;
 
-    private enum FlowStep {Price, Category, Details, Final}
+    private enum FlowStep {Price, Category, Final}
     private FlowStep step;
     private FlowStep previousStep = null;
 
     private String currPref;
     public String mPrice = "0";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,22 +81,12 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         currPref = this.sharedPreferences.getString("pref_key_currency", "1");
 
         initializeActivity(savedInstanceState);
-
         setUpToolbar();
-
-        // Retrieve intent and check for notificationId extra. If it exists, it means the activity
-        // has been started from a notification, so dismiss it.
-        Intent intent = getIntent();
-        int notificationId = intent.getIntExtra("notificationId", -1);
-        if (notificationId == 001) {
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(notificationId);
-        }
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         if (outState != null) {
-            outState.putLong(INSTANCE_STATE_PARAM_TRANSACTION_ID, this.transactionId);
+            outState.putLong(INSTANCE_STATE_PARAM_OVERHEADS_ID, this.overheadId);
         }
         super.onSaveInstanceState(outState);
     }
@@ -108,40 +94,40 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     private void setUpToolbar() {
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
-        if (transactionId > -1) {
+        if (overheadId > -1) {
             iv_delete.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void initializeInjector() {
+        this.overheadsComponent = DaggerOverheadsComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .overheadsModule(new OverheadsModule())
+                .build();
+        this.overheadsComponent.inject(this);
     }
 
     /**
      * Initializes this activity.
      */
     private void initializeActivity(Bundle savedInstanceState) {
-        this.createTransactionPresenter.setView(this);
-        // Load transaction Id from intent or savedInstanceState if available.
+        this.createOverheadPresenter.setView(this);
+        // Load overhead Id from intent or savedInstanceState if available.
         if (savedInstanceState == null) {
-            this.transactionId = getIntent().getIntExtra(INTENT_EXTRA_PARAM_TRANSACTION_ID, -1);
+            this.overheadId = getIntent().getIntExtra(INTENT_EXTRA_PARAM_OVERHEADS_ID, -1);
         } else {
-            this.transactionId = savedInstanceState.getInt(INTENT_EXTRA_PARAM_TRANSACTION_ID);
+            this.overheadId = savedInstanceState.getInt(INTENT_EXTRA_PARAM_OVERHEADS_ID);
         }
-        this.createTransactionPresenter.initialize(this.transactionId);
+        this.createOverheadPresenter.initialize(this.overheadId);
 
-        // Load fragment depending if we are creating or updating a transaction and maintain step tracker
-        if (transactionId == -1) {
+        // Load fragment depending if we are creating or updating an overhead and maintain step tracker
+        if (overheadId == -1) {
             addFragment(R.id.fl_transaction_details_container, new NumericKeyboardFragment(), "NumericKeyboardFragment");
             step = FlowStep.Price;
         } else {
-            addFragment(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment");
+            addFragment(R.id.fl_transaction_details_container, new OverheadDetailsFragment(), "TransactionDetailsFragment");
             step = FlowStep.Final;
         }
-    }
-
-    private void initializeInjector() {
-        this.transactionComponent = DaggerTransactionComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .transactionModule(new TransactionModule())
-                .build();
-        this.transactionComponent.inject(this);
     }
 
     @Override
@@ -177,19 +163,19 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
     @OnClick(R.id.iv_delete)
     void onDeleteIconClicked() {
-        // Display dialog to ask user confirmation to delete category
+        // Display dialog to ask user confirmation to delete overheads
         new MaterialDialog.Builder(this)
-                .title(R.string.delete_transaction_title_question)
-                .content(R.string.delete_transaction_complete_question)
+                .title(R.string.delete_overhead_title_question)
+                .content(R.string.delete_overhead_complete_question)
                 .positiveText(R.string.delete)
                 .negativeText(R.string.cancel)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        CreateTransactionActivity.this.createTransactionPresenter.deleteTransaction(
-                                                            CreateTransactionActivity.this.transactionId);
+                        CreateOverheadActivity.this.createOverheadPresenter.deleteOverhead(
+                                CreateOverheadActivity.this.overheadId);
                         dialog.dismiss();
-                        CreateTransactionActivity.this.finish();
+                        CreateOverheadActivity.this.finish();
                     }
                 })
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -221,7 +207,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 if (mPrice.equals("")) {
                     mPrice = "0";
                 }
-                this.createTransactionPresenter.setMPrice(Double.valueOf(mPrice));
+                this.createOverheadPresenter.setMPrice(Double.valueOf(mPrice));
                 if (previousStep == FlowStep.Category || previousStep == null) {
                     getFragmentManager()
                             .beginTransaction()
@@ -231,14 +217,14 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 } else {
                     getFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(),"TransactionDetailsFragment")
+                            .replace(R.id.fl_transaction_details_container, new OverheadDetailsFragment(),"OverheadDetailsFragment")
                             .commit();
                     step = FlowStep.Final;
 
                 }
                 break;
             case Final:
-                this.createTransactionPresenter.saveTransaction();
+                this.createOverheadPresenter.saveOverhead();
                 finish();
                 break;
             default:
@@ -323,14 +309,14 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     }
 
     public CategoryModel getCategory() {
-        return this.createTransactionPresenter.getMCategory();
+        return this.createOverheadPresenter.getMCategory();
     }
 
     public void onCategorySet(CategoryModel categoryModel) {
-        this.createTransactionPresenter.setmCategory(categoryModel);
+        this.createOverheadPresenter.setmCategory(categoryModel);
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(),"TransactionDetailsFragment")
+                .replace(R.id.fl_transaction_details_container, new OverheadDetailsFragment(),"OverheadDetailsFragment")
                 .commit();
         step = FlowStep.Final;
     }
@@ -343,48 +329,24 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         step = FlowStep.Category;
     }
 
-    public Date getDate() {
-        return this.createTransactionPresenter.getmDate();
+    public short getDayOfMonth() {
+        return this.createOverheadPresenter.getmDayOfMonth();
     }
 
-    public void onDateSet(Date date) {
-        this.createTransactionPresenter.setmDate(date);
+    public void setDayOfMonth(short dayOfMonth) {
+        this.createOverheadPresenter.setmDayOfMonth(dayOfMonth);
     }
 
     public String getComment() {
-        return this.createTransactionPresenter.getmComment();
+        return this.createOverheadPresenter.getmComment();
     }
 
     public void onCommentSet(String comment) {
-        this.createTransactionPresenter.setmComment(comment);
-    }
-
-    public boolean isPending() {
-        return this.createTransactionPresenter.ismPending();
-    }
-
-    public void setPending(boolean isPending) {
-        this.createTransactionPresenter.setmPending(isPending);
-    }
-
-    public int getDueToOrBy() {
-        return this.createTransactionPresenter.getmDueToOrBy();
-    }
-
-    public void setDueToOrBy(int dueToOrBy) {
-        this.createTransactionPresenter.setmDueToOrBy(dueToOrBy);
-    }
-
-    public String getDueName() {
-        return this.createTransactionPresenter.getmDueName();
-    }
-
-    public void setDueName(String dueName) {
-        this.createTransactionPresenter.setmDueName(dueName);
+        this.createOverheadPresenter.setmComment(comment);
     }
 
     @Override
-    public TransactionComponent getComponent() {
-        return transactionComponent;
+    public OverheadsComponent getComponent() {
+        return overheadsComponent;
     }
 }

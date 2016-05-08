@@ -87,6 +87,9 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);
         }
+
+        // Check if an automatic overhead is set and create it if needed.
+
     }
 
 
@@ -272,10 +275,10 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             // Display dialog to show changelog for new version
             new MaterialDialog.Builder(this)
                     .title(R.string.what_new)
-                    .content(Html.fromHtml("Version 0.6.1<br />" +
+                    .content(Html.fromHtml("<b>Version 0.7.0<b><br />" +
                             "<br />" +
-                            "<b>1. IMPROVEMENT:</b> General improvements in usability.<br />" +
-                            "<b>2. FIX:</b> Notification set up with new app icon and proper behaviour."))
+                            "<b>1. NEW:</b> Manage repeating expenses (overheads).<br />" +
+                            "<b>2. FIX:</b> Delete icon was displayed in create new transaction."))
                     .positiveText(R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

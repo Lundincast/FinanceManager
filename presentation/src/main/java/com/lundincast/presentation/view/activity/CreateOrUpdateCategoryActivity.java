@@ -26,7 +26,7 @@ import butterknife.OnClick;
 public class CreateOrUpdateCategoryActivity extends BaseActivity implements HasComponent<CategoryComponent>,
                                                                             ColorChooserDialog.ColorCallback {
 
-    private static final String INTENT_EXTRA_PARAM_CATEGORY_ID = "com.lundincast.INTENT_PARAM_CATEGORY_ID";
+    public static final String INTENT_EXTRA_PARAM_CATEGORY_ID = "com.lundincast.INTENT_PARAM_CATEGORY_ID";
     private static final String INSTANCE_STATE_PARAM_CATEGORY_ID = "com.lundincast.STATE_PARAM_CATEGORY_ID";
 
     public static Intent getCallingIntent(Context context, long categoryId) {

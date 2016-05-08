@@ -66,6 +66,18 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         viewHolder.tv_category_name.setText(overheadModel.getCategory().getName());
         viewHolder.tv_overheads_comment.setText(overheadModel.getComment());
+        short dayOfMonth = overheadModel.getDayOfMonth();
+        String dayNbInString;
+        if (dayOfMonth == 1 || dayOfMonth == 21) {
+            dayNbInString = dayOfMonth + "st";
+        } else if (dayOfMonth == 2 || dayOfMonth == 22) {
+            dayNbInString = dayOfMonth + "nd";
+        } else if(dayOfMonth == 3 || dayOfMonth == 23) {
+            dayNbInString = dayOfMonth + "rd";
+        } else {
+            dayNbInString = dayOfMonth + "th";
+        }
+        viewHolder.tv_overheads_recurring_time.setText("On " + dayNbInString + " of month");
 
         // determine currency from preferences
         String currency;
@@ -77,6 +89,15 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             currency = " €";
         }
         viewHolder.tv_overheads_price.setText((String.format("%.2f", overheadModel.getPrice())) + currency);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (OverheadsAdapter.this.onItemClickListener != null) {
+                    OverheadsAdapter.this.onItemClickListener.onOverheadsItemClicked(overheadModel);
+                }
+            }
+        });
     }
 
     @Override
