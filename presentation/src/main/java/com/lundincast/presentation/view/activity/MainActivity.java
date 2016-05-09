@@ -275,7 +275,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             // Display dialog to show changelog for new version
             new MaterialDialog.Builder(this)
                     .title(R.string.what_new)
-                    .content(Html.fromHtml("<b>Version 0.7.0<b><br />" +
+                    .content(Html.fromHtml("<b>Version 0.7.1<b><br />" +
                             "<br />" +
                             "<b>1. NEW:</b> Manage repeating expenses (overheads).<br />" +
                             "<b>2. FIX:</b> Delete icon was displayed in create new transaction."))

@@ -35,7 +35,7 @@ public class CreateOverheadPresenter implements Presenter {
     private int mOverheadId = -1;
     private double mPrice = 0;
     private CategoryModel mCategory = null;
-    private short mDayOfMonth;
+    private short mDayOfMonth = 1;
     private String mComment;
 
     @Inject
