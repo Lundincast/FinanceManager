@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
+import com.lundincast.presentation.view.activity.AccountListActivity;
 import com.lundincast.presentation.view.activity.CategoryListActivity;
+import com.lundincast.presentation.view.activity.CreateOrUpdateAccountActivity;
 import com.lundincast.presentation.view.activity.CreateOrUpdateCategoryActivity;
 import com.lundincast.presentation.view.activity.CreateOverheadActivity;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
@@ -92,6 +94,30 @@ public class Navigator {
     public void navigateToCreateOrUpdateOverhead(Context context, int overheadId) {
         if (context != null) {
             Intent intentToLaunch = CreateOverheadActivity.getCallingIntent(context, overheadId);
+            context.startActivity(intentToLaunch);
+        }
+    }
+
+    /**
+     * Goes to list accounts screen
+     *
+     * @param context A Context needed to open the destiny activity.
+     */
+    public void navigateToListAccounts(Context context) {
+        if (context != null) {
+            Intent intentToLaunch = AccountListActivity.getCallingIntent(context);
+            context.startActivity(intentToLaunch);
+        }
+    }
+
+    /**
+     * Goes to create or edit account screen
+     *
+     * @param context A Context needed to open the destiny activity.
+     */
+    public void navigateToCreateOrUpdateAccount(Context context, long accountId) {
+        if (context != null) {
+            Intent intentToLaunch = CreateOrUpdateAccountActivity.getCallingIntent(context, accountId);
             context.startActivity(intentToLaunch);
         }
     }

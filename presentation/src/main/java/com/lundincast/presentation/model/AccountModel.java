@@ -4,14 +4,15 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Class that represents a category in the presentation layer.
+ * Class that represents an account in the presentation layer.
  */
-public class CategoryModel extends RealmObject {
+public class AccountModel extends RealmObject {
 
     @PrimaryKey
     private long id;
     private String name;
     private int color;
+    private double balance;
 
     public long getId() {
         return id;
@@ -35,5 +36,13 @@ public class CategoryModel extends RealmObject {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }

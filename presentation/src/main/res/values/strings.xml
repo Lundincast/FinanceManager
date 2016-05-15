@@ -17,6 +17,8 @@
     <string name="colors">Colors</string>
     <string name="color_palette">Color Palette</string>
     <string name="delete">Delete</string>
+    <string name="delete_account_complete_question">Are you sure you want to delete this account ?</string>
+    <string name="delete_account_title_question">Delete account ?</string>
     <string name="delete_category_complete_question">Are you sure you want to delete this category ?</string>
     <string name="delete_category_title_question">Delete category ?</string>
     <string name="delete_overhead_complete_question">Are you sure you want to delete this overhead ?</string>
@@ -24,10 +26,12 @@
     <string name="delete_transaction_complete_question">Are you sure you want to delete this transaction ?</string>
     <string name="delete_transaction_title_question">Delete transaction ? </string>
     <string name="done">Done</string>
+    <string name="edit_account">Edit account</string>
     <string name="edit_category">Edit category</string>
     <string name="enter_name">Enter name</string>
     <string name="filter_by_category">Filter by category</string>
     <string name="name">Name</string>
+    <string name="new_account">New account</string>
     <string name="new_category">New category</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -47,5 +51,10 @@
     <string name="enter_comment">Enter comment</string>
     <string name="enter_a_name">Enter a name</string>
     <string name="overheads">Overheads</string>
+    <string name="income_management">Income management</string>
+    <string name="accounts">Accounts</string>
+    <string name="account_color">Account color</string>
+    <string name="transaction_color">Transaction color</string>
+    <string name="current_balance">Current balance</string>
 
 </resources>

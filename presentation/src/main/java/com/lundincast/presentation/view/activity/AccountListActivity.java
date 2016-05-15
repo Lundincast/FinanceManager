@@ -9,12 +9,12 @@ import android.widget.TextView;
 
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.HasComponent;
-import com.lundincast.presentation.dagger.components.CategoryComponent;
-import com.lundincast.presentation.dagger.components.DaggerCategoryComponent;
-import com.lundincast.presentation.dagger.modules.CategoryModule;
-import com.lundincast.presentation.model.CategoryModel;
+import com.lundincast.presentation.dagger.components.AccountComponent;
+import com.lundincast.presentation.dagger.components.DaggerAccountComponent;
+import com.lundincast.presentation.dagger.modules.AccountModule;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.navigation.Navigator;
-import com.lundincast.presentation.view.fragment.CategoryListFragment;
+import com.lundincast.presentation.view.fragment.AccountListFragment;
 
 import javax.inject.Inject;
 
@@ -23,13 +23,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * Activity to display the list of categories.
+ * Activity to display the list of accounts.
  */
-public class CategoryListActivity extends BaseActivity implements HasComponent<CategoryComponent>,
-                                                                CategoryListFragment.CategoryListListener {
+public class AccountListActivity extends BaseActivity implements HasComponent<AccountComponent>,
+                                                                AccountListFragment.AccountListListener {
 
     public static Intent getCallingIntent(Context context) {
-        return new Intent(context, CategoryListActivity.class);
+        return new Intent(context, AccountListActivity.class);
     }
 
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -39,7 +39,7 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
 
     @Inject Navigator navigator;
 
-    private CategoryComponent categoryComponent;
+    private AccountComponent accountComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +56,18 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
         // Set title
-        tv_title.setText(R.string.categories);
+        tv_title.setText(R.string.accounts);
     }
 
     private void initializeInjector() {
         this.getApplicationComponent().inject(this);
-        this.categoryComponent = DaggerCategoryComponent.builder()
-                .categoryModule(new CategoryModule())
+        this.accountComponent = DaggerAccountComponent.builder()
+                .accountModule(new AccountModule())
                 .build();
     }
 
     private void loadFragment() {
-        this.addFragment(R.id.listCategoryFragment, new CategoryListFragment(), "categoryListFragment");
+        this.addFragment(R.id.listCategoryFragment, new AccountListFragment(), "accountListFragment");
     }
 
     @OnClick(R.id.iv_back)
@@ -77,16 +77,16 @@ public class CategoryListActivity extends BaseActivity implements HasComponent<C
 
     @OnClick(R.id.iv_add_icon)
     void onAddIconClicked() {
-        this.navigator.navigateToCreateOrUpdateCategory(this, -1);
+        this.navigator.navigateToCreateOrUpdateAccount(this, -1);
     }
 
     @Override
-    public CategoryComponent getComponent() {
-        return categoryComponent;
+    public AccountComponent getComponent() {
+        return accountComponent;
     }
 
     @Override
-    public void onCategoryClicked(CategoryModel categoryModel) {
-        this.navigator.navigateToCreateOrUpdateCategory(this, categoryModel.getId());
+    public void onAccountClicked(AccountModel accountModel) {
+        this.navigator.navigateToCreateOrUpdateAccount(this, accountModel.getId());
     }
 }

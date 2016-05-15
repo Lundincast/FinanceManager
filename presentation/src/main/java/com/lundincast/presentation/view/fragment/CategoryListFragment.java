@@ -13,7 +13,6 @@ import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.CategoryComponent;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.CategoryListPresenter;
-import com.lundincast.presentation.presenter.Presenter;
 import com.lundincast.presentation.view.CategoryListView;
 import com.lundincast.presentation.view.adapter.CategoriesAdapter;
 import com.lundincast.presentation.view.adapter.CategoriesLayoutManager;
@@ -21,15 +20,11 @@ import com.lundincast.presentation.view.utilities.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for listing categories

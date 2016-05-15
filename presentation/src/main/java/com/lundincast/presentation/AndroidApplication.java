@@ -32,7 +32,7 @@ public class AndroidApplication extends Application {
     private void setRealmDefaultConfig() {
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .name("financemanager.realm")
-                .schemaVersion(2) // Must be bumped when the schema changes
+                .schemaVersion(3) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run instead of throwing an exception
                 .build();
         Realm.setDefaultConfiguration(config);

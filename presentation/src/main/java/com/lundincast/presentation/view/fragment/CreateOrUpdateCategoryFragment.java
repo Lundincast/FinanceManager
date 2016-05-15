@@ -71,7 +71,7 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if (et_category_name.getText().toString().equals("")) {
-                    Toast.makeText(getActivity(), "Category name cannot be empty!", Toast.LENGTH_SHORT).show();
+                    CreateOrUpdateCategoryFragment.this.showToastMessage("Category name cannot be empty!");
                 } else {
                     CreateOrUpdateCategoryFragment.this.createCategoryPresenter
                             .saveCategory(activity.categoryId, et_category_name.getText().toString(), activity.color);

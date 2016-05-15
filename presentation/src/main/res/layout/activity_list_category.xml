@@ -8,8 +8,7 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar_category_list" />
 
-    <fragment
-        android:name="com.lundincast.presentation.view.fragment.CategoryListFragment"
+    <FrameLayout
         android:id="@+id/listCategoryFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

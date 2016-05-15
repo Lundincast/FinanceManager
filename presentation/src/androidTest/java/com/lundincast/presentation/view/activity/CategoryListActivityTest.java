@@ -49,7 +49,7 @@ public class CategoryListActivityTest {
     @Test
     public void containsCategoryListFragment() {
         Fragment categoryListFragment =
-                mActivityRule.getActivity().getFragmentManager().findFragmentById(R.id.listCategoryFragment);
+                mActivityRule.getActivity().getFragmentManager().findFragmentByTag("categoryListFragment");
         assertThat(categoryListFragment, is(notNullValue()));
     }
 
@@ -59,6 +59,11 @@ public class CategoryListActivityTest {
         onView(withId(R.id.tv_title)).check(matches(isDisplayed()));
         onView(withId(R.id.iv_add_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.listCategoryFragment)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void activityTitleIsCorrect() {
+        onView(withId(R.id.tv_title)).check(matches(withText("Categories")));
     }
 
     @Test

@@ -44,6 +44,12 @@
         <activity android:name=".view.activity.CreateOverheadActivity"
             android:label="">
         </activity>
+        <activity android:name=".view.activity.AccountListActivity"
+            android:label="">
+        </activity>
+        <activity android:name=".view.activity.CreateOrUpdateAccountActivity"
+            android:label="">
+        </activity>
 
         <service android:name=".services.NotificationService"
             android:enabled="true">

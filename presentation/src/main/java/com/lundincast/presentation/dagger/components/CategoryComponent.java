@@ -11,7 +11,7 @@ import dagger.Component;
 
 /**
  * A scope {@link com.lundincast.presentation.dagger.PerActivity} component.
- * Injects transaction specific Fragments.
+ * Injects category specific Fragments.
  */
 @PerActivity
 @Component(modules = CategoryModule.class)

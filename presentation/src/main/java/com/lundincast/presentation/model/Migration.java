@@ -34,5 +34,17 @@ public class Migration implements RealmMigration {
 
             oldVersion++;
         }
+
+        // Migrate from version 2 to version 3
+        if (oldVersion == 2) {
+            // Create new AccountModel class
+            RealmObjectSchema accountSchema = schema.create("AccountModel")
+                    .addField("id", long.class, FieldAttribute.PRIMARY_KEY)
+                    .addField("name", String.class)
+                    .addField("color", int.class)
+                    .addField("balance", double.class);
+
+            oldVersion++;
+        }
     }
 }

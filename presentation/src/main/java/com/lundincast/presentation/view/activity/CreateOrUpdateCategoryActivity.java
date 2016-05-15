@@ -53,6 +53,7 @@ public class CreateOrUpdateCategoryActivity extends BaseActivity implements HasC
         setUpToolbar();
         initializeActivity(savedInstanceState);
         initializeInjector();
+        loadFragment();
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -82,6 +83,10 @@ public class CreateOrUpdateCategoryActivity extends BaseActivity implements HasC
         this.categoryComponent = DaggerCategoryComponent.builder()
                 .categoryModule(new CategoryModule())
                 .build();
+    }
+
+    private void loadFragment() {
+        this.addFragment(R.id.createActivityFragment, new CreateOrUpdateCategoryFragment(), "createActivityFragment");
     }
 
     @OnClick(R.id.iv_back)
