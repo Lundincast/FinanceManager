@@ -17,6 +17,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.view.fragment.OverviewFragment;
 import com.lundincast.presentation.utils.CustomDateFormatter;
 
@@ -158,6 +159,7 @@ public class OverviewPresenter implements Presenter {
 
         // get data from db depending on date
         transactionListByMonth = realm.where(TransactionModel.class)
+                .equalTo("transactionType", CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)
                 .equalTo("month", cal.get(Calendar.MONTH))
                 .equalTo("year", cal.get(Calendar.YEAR))
                 .findAll();
@@ -196,9 +198,11 @@ public class OverviewPresenter implements Presenter {
         Calendar sixMonthAgo = Calendar.getInstance();
         sixMonthAgo.add(Calendar.MONTH, -5);
         sixMonthAgo.set(Calendar.DAY_OF_MONTH, 1);
-        RealmResults<TransactionModel> lastSixMonthsTransactionList = realm.where(TransactionModel.class)
-                                                                           .between("date", sixMonthAgo.getTime(), today.getTime())
-                                                                           .findAll();
+        RealmResults<TransactionModel> lastSixMonthsTransactionList =
+                realm.where(TransactionModel.class)
+                            .equalTo("transactionType", CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)
+                            .between("date", sixMonthAgo.getTime(), today.getTime())
+                            .findAll();
         for (TransactionModel transaction : lastSixMonthsTransactionList) {
             String categoryName = transaction.getCategory().getName();
             if (!categorySpinnerList.contains(categoryName)) {

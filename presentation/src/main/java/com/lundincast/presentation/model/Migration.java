@@ -2,6 +2,7 @@ package com.lundincast.presentation.model;
 
 
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
@@ -43,6 +44,26 @@ public class Migration implements RealmMigration {
                     .addField("name", String.class)
                     .addField("color", int.class)
                     .addField("balance", double.class);
+
+            // Add transactionType field in TransactionModel and populate existing records
+            schema.get("TransactionModel")
+                    .addField("transactionType", String.class, FieldAttribute.REQUIRED)
+                    .transform(new RealmObjectSchema.Function() {
+                        @Override
+                        public void apply(DynamicRealmObject obj) {
+                            obj.setString("transactionType", "Expense");
+                        }
+                    });
+
+            // Add fromAccount field in TransactionModel and set it to null
+            schema.get("TransactionModel")
+                    .addRealmObjectField("fromAccount", schema.get("AccountModel"))
+                    .transform(new RealmObjectSchema.Function() {
+                        @Override
+                        public void apply(DynamicRealmObject obj) {
+                            obj.set("fromAccount", null);
+                        }
+                    });
 
             oldVersion++;
         }

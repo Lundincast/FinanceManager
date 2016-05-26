@@ -43,9 +43,9 @@ public class Navigator {
      *
      * @param context A Context needed to open the destiny activity.
      */
-    public void navigateToCreateTransaction(Context context, int transactionId) {
+    public void navigateToCreateTransaction(Context context, int transactionId, String transactionType) {
         if (context != null) {
-            Intent intentToLaunch = CreateTransactionActivity.getCallingIntent(context, transactionId);
+            Intent intentToLaunch = CreateTransactionActivity.getCallingIntent(context, transactionId, transactionType);
             context.startActivity(intentToLaunch);
         }
     }

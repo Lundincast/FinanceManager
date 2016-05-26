@@ -4,6 +4,7 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 /**
  * Class that represents a transaction in the presentation layer.
@@ -19,6 +20,8 @@ public class TransactionModel extends RealmObject {
         this.transactionId = transactionId;
     }
 
+    @Required
+    private String transactionType;
     private double price;
     private CategoryModel category;
     private Date date;
@@ -26,10 +29,19 @@ public class TransactionModel extends RealmObject {
     private int month;
     private int year;
     private String comment;
+    private AccountModel fromAccount;
     private boolean pending;
     private int dueToOrBy;
     private String dueName;
 
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
 
     public void setTransactionId(int transactionId) {
         this.transactionId = transactionId;
@@ -93,6 +105,14 @@ public class TransactionModel extends RealmObject {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public AccountModel getFromAccount() {
+        return fromAccount;
+    }
+
+    public void setFromAccount(AccountModel fromAccount) {
+        this.fromAccount = fromAccount;
     }
 
     public String getDueName() {

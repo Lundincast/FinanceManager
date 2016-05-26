@@ -30,6 +30,7 @@ import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.dagger.modules.TransactionModule;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.navigation.Navigator;
@@ -147,15 +148,15 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
 
     @Override
     public void onTransactionClicked(TransactionModel transactionModel) {
-        this.navigator.navigateToCreateTransaction(this, transactionModel.getTransactionId());
+        this.navigator.navigateToCreateTransaction(this, transactionModel.getTransactionId(), transactionModel.getTransactionType()); //TODO pass correct transaction type
     }
 
     /**
      *
      * Launch create transaction activity on fab clicked
      */
-    public void onFabClicked() {
-        this.navigator.navigateToCreateTransaction(this, -1);
+    public void onFabClicked(String transactionType) {
+        this.navigator.navigateToCreateTransaction(this, -1, transactionType);
     }
 
     @Override
@@ -212,6 +213,7 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
+                    // Create default categories
                     CategoryModel housing = realm.createObject(CategoryModel.class);
                     housing.setId(1);
                     housing.setName("Housing");
@@ -268,6 +270,17 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
                     education.setId(14);
                     education.setName("Education");
                     education.setColor(-1499549);
+                    // Create default accounts
+                    AccountModel current = realm.createObject(AccountModel.class);
+                    current.setId(1);
+                    current.setName("Current");
+                    current.setColor(-769226);
+                    current.setBalance(0);
+                    AccountModel savings = realm.createObject(AccountModel.class);
+                    savings.setId(2);
+                    savings.setName("Savings");
+                    savings.setColor(-7617718);
+                    savings.setBalance(0);
                 }
             });
         } else if (currentVersionCode > savedVersionCode) {

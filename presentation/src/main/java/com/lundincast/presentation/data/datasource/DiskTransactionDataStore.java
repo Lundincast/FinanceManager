@@ -66,9 +66,14 @@ public class DiskTransactionDataStore implements TransactionDataStore {
                 } else {
                     transaction.setTransactionId(transactionModel.getTransactionId());
                 }
+                transaction.setTransactionType(transactionModel.getTransactionType());
                 transaction.setPrice(transactionModel.getPrice());
-                CategoryModel category = realm.where(CategoryModel.class).equalTo("id", transactionModel.getCategory().getId()).findFirst();
-                transaction.setCategory(category);
+                if (transactionModel.getCategory() != null) {
+                    CategoryModel category = realm.where(CategoryModel.class).equalTo("id", transactionModel.getCategory().getId()).findFirst();
+                    transaction.setCategory(category);
+                } else {
+                    transaction.setCategory(null);
+                }
                 transaction.setDate(transactionModel.getDate());
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(transactionModel.getDate());
@@ -76,12 +81,13 @@ public class DiskTransactionDataStore implements TransactionDataStore {
                 transaction.setMonth(cal.get(Calendar.MONTH));
                 transaction.setYear(cal.get(Calendar.YEAR));
                 transaction.setComment(transactionModel.getComment());
+                transaction.setFromAccount(transactionModel.getFromAccount());
                 transaction.setPending(transactionModel.isPending());
                 transaction.setDueToOrBy(transactionModel.getDueToOrBy());
                 transaction.setDueName(transactionModel.getDueName());
                 realm.copyToRealmOrUpdate(transaction);
             }
-        }, null);
+        }); // TODO make it work async. Issue with accountModel on other thread
     }
 
     @Override

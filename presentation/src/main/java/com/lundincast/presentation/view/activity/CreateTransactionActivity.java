@@ -20,11 +20,13 @@ import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerTransactionComponent;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.dagger.modules.TransactionModule;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.CreateTransactionPresenter;
 import com.lundincast.presentation.view.CreateItemUtility;
 import com.lundincast.presentation.view.TransactionDetailsView;
 import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFragment;
+import com.lundincast.presentation.view.fragment.IncomeDetailsFragment;
 import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
 import com.lundincast.presentation.view.fragment.TransactionDetailsFragment;
 import com.melnykov.fab.FloatingActionButton;
@@ -45,11 +47,16 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                                                                         CreateItemUtility {
 
     public static final String INTENT_EXTRA_PARAM_TRANSACTION_ID = "com.lundincast.INTENT_PARAM_TRANSACTION_ID";
+    public static final String INTENT_EXTRA_PARAM_TRANSACTION_TYPE = "com.lundincast.INTENT_PARAM_TRANSACTION_TYPE";
     private static final String INSTANCE_STATE_PARAM_TRANSACTION_ID = "com.lundincast.STATE_PARAM_TRANSACTION_ID";
 
-    public static Intent getCallingIntent(Context context, int transactionId) {
+    public static final String TRANSACTION_TYPE_EXPENSE = "Expense";
+    public static final String TRANSACTION_TYPE_INCOME = "Income";
+
+    public static Intent getCallingIntent(Context context, int transactionId, String transactionType) {
         Intent callingIntent = new Intent(context, CreateTransactionActivity.class);
         callingIntent.putExtra(INTENT_EXTRA_PARAM_TRANSACTION_ID, transactionId);
+        callingIntent.putExtra(INTENT_EXTRA_PARAM_TRANSACTION_TYPE, transactionType);
 
         return callingIntent;
     }
@@ -63,10 +70,11 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     @Inject SharedPreferences sharedPreferences;
     @Inject CreateTransactionPresenter createTransactionPresenter;
 
+    public String transactionType;
     public int transactionId = -1;
     private TransactionComponent transactionComponent;
 
-    private enum FlowStep {Price, Category, Details, Final}
+    private enum FlowStep {Price, Category, Final}
     private FlowStep step;
     private FlowStep previousStep = null;
 
@@ -126,12 +134,20 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         }
         this.createTransactionPresenter.initialize(this.transactionId);
 
+        // Get transaction type from Intent extra
+        transactionType = getIntent().getStringExtra(INTENT_EXTRA_PARAM_TRANSACTION_TYPE);
+        this.createTransactionPresenter.setmTransactionType(transactionType);
+
         // Load fragment depending if we are creating or updating a transaction and maintain step tracker
         if (transactionId == -1) {
             addFragment(R.id.fl_transaction_details_container, new NumericKeyboardFragment(), "NumericKeyboardFragment");
             step = FlowStep.Price;
         } else {
-            addFragment(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment");
+            if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                addFragment(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment");
+            } else {
+                addFragment(R.id.fl_transaction_details_container, new IncomeDetailsFragment(), "TransactionDetailsFragment");
+            }
             step = FlowStep.Final;
         }
     }
@@ -223,18 +239,33 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 }
                 this.createTransactionPresenter.setMPrice(Double.valueOf(mPrice));
                 if (previousStep == FlowStep.Category || previousStep == null) {
-                    getFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
-                            .commit();
-                    step = FlowStep.Category;
+                    if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
+                                .commit();
+                        step = FlowStep.Category;
+                    } else {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new IncomeDetailsFragment(),"IncomeDetailsFragment")
+                                .commit();
+                        step = FlowStep.Final;
+                    }
                 } else {
-                    getFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(),"TransactionDetailsFragment")
-                            .commit();
-                    step = FlowStep.Final;
-
+                    if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment")
+                                .commit();
+                        step = FlowStep.Final;
+                    } else {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new IncomeDetailsFragment(),"IncomeDetailsFragment")
+                                .commit();
+                        step = FlowStep.Final;
+                    }
                 }
                 break;
             case Final:
@@ -357,6 +388,14 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
     public void onCommentSet(String comment) {
         this.createTransactionPresenter.setmComment(comment);
+    }
+
+    public AccountModel getAccount() {
+        return this.createTransactionPresenter.getmFromAccount();
+    }
+
+    public void onAccountSet(String accountName) {
+        this.createTransactionPresenter.setmFromAccount(accountName);
     }
 
     public boolean isPending() {

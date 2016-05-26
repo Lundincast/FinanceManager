@@ -49,8 +49,7 @@
         android:layout_alignBottom="@+id/tv_transaction_comment"
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textSize="15sp"
         tools:ignore="RelativeOverlap" />
 
     <ImageView

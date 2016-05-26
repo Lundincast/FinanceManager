@@ -1,6 +1,7 @@
 package com.lundincast.presentation.view.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.preference.PreferenceManager;
@@ -12,9 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.utils.CustomDateFormatter;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -58,10 +61,15 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TransactionViewHolder viewHolder = (TransactionViewHolder) holder;
 
         final TransactionModel transactionModel = this.transactionsCollection.get(position);
-        // extract category information to set category icon color
-//        String colorName = transactionModel.getCategory().getColor();
-        CategoryModel categoryModel = transactionModel.getCategory();
-        int color = categoryModel.getColor();
+        // extract category or account information to set icon color
+        int color = 0;
+        if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+            CategoryModel categoryModel = transactionModel.getCategory();
+            color = categoryModel.getColor();
+        } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+            AccountModel accountModel = transactionModel.getFromAccount();
+            color = accountModel.getColor();
+        }
         // set circle drawable color
         LayerDrawable bgDrawable = (LayerDrawable) viewHolder.ivTransactionCategory.getBackground();
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
@@ -82,6 +90,13 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             currency = " €";
         }
         viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + currency);
+        // set price color depending if expense or income
+        if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+            viewHolder.tvTransactionPrice.setTextColor(Color.RED);
+        } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+            viewHolder.tvTransactionPrice.setTextColor(Color.GREEN);
+        }
+
         if (transactionModel.isPending()) {
             viewHolder.iv_pending_icon.setVisibility(View.VISIBLE);
         } else {

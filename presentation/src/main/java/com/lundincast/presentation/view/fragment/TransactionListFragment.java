@@ -13,16 +13,18 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
 import com.lundincast.presentation.view.TransactionListView;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.view.activity.MainActivity;
 import com.lundincast.presentation.view.adapter.TransactionsAdapter;
 import com.lundincast.presentation.view.adapter.TransactionsLayoutManager;
 import com.lundincast.presentation.view.utilities.SimpleDividerItemDecoration;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +53,9 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
     @Bind(R.id.ll_empty_list) LinearLayout ll_empty_list;
     @Bind(R.id.rv_transactions) RecyclerView rv_transactions;
-    @Bind(R.id.fab) FloatingActionButton fab;
+    @Bind(R.id.fab) FloatingActionMenu fab;
+    @Bind(R.id.fab1) FloatingActionButton fab_expense;
+    @Bind(R.id.fab2) FloatingActionButton fab_income;
 
     private TransactionsAdapter transactionsAdapter;
     private TransactionsLayoutManager transactionsLayoutManager;
@@ -103,8 +107,6 @@ public class TransactionListFragment extends BaseFragment implements Transaction
     @Override public void onResume() {
         super.onResume();
         this.transactionListPresenter.resume();
-
-        this.fab.setVisibility(View.VISIBLE);
     }
 
     @Override public void onPause() {
@@ -166,7 +168,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         this.rv_transactions.setAdapter(transactionsAdapter);
 
         // Attach fab to RecyclerView
-        fab.attachToRecyclerView(this.rv_transactions);
+//        fab.attachToRecyclerView(this.rv_transactions);
 
         // Set listener on filter icon click event in Main Activity
         ImageView filterIcon = (ImageView) getActivity().findViewById(R.id.iv_filter_list_icon);
@@ -180,6 +182,9 @@ public class TransactionListFragment extends BaseFragment implements Transaction
                 }
             });
         }
+
+        fab.setClosedOnTouchOutside(true);
+
     }
 
     /**
@@ -239,8 +244,15 @@ public class TransactionListFragment extends BaseFragment implements Transaction
                 }
             };
 
-    @OnClick(R.id.fab)
-    void onFabClicked() {
-        ((MainActivity) getActivity()).onFabClicked();
+    @OnClick(R.id.fab1)
+    void onExpenseFabClicked() {
+        fab.close(true);
+        ((MainActivity) getActivity()).onFabClicked(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE);
+    }
+
+    @OnClick(R.id.fab2)
+    void onIncomeFabClicked() {
+        fab.close(true);
+        ((MainActivity) getActivity()).onFabClicked(CreateTransactionActivity.TRANSACTION_TYPE_INCOME);
     }
 }
