@@ -94,7 +94,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
             viewHolder.tvTransactionPrice.setTextColor(Color.RED);
         } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-            viewHolder.tvTransactionPrice.setTextColor(Color.GREEN);
+            viewHolder.tvTransactionPrice.setTextColor(-11751600);
         }
 
         if (transactionModel.isPending()) {

@@ -28,6 +28,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onAccountItemClicked(AccountModel accountModel);
     }
 
+    private Context context;
     private List<AccountModel> accountCollection;
     private final LayoutInflater layoutInflater;
 
@@ -35,6 +36,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public AccountAdapter(Context context, List<AccountModel> accountCollection) {
         this.validateAccountCollection(accountCollection);
+        this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.accountCollection = accountCollection;
     }
@@ -53,7 +55,13 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         final AccountModel accountModel = this.accountCollection.get(position);
         viewHolder.tv_account_name.setText(accountModel.getName());
-        viewHolder.tv_account_balance.setText(String.valueOf(accountModel.getBalance()));
+        // set balance text color and value
+        if (accountModel.getBalance() < 0) {
+            viewHolder.tv_account_balance.setTextColor(context.getResources().getColor(R.color.Dark_red));
+        } else {
+            viewHolder.tv_account_balance.setTextColor(context.getResources().getColor(R.color.Dark_green));
+        }
+        viewHolder.tv_account_balance.setText((String.format("%.2f", accountModel.getBalance())));
         // get color code from color name
         int color = accountModel.getColor();
         // set circle drawable color

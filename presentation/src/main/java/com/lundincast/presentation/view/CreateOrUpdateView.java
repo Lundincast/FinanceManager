@@ -30,6 +30,20 @@ public interface CreateOrUpdateView {
     void setColor(int color);
 
     /**
+     * Display balance
+     *
+     * @param balance The balance that will be displayed.
+     */
+    void setBalance(double balance);
+
+    /**
+     * Display currency icon
+     *
+     * @param currency The currency icon that will be displayed.
+     */
+    void setCurrency(String currency);
+
+    /**
      * Display delete icon
      *
      */

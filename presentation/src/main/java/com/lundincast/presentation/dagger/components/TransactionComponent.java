@@ -1,6 +1,7 @@
 package com.lundincast.presentation.dagger.components;
 
 import com.lundincast.presentation.dagger.PerActivity;
+import com.lundincast.presentation.dagger.modules.AccountModule;
 import com.lundincast.presentation.dagger.modules.ActivityModule;
 import com.lundincast.presentation.dagger.modules.TransactionModule;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
@@ -16,7 +17,7 @@ import dagger.Component;
  * Injects transaction specific Fragments.
  */
 @PerActivity
-@Component(dependencies = ApplicationComponent.class, modules = TransactionModule.class)
+@Component(dependencies = ApplicationComponent.class, modules = {TransactionModule.class, AccountModule.class})
 public interface TransactionComponent {
 
     void inject(TransactionListFragment transactionListFragment);

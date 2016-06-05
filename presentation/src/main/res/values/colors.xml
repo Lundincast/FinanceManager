@@ -11,11 +11,12 @@
     <color name="colorAccentDark">#D86508</color>
 
     <color name="Red">#FF8D9A</color>
+    <color name="Dark_red">#D32F2F</color>
     <color name="Blue">#87EAFE</color>
     <color name="Dark_blue">#192980</color>
     <color name="Yellow">#FFF892</color>
     <color name="Green">#C2FF93</color>
-    <color name="Dark_green">#085D3C</color>
+    <color name="Dark_green">#388E3C</color>
     <color name="Grey">#B5B5B5</color>
     <color name="Pink">#E879A4</color>
     <color name="Brown">#775530</color>

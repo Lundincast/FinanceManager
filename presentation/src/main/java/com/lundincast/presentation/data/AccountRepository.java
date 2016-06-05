@@ -1,6 +1,7 @@
 package com.lundincast.presentation.data;
 
 import com.lundincast.presentation.model.AccountModel;
+import com.lundincast.presentation.model.TransactionModel;
 
 import java.util.List;
 
@@ -23,4 +24,9 @@ public interface AccountRepository {
      * Delete an {@link AccountModel} by id in database
      */
     void deleteAccount(final long accountId);
+
+    /**
+     * Update an {@link AccountModel}'s balance with transaction value
+     */
+    void updateAccountBalance(final long accountId, final double delta);
 }

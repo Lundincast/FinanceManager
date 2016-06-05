@@ -1,5 +1,6 @@
 package com.lundincast.presentation.presenter;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.AdapterView;
@@ -47,15 +48,19 @@ public class OverviewPresenter implements Presenter {
             loadTransactionList();
         }
     };
-    private RealmResults<TransactionModel> transactionListByMonth;
-    private RealmChangeListener transactionListByMonthListener;
-    private RealmResults<TransactionModel> transactionListByCategory;
-    private RealmChangeListener transactionListByCategoryListener;
+    private RealmResults<TransactionModel> incomeListByMonth;
+    private RealmResults<TransactionModel> expenseListByMonth;
+    private RealmChangeListener expenseListByMonthListener;
+    private RealmResults<TransactionModel> expenseListByCategory;
+    private RealmChangeListener expenseListByCategoryListener;
 
     private OverviewFragment viewOverView;
 
     private ArrayList<String> categorySpinnerList;
     private String currentCategorySpinnerChoice;
+
+    public String currencySymbol;
+    private double totalMonthExpense;
 
     @Inject
     public OverviewPresenter() {
@@ -71,9 +76,31 @@ public class OverviewPresenter implements Presenter {
         this.viewOverView = view;
     }
 
+    /**
+     * Get currency preference from SharedPreferences and store it in variable
+     *
+     * @param sharedPreferences
+     */
+    public void setCurrency(SharedPreferences sharedPreferences) {
+        String currencyPref = sharedPreferences.getString("pref_key_currency", "1");
+        switch (currencyPref) {
+            case "1":
+                currencySymbol = "€";
+                break;
+            case "2":
+                currencySymbol = "$";
+                break;
+            default:
+                currencySymbol = "£";
+                break;
+        }
+    }
+
+
+
     @Override
     public void resume() {
-        transactionListByMonthListener = new RealmChangeListener() {
+        expenseListByMonthListener = new RealmChangeListener() {
             @Override
             public void onChange() {
                 OverviewPresenter.this.generatePieData();
@@ -82,22 +109,22 @@ public class OverviewPresenter implements Presenter {
                 OverviewPresenter.this.generateBarChartData(currentCategorySpinnerChoice);
             }
         };
-//        transactionListByMonth.addChangeListener(transactionListByMonthListener);
-        transactionListByCategoryListener = new RealmChangeListener() {
+//        expenseListByMonth.addChangeListener(expenseListByMonthListener);
+        expenseListByCategoryListener = new RealmChangeListener() {
             @Override
             public void onChange() {
                 OverviewPresenter.this.setCategorySpinner();
                 OverviewPresenter.this.generateBarChartData(currentCategorySpinnerChoice);
             }
         };
-//        transactionListByCategory.addChangeListener(transactionListByCategoryListener);
+//        expenseListByCategory.addChangeListener(expenseListByCategoryListener);
         realm.addChangeListener(realmChangeListener);
     }
 
     @Override
     public void pause() {
-        transactionListByMonth.removeChangeListener(transactionListByMonthListener);
-        transactionListByCategory.removeChangeListener(transactionListByCategoryListener);
+        expenseListByMonth.removeChangeListener(expenseListByMonthListener);
+        expenseListByCategory.removeChangeListener(expenseListByCategoryListener);
     }
 
     @Override
@@ -109,6 +136,7 @@ public class OverviewPresenter implements Presenter {
      * Initializes the presenter by retrieving the monthly transaction list.
      */
     public void initialize() {
+
         this.loadTransactionList();
     }
 
@@ -117,6 +145,8 @@ public class OverviewPresenter implements Presenter {
      */
     private void loadTransactionList() {
         this.showViewLoading();
+        this.getMonthIncomeList(null);
+        this.calculateTotalMonthIncome();
         this.getMonthlyOverallTransactionList(null);
         this.setTimeframeSpinner();
         this.setCategorySpinner();
@@ -149,6 +179,31 @@ public class OverviewPresenter implements Presenter {
         this.viewOverView.setCategoryBarChartData(data);
     }
 
+    private void getMonthIncomeList(Calendar setCal) {
+        Calendar cal = Calendar.getInstance();
+        if (setCal == null) {
+            cal.setTime(new Date());
+        } else {
+            cal.setTime(setCal.getTime());
+        }
+
+        // get data from db depending on date
+        incomeListByMonth = realm.where(TransactionModel.class)
+                .equalTo("transactionType", CreateTransactionActivity.TRANSACTION_TYPE_INCOME)
+                .equalTo("month", cal.get(Calendar.MONTH))
+                .equalTo("year", cal.get(Calendar.YEAR))
+                .findAll();
+    }
+
+    private void calculateTotalMonthIncome() {
+        double totalIncome = 0;
+        for (TransactionModel income : incomeListByMonth) {
+            totalIncome += income.getPrice();
+        }
+
+        this.viewOverView.setMonthIncome(totalIncome);
+    }
+
     private void getMonthlyOverallTransactionList(Calendar setCal) {
         Calendar cal = Calendar.getInstance();
         if (setCal == null) {
@@ -158,7 +213,7 @@ public class OverviewPresenter implements Presenter {
         }
 
         // get data from db depending on date
-        transactionListByMonth = realm.where(TransactionModel.class)
+        expenseListByMonth = realm.where(TransactionModel.class)
                 .equalTo("transactionType", CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)
                 .equalTo("month", cal.get(Calendar.MONTH))
                 .equalTo("year", cal.get(Calendar.YEAR))
@@ -169,7 +224,7 @@ public class OverviewPresenter implements Presenter {
 
     private void setTimeframeSpinner() {
         ArrayList<String> values = new ArrayList<>();
-        if (transactionListByMonth.size() != 0) {
+        if (expenseListByMonth.size() != 0) {
             values.add("This month");
         }
         Calendar cal = Calendar.getInstance();
@@ -221,8 +276,8 @@ public class OverviewPresenter implements Presenter {
 
 
 
-        // Build categoryNames array from transactionListByMonth RealmResult
-        for (TransactionModel transaction : transactionListByMonth) {
+        // Build categoryNames array from expenseListByMonth RealmResult
+        for (TransactionModel transaction : expenseListByMonth) {
             String name = transaction.getCategory().getName();
             if (!categoryNames.contains(name)) {
                 categoryNames.add(name);
@@ -232,8 +287,8 @@ public class OverviewPresenter implements Presenter {
         // Create new array for totals per category with same size as categoryNames
         double[] totalsPerCategory = new double[categoryNames.size()];
 
-        // calculate total per category by iterating again through transactionListByMonth
-        for (TransactionModel transaction : transactionListByMonth) {
+        // calculate total per category by iterating again through expenseListByMonth
+        for (TransactionModel transaction : expenseListByMonth) {
             String category = transaction.getCategory().getName();
             // Get category position in categoryNames ArrayList
             position = categoryNames.indexOf(category);
@@ -269,6 +324,7 @@ public class OverviewPresenter implements Presenter {
         PieData pieData = new PieData(categoryNames, dataSet);
         pieData.setDrawValues(false);
 
+        this.viewOverView.setMonthExpenses(totalSpent);
         this.renderMonthlyPieChart(pieData, totalSpent);
     }
 
@@ -289,12 +345,12 @@ public class OverviewPresenter implements Presenter {
         sixMonthAgo.add(Calendar.MONTH, -5);
         sixMonthAgo.set(Calendar.DAY_OF_MONTH, 1);
 
-        transactionListByCategory = realm.where(TransactionModel.class)
+        expenseListByCategory = realm.where(TransactionModel.class)
                                                     .equalTo("category.name", categoryName)
                                                     .between("date", sixMonthAgo.getTime(), today.getTime())
                                                     .findAll();
 
-        if (transactionListByCategory.size() == 0) {
+        if (expenseListByCategory.size() == 0) {
             this.renderCategoryBarChart(null);
         } else {
             // create months array
@@ -307,7 +363,7 @@ public class OverviewPresenter implements Presenter {
             // fill yTotals by adding transaction price to total per month
             double[] yTotals = new double[xVals.size()];
             Calendar cal2 = Calendar.getInstance();
-            for (TransactionModel transaction : transactionListByCategory) {
+            for (TransactionModel transaction : expenseListByCategory) {
                 cal2.setTime(transaction.getDate());
                 String monthName = CustomDateFormatter.getShortMonthName(cal2.get(Calendar.MONTH));
 

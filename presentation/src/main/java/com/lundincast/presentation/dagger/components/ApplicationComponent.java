@@ -30,6 +30,7 @@ public interface ApplicationComponent {
     void inject(AccountListActivity accountListActivity);
     void inject(SettingsFragment settingsFragment);
 
+
     //Exposed to sub-graphs.
     Context context();
     SharedPreferences sharedPreferences();

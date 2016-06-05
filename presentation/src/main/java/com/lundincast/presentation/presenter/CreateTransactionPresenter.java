@@ -2,6 +2,7 @@ package com.lundincast.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.lundincast.presentation.data.AccountRepository;
 import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
@@ -24,10 +25,12 @@ public class CreateTransactionPresenter implements Presenter {
     private TransactionDetailsView viewDetailsView;
 
     private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
     private final Realm realm;
 
     private int mTransactionId = -1;
     private String mTransactionType;
+    private double previousPrice = -1;
     private double mPrice = 0;
     private CategoryModel mCategory = null;
     private Date mDate = new Date();
@@ -38,8 +41,10 @@ public class CreateTransactionPresenter implements Presenter {
     private String mDueName;
 
     @Inject
-    public CreateTransactionPresenter(TransactionRepository transactionRepository) {
+    public CreateTransactionPresenter(TransactionRepository transactionRepository,
+                                      AccountRepository accountRepository) {
         this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
         this.realm = Realm.getDefaultInstance();
     }
 
@@ -69,6 +74,7 @@ public class CreateTransactionPresenter implements Presenter {
                     realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst();
             this.mTransactionType = transactionModel.getTransactionType();
             this.mPrice = transactionModel.getPrice();
+            this.previousPrice = mPrice;
             this.mCategory = transactionModel.getCategory();
             this.mDate = transactionModel.getDate();
             this.mComment = transactionModel.getComment();
@@ -105,10 +111,32 @@ public class CreateTransactionPresenter implements Presenter {
         transaction.setDueToOrBy(mDueToOrBy);
         transaction.setDueName(mDueName);
         this.transactionRepository.saveTransaction(transaction);
+
+        // Update account balance with transaction value if necessary
+        double delta;
+        if (previousPrice == -1) {
+            delta = mPrice;
+        } else {
+            delta = mPrice - previousPrice;
+        }
+        if (previousPrice - mPrice != 0) {
+            if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
+            } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+                this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), delta);
+            }
+        }
     }
 
     public void deleteTransaction(int transactionId) {
         this.transactionRepository.deleteTransaction(transactionId);
+        // remove transaction value from account balance
+        TransactionModel transaction = realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst();
+        if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+            this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), transaction.getPrice());
+        } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+            this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -transaction.getPrice());
+        }
     }
 
     public String getmTransactionType() {

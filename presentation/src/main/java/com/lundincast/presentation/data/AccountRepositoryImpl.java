@@ -3,6 +3,7 @@ package com.lundincast.presentation.data;
 import com.lundincast.presentation.dagger.PerActivity;
 import com.lundincast.presentation.data.datasource.AccountDataStore;
 import com.lundincast.presentation.model.AccountModel;
+import com.lundincast.presentation.model.TransactionModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,5 +47,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public void deleteAccount(long accountId) {
         this.accountDataStore.deleteAccount(accountId);
+    }
+
+    @Override
+    public void updateAccountBalance(final long accountId, final double delta) {
+        this.accountDataStore.updateAccountBalance(accountId, delta);
     }
 }

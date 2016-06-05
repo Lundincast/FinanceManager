@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp" >
+
+    <ImageView
+        android:id="@+id/iv_category_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circle"
+        android:layout_margin="9dp"
+        android:padding="10dp"
+        android:contentDescription="@string/category_color" />
+
+    <EditText
+        android:id="@+id/et_category_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/iv_category_icon"
+        android:layout_toRightOf="@+id/iv_category_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:inputType="text"
+        android:hint="@string/enter_name"
+        android:layout_alignLeft="@+id/et_account_balance_value"
+        android:layout_alignStart="@+id/et_account_balance_value" />
+
+    <TextView
+        android:id="@+id/tv_account_balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_category_icon"
+        android:text="@string/initial_balance"
+        android:textColor="@color/black"
+        android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/et_account_balance_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_category_name"
+        android:layout_toLeftOf="@+id/tv_account_balance_currency"
+        android:hint="0,00"
+        android:layout_toRightOf="@+id/tv_account_balance_label"
+        android:layout_toEndOf="@+id/tv_account_balance_label"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"/>
+
+    <TextView
+        android:id="@+id/tv_account_balance_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_category_name"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="€"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:layout_alignBottom="@+id/et_account_balance_value"
+        android:gravity="center_vertical" />
+
+</RelativeLayout>

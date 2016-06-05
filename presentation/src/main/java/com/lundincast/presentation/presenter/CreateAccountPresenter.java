@@ -1,5 +1,6 @@
 package com.lundincast.presentation.presenter;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -26,13 +27,16 @@ public class CreateAccountPresenter implements Presenter {
 
     private Realm realm;
 
+    private SharedPreferences sharedPreferences;
     private final AccountRepository accountRepository;
     private CreateOrUpdateAccountFragment viewListView;
 
     private AccountModel accountModel;
+    private String currencySymbol;
 
     @Inject
-    public CreateAccountPresenter(AccountRepository accountRepository) {
+    public CreateAccountPresenter(SharedPreferences sharedPreferences, AccountRepository accountRepository) {
+        this.sharedPreferences = sharedPreferences;
         this.accountRepository = accountRepository;
         this.realm = Realm.getDefaultInstance();
     }
@@ -47,15 +51,26 @@ public class CreateAccountPresenter implements Presenter {
     }
 
     public void initialize(long accountId) {
+        // get currency setting from SharedPreferences
+        String currencyPref = sharedPreferences.getString("pref_key_currency", "1");
+        if (currencyPref.equals("2")) {
+            this.currencySymbol = " $";
+        } else if (currencyPref.equals("3")) {
+            this.currencySymbol = " £";
+        } else {
+            this.currencySymbol = " €";
+        }
+        // set default values
         if (accountId != -1) {
             // Toolbar title by default is "New category". Set to "Edit account" in this case.
-            viewListView.setToolbarTitle(R.string.edit_category);
+            viewListView.setToolbarTitle(R.string.edit_account);
             // set account name
             accountModel = realm.where(AccountModel.class).equalTo("id", accountId).findFirst();
             viewListView.setName(accountModel.getName());
             // set color in parent activity (due to library limitation) and in fragment
             ((CreateOrUpdateAccountActivity) viewListView.getActivity()).color = accountModel.getColor();
             viewListView.setColor(accountModel.getColor());
+            viewListView.setBalance(accountModel.getBalance());
             // Display delete icon since it's an existing account
             viewListView.showDeleteIcon();
         } else {
@@ -86,6 +101,7 @@ public class CreateAccountPresenter implements Presenter {
 //                                                              .equalTo("account.name", this.accountModel.getName())
 //                                                              .findAll();
 
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         ArrayList<TransactionModel> transactionList = new ArrayList<>();
         String contentText;
         if (transactionList.size() != 0) {
@@ -121,12 +137,13 @@ public class CreateAccountPresenter implements Presenter {
         this.viewListView.showDialog(builder);
     }
 
-    public void saveAccount(Long accountId, String accountName, int accountColor) {
+    public void saveAccount(Long accountId, String accountName, int accountColor, double balance) {
         if (!accountName.equals("")) {
             AccountModel accountModel = new AccountModel();
             accountModel.setId(accountId);
             accountModel.setName(accountName);
             accountModel.setColor(accountColor);
+            accountModel.setBalance(balance);
             this.accountRepository.saveAccount(accountModel);
         }
     }

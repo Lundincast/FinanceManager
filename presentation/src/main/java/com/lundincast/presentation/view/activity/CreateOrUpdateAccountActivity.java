@@ -89,6 +89,7 @@ public class CreateOrUpdateAccountActivity extends BaseActivity implements HasCo
 
     private void initializeInjector() {
         this.accountComponent = DaggerAccountComponent.builder()
+                .applicationComponent(getApplicationComponent())
                 .accountModule(new AccountModule())
                 .build();
     }

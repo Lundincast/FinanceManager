@@ -3,6 +3,7 @@ package com.lundincast.presentation.dagger.modules;
 import com.lundincast.domain.interactor.GetTransactionList;
 import com.lundincast.domain.interactor.UseCase;
 import com.lundincast.presentation.dagger.PerActivity;
+import com.lundincast.presentation.data.AccountRepository;
 import com.lundincast.presentation.data.TransactionRepository;
 import com.lundincast.presentation.data.TransactionRepositoryImpl;
 import com.lundincast.presentation.data.datasource.DiskTransactionDataStore;
@@ -46,7 +47,7 @@ public class TransactionModule {
 
     @Provides @PerActivity
     CreateTransactionPresenter provideCreateTransactionPresenter(
-            TransactionRepository transactionRepository) {
-        return new CreateTransactionPresenter(transactionRepository);
+            TransactionRepository transactionRepository, AccountRepository accountRepository) {
+        return new CreateTransactionPresenter(transactionRepository, accountRepository);
     }
 }

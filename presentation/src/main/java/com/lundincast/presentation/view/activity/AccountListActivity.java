@@ -62,6 +62,7 @@ public class AccountListActivity extends BaseActivity implements HasComponent<Ac
     private void initializeInjector() {
         this.getApplicationComponent().inject(this);
         this.accountComponent = DaggerAccountComponent.builder()
+                .applicationComponent(getApplicationComponent())
                 .accountModule(new AccountModule())
                 .build();
     }

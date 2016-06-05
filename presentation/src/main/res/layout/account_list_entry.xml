@@ -41,6 +41,6 @@
         android:layout_alignBottom="@+id/tv_account_balance_label"
         android:layout_alignBaseline="@+id/tv_account_balance_label"
         android:gravity="center_vertical"
-        android:textSize="20sp" />
+        android:textSize="17sp" />
 
 </RelativeLayout>

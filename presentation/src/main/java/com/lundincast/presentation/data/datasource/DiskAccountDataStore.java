@@ -1,6 +1,8 @@
 package com.lundincast.presentation.data.datasource;
 
 import com.lundincast.presentation.model.AccountModel;
+import com.lundincast.presentation.model.TransactionModel;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +46,7 @@ public class DiskAccountDataStore implements AccountDataStore {
                 }
                 account.setName(accountModel.getName());
                 account.setColor(accountModel.getColor());
-                // TODO set balance
+                account.setBalance(accountModel.getBalance());
                 realm.copyToRealmOrUpdate(account);
             }
         }, null);
@@ -60,5 +62,20 @@ public class DiskAccountDataStore implements AccountDataStore {
                 account.removeFromRealm();
             }
         }, null);
+    }
+
+    @Override
+    public void updateAccountBalance(final long accountId, final double delta) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                AccountModel account = realm.where(AccountModel.class)
+                                            .equalTo("id", accountId)
+                                            .findFirst();
+                double balance = account.getBalance();
+                balance += delta;
+                account.setBalance(balance);
+            }
+        });
     }
 }

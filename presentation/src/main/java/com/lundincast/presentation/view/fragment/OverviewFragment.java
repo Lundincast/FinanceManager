@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -58,6 +59,8 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     @Inject OverviewPresenter overviewPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
+    @Bind(R.id.tv_total_income) TextView tv_total_income;
+    @Bind(R.id.tv_total_expenses) TextView tv_total_expenses;
     @Bind(R.id.piechart_monthly_distribution) PieChart piechart_monthly;
     @Bind(R.id.sp_distribution_timeframe) Spinner sp_distribution_timeframe;
     @Bind(R.id.ll_barchart_loading) LinearLayout ll_barchart_loading;
@@ -85,7 +88,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         piechart_monthly.setDrawSliceText(false);
         // Set center text properties
         piechart_monthly.setCenterTextColor(Color.DKGRAY);
-        piechart_monthly.setCenterTextSize(30f);
+        piechart_monthly.setCenterTextSize(25f);
         piechart_monthly.setDrawCenterText(true);
         // Disable legend
         Legend l = piechart_monthly.getLegend();
@@ -104,10 +107,14 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
         YAxis leftAxis = barchart_category_history.getAxisLeft();
         leftAxis.setSpaceBottom(0);
+        leftAxis.setLabelCount(4, true);
+        leftAxis.setDrawAxisLine(false);
+        leftAxis.setDrawGridLines(true);
 
         YAxis rightAxis = barchart_category_history.getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setDrawLabels(false);
+        rightAxis.setDrawAxisLine(false);
 
         Legend leg = barchart_category_history.getLegend();
         leg.setEnabled(false);
@@ -182,6 +189,17 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     private void initialize() {
         this.getComponent(TransactionComponent.class).inject(this);
         this.overviewPresenter.setView(this);
+        this.overviewPresenter.setCurrency(((MainActivity) getActivity()).sharedPreferences);
+    }
+
+    @Override
+    public void setMonthIncome(double totalMonthIncome) {
+        tv_total_income.setText(String.valueOf(String.format("%.2f", totalMonthIncome)) + " " + overviewPresenter.currencySymbol);
+    }
+
+    @Override
+    public void setMonthExpenses(double totalMonthExpenses) {
+        tv_total_expenses.setText(String.valueOf(String.format("%.2f", totalMonthExpenses)) + " " + overviewPresenter.currencySymbol);
     }
 
     @Override
@@ -202,23 +220,12 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
 
     private void setPieChartCenterText(String category, double priceValue, double percent) {
         if (priceValue != 0) {
-            String currencyPref = ((MainActivity) getActivity()).sharedPreferences.getString("pref_key_currency", "1");
-            String currencySymbol;
-            switch (currencyPref) {
-                case "1":
-                    currencySymbol = "€";
-                    break;
-                case "2":
-                    currencySymbol = "$";
-                    break;
-                default:
-                    currencySymbol = "£";
-                    break;
-            }
             if (category == null) {
                 category = "TOTAL";
             }
-            SpannableString centerText = new SpannableString(category.toUpperCase() + "\n" + String.format("%.2f", priceValue) + " " + currencySymbol);
+            SpannableString centerText = new SpannableString(category.toUpperCase() +
+                                                             "\n" + String.format("%.2f", priceValue) +
+                                                             " " + overviewPresenter.currencySymbol);
             centerText.setSpan(new RelativeSizeSpan(0.5f), 0, category.length(), 0);
             if (percent != 0) {
                 SpannableString percentLine = new SpannableString(String.format("%.2f", percent) + " %");

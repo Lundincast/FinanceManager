@@ -1,6 +1,7 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -35,19 +36,22 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
 
     @Bind(R.id.iv_category_icon) ImageView iv_account_icon;
     @Bind(R.id.et_category_name) EditText et_account_name;
+    @Bind(R.id.tv_account_balance_label) TextView tv_account_balance_label;
+    @Bind(R.id.et_account_balance_value) EditText et_account_balance_value;
+    @Bind(R.id.tv_account_balance_currency) TextView tv_account_balance_currency;
     // View in activity can't be accessed from fragment
     ImageView iv_delete;
     ImageView iv_done;
 
-    @Inject
-    CreateAccountPresenter createAccountPresenter;
+    @Inject CreateAccountPresenter createAccountPresenter;
+    @Inject SharedPreferences sharedPreferences;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_create_or_update_category, container, false);
+        return inflater.inflate(R.layout.fragment_create_or_update_account, container, false);
     }
 
     @Override
@@ -79,8 +83,9 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
                 } else {
                     CreateOrUpdateAccountFragment.this.createAccountPresenter
                             .saveAccount(((CreateOrUpdateAccountActivity) getActivity()).accountId,
-                                    et_account_name.getText().toString(),
-                                    ((CreateOrUpdateAccountActivity) getActivity()).color);
+                                         et_account_name.getText().toString(),
+                                         ((CreateOrUpdateAccountActivity) getActivity()).color,
+                                         Double.valueOf(et_account_balance_value.getText().toString()));
                     ((CreateOrUpdateAccountActivity) getActivity()).finish();
                 }
             }
@@ -115,6 +120,16 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
         LayerDrawable bgDrawable = (LayerDrawable) iv_account_icon.getBackground();
         GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
         shape.setColor(color);
+    }
+
+    @Override
+    public void setBalance(double balance) {
+        et_account_balance_value.setText((String.format("%.2f", balance)));
+    }
+
+    @Override
+    public void setCurrency(String currency) {
+        tv_account_balance_currency.setText(currency);
     }
 
     @Override

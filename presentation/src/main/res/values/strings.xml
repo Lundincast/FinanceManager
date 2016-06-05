@@ -57,5 +57,8 @@
     <string name="account_color">Account color</string>
     <string name="transaction_color">Transaction color</string>
     <string name="current_balance">Current balance</string>
+    <string name="income">Income</string>
+    <string name="expenses">Expenses</string>
+    <string name="initial_balance">Initial balance:</string>
 
 </resources>

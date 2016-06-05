@@ -12,6 +12,16 @@ import java.util.ArrayList;
 public interface OverviewView extends LoadDataView {
 
     /**
+     * Set total income in monthly overview
+     */
+    void setMonthIncome(double totalMonthIncome);
+
+    /**
+     * Set total expenses in monthly overview
+     */
+    void setMonthExpenses(double totalMonthExpenses);
+
+    /**
      * Set data to Monthly PieChart for rendering
      */
     void setMonthlyPieChartData(PieData pieData, String category, double monthlyTotal, double percent);
