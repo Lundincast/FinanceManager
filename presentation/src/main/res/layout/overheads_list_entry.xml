@@ -14,7 +14,7 @@
         android:background="@drawable/circle" />
 
     <TextView
-        android:id="@+id/tv_category_name"
+        android:id="@+id/et_category_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/iv_overheads_category"
@@ -25,7 +25,7 @@
         android:id="@+id/tv_overheads_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_category_name"
+        android:layout_below="@id/et_category_name"
         android:layout_toRightOf="@id/iv_overheads_category"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"

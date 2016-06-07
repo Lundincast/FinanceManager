@@ -133,20 +133,21 @@ public class TransactionListPresenter implements Presenter {
         showTransactionsCollectionInView(filteredTransactionList);
     }
 
-    public void buildCategoryAdapterForFilterDialog() {
-        ArrayList<String> categoryNameList= new ArrayList<>();
-        RealmResults<CategoryModel> categoryModels = realm.where(CategoryModel.class).findAll();
-        // Add manually the "all" option so that user can come back to all transactions
+    public void getCategoryListForFilterDialog() {
+        ArrayList<CategoryModel> categoryNameList= new ArrayList<>();
+        final RealmResults<CategoryModel> categoryModels = realm.where(CategoryModel.class).findAll();
+        // Add manually a "fake" CategoryModel object as the "all" option
+        // so that user can come back to all transactions
         allWordString = ((TransactionListFragment)viewListView).getResources().getString(R.string.all);
-        categoryNameList.add(allWordString);
+        CategoryModel allCategory = new CategoryModel();
+        allCategory.setName(allWordString);
+        allCategory.setColor(0);
+        categoryNameList.add(allCategory);
         for (CategoryModel categoryModel : categoryModels) {
-            categoryNameList.add(categoryModel.getName());
+            categoryNameList.add(categoryModel);
         }
 
-        this.viewListView.showFilterTransactionDialog(new ArrayAdapter<>(
-                                                ((TransactionListFragment)viewListView).getActivity(),
-                                                R.layout.dialog_list_entry,
-                                                categoryNameList));
+        this.viewListView.showFilterTransactionDialog(categoryNameList);
     }
 
 }

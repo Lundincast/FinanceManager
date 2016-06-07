@@ -60,5 +60,14 @@
     <string name="income">Income</string>
     <string name="expenses">Expenses</string>
     <string name="initial_balance">Initial balance:</string>
+    <string name="category_color_circle">Category color circle</string>
+    <string name="calendar_icon">Calendar icon</string>
+    <string name="time_icon">Time icon</string>
+    <string name="comment_icon">Comment icon</string>
+    <string name="_0_00">0,00</string>
+    <string name="account_icon">Account icon</string>
+    <string name="delete_last_icon">Delete last icon</string>
+    <string name="unassigned">Unassigned</string>
+    <string name="full_list_icon">Full list icon</string>
 
 </resources>

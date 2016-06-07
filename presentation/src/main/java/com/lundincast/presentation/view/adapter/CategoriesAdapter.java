@@ -1,7 +1,6 @@
 package com.lundincast.presentation.view.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v7.widget.RecyclerView;
@@ -101,7 +100,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.iv_category_icon) ImageView iv_category_icon;
-        @Bind(R.id.tv_category_name) TextView tv_category_name;
+        @Bind(R.id.et_category_name) TextView tv_category_name;
 
         public CategoryViewHolder(View itemView) {
             super(itemView);

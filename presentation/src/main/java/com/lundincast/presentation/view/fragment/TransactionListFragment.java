@@ -11,29 +11,36 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.TransactionComponent;
+import com.lundincast.presentation.model.AccountModel;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 import com.lundincast.presentation.presenter.TransactionListPresenter;
 import com.lundincast.presentation.view.TransactionListView;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.view.activity.MainActivity;
+import com.lundincast.presentation.view.adapter.AccountListDialogAdapter;
+import com.lundincast.presentation.view.adapter.CategoryListDialogAdapter;
 import com.lundincast.presentation.view.adapter.TransactionsAdapter;
 import com.lundincast.presentation.view.adapter.TransactionsLayoutManager;
 import com.lundincast.presentation.view.utilities.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.RealmObject;
 
 /**
  * A {@link Fragment} subclass for "List" tab in Main Activity
@@ -96,7 +103,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if (key.equals("pref_key_currency")) {
-                    TransactionListFragment.this.transactionsAdapter.setCurrencyPref(getActivity());
+                    TransactionListFragment.this.transactionsAdapter.setCurrencySymbol(getActivity());
                     TransactionListFragment.this.transactionsAdapter.notifyDataSetChanged();
                 }
             }
@@ -177,7 +184,7 @@ public class TransactionListFragment extends BaseFragment implements Transaction
                 @Override
                 public void onClick(View v) {
                     if (TransactionListFragment.this.transactionListPresenter != null) {
-                        TransactionListFragment.this.transactionListPresenter.buildCategoryAdapterForFilterDialog();
+                        TransactionListFragment.this.transactionListPresenter.getCategoryListForFilterDialog();
                     }
                 }
             });
@@ -218,15 +225,16 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         this.transactionListPresenter.initialize();
     }
 
-    public void showFilterTransactionDialog(ListAdapter adapter) {
+    public void showFilterTransactionDialog(List<CategoryModel> list) {
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.filter_by_category)
                 .titleColorRes(R.color.colorPrimary)
-                .adapter(adapter, new MaterialDialog.ListCallback() {
+                .adapter(new CategoryListDialogAdapter(getActivity(), list), new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                         if (TransactionListFragment.this.transactionListPresenter != null) {
-                            TransactionListFragment.this.transactionListPresenter.filterListByCategory(text);
+                            TextView tv_category_name = (TextView) itemView.findViewById(R.id.et_category_name);
+                            TransactionListFragment.this.transactionListPresenter.filterListByCategory(tv_category_name.getText());
                         }
                         dialog.dismiss();
                     }

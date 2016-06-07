@@ -1,5 +1,7 @@
 package com.lundincast.presentation.view;
 
+import android.support.annotation.StringRes;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
 /**
@@ -13,7 +15,7 @@ public interface CreateOrUpdateView {
      *
      * @param title The title that will be displayed.
      */
-    void setToolbarTitle(int title);
+    void setToolbarTitle(@StringRes int title);
 
     /**
      * Display name (of a Category or an Account for example)
@@ -28,6 +30,13 @@ public interface CreateOrUpdateView {
      * @param color The color that will be displayed.
      */
     void setColor(int color);
+
+    /**
+     * Display balance label text
+     *
+     * @param stringResource The string resource that will be displayed.
+     */
+    void setBalanceLabel(@StringRes int stringResource);
 
     /**
      * Display balance

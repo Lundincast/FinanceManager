@@ -167,7 +167,8 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:clickable="true"
-            android:onClick="priceBackListener" />
+            android:onClick="priceBackListener"
+            android:contentDescription="@string/delete_last_icon" />
 
     </LinearLayout>
 

@@ -18,10 +18,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 import com.lundincast.presentation.utils.CustomDateFormatter;
+import com.lundincast.presentation.view.adapter.AccountListDialogAdapter;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -32,6 +35,8 @@ import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for showing transaction details
@@ -40,9 +45,10 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
                                                                         TimePickerDialog.OnTimeSetListener {
 
     @Bind(R.id.iv_category_icon) ImageView iv_category_icon;
-    @Bind(R.id.tv_category_name) TextView tv_category_name;
-    @Bind(R.id.tv_transaction_date) TextView tv_transaction_date;
-    @Bind(R.id.tv_transaction_time) TextView tv_transaction_time;
+    @Bind(R.id.et_category_name) TextView et_category_name;
+    @Bind(R.id.et_transaction_date) TextView et_transaction_date;
+    @Bind(R.id.et_transaction_time) TextView et_transaction_time;
+    @Bind(R.id.et_account_name) EditText et_account_name;
     @Bind(R.id.et_transaction_comment) EditText et_transaction_comment;
     @Bind(R.id.cb_due) CheckBox cb_due;
     @Bind(R.id.sp_due_by_to) Spinner sp_due_by_to;
@@ -71,17 +77,26 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
         shape.setColor(color);
         // Set category name
-        tv_category_name.setText(category.getName());
+        et_category_name.setText(category.getName());
 
         // Set date and time as in activity's presenter
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+        }
+
+        // Set account as in activity's presenter
+        AccountModel account = ((CreateTransactionActivity) getActivity()).getAccount();
+        // Set account name
+        if (account != null) {
+            et_account_name.setText(account.getName());
+        } else {
+            et_account_name.setText(R.string.unassigned);
         }
 
         // Set comment as in activity's presenter
@@ -158,12 +173,12 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
 
     }
 
-    @OnClick(R.id.tv_category_name)
+    @OnClick(R.id.et_category_name)
     void onCategoryClicked() {
         ((CreateTransactionActivity) getActivity()).onCategoryClickedInDetails();
     }
 
-    @OnClick(R.id.tv_transaction_date)
+    @OnClick(R.id.et_transaction_date)
     void onDateClicked() {
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
@@ -177,7 +192,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         dpd.show(getFragmentManager(), "Datepickerdialog");
     }
 
-    @OnClick(R.id.tv_transaction_time)
+    @OnClick(R.id.et_transaction_time)
     void onTimeClicked() {
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
@@ -191,6 +206,24 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         tpd.show(getFragmentManager(), "TimepickerDialog");
     }
 
+    @OnClick(R.id.et_account_name)
+    void onAccountClicked() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<AccountModel> result = realm.where(AccountModel.class).findAll();
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.choose_account)
+                .adapter(new AccountListDialogAdapter(getActivity(), result),
+                        new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                dialog.dismiss();
+                                TransactionDetailsFragment.this.onAccountSet(itemView);
+                            }
+                        })
+                .show();
+    }
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = Calendar.getInstance();
@@ -201,7 +234,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         // assign selected date to mDate variable in parent activity
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // format date and display
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
     }
 
     @Override
@@ -215,9 +248,15 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // Display time on screen
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
         }
+    }
+
+    private void onAccountSet(View itemView) {
+        TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
+        this.et_account_name.setText(accountNameTv.getText());
+        ((CreateTransactionActivity) getActivity()).onAccountSet((String) accountNameTv.getText());
     }
 }

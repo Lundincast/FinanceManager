@@ -48,6 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toRightOf="@+id/tv_colored_stripe_income"
+                    android:layout_toEndOf="@+id/tv_colored_stripe_income"
                     android:padding="10dp"
                     android:text="@string/income"
                     android:textColor="@color/black" />
@@ -81,6 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/tv_colored_stripe_expense"
+                    android:layout_toEndOf="@+id/tv_colored_stripe_expense"
                     android:padding="10dp"
                     android:text="@string/expenses"
                     android:textColor="@color/black" />

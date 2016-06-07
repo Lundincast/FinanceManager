@@ -6,8 +6,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
 import com.lundincast.presentation.dagger.components.AccountComponent;
@@ -23,11 +22,12 @@ import com.lundincast.presentation.presenter.CreateAccountPresenter;
 import com.lundincast.presentation.view.CreateOrUpdateView;
 import com.lundincast.presentation.view.activity.CreateOrUpdateAccountActivity;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for creating new account
@@ -79,14 +79,20 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
             @Override
             public void onClick(View v) {
                 if (et_account_name.getText().toString().equals("")) {
-                    CreateOrUpdateAccountFragment.this.showToastMessage("Category name cannot be empty!");
+                    CreateOrUpdateAccountFragment.this.showToastMessage("Account name cannot be empty!");
                 } else {
+                    double balance;
+                    if (et_account_balance_value.getText().toString().equals("")) {
+                        balance = 0;
+                    } else {
+                        balance = Double.valueOf(et_account_balance_value.getText().toString());
+                    }
                     CreateOrUpdateAccountFragment.this.createAccountPresenter
                             .saveAccount(((CreateOrUpdateAccountActivity) getActivity()).accountId,
                                          et_account_name.getText().toString(),
                                          ((CreateOrUpdateAccountActivity) getActivity()).color,
-                                         Double.valueOf(et_account_balance_value.getText().toString()));
-                    ((CreateOrUpdateAccountActivity) getActivity()).finish();
+                                         balance);
+                    getActivity().finish();
                 }
             }
         });
@@ -103,8 +109,8 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
     }
 
     @Override
-    public void setToolbarTitle(int title) {
-        TextView tv_title = (TextView) ((CreateOrUpdateAccountActivity) getActivity()).findViewById(R.id.tv_title);
+    public void setToolbarTitle(@StringRes int title) {
+        TextView tv_title = (TextView) getActivity().findViewById(R.id.tv_title);
         if (tv_title != null) {
             tv_title.setText(title);
         }
@@ -123,8 +129,13 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
     }
 
     @Override
+    public void setBalanceLabel(@StringRes int stringResource) {
+        tv_account_balance_label.setText(stringResource);
+    }
+
+    @Override
     public void setBalance(double balance) {
-        et_account_balance_value.setText((String.format("%.2f", balance)));
+        et_account_balance_value.setText((String.format(Locale.getDefault(), "%.2f", balance)));
     }
 
     @Override

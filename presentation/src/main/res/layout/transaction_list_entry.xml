@@ -22,7 +22,7 @@
         android:textColor="@color/black" />
 
     <TextView
-        android:id="@+id/tv_transaction_date"
+        android:id="@+id/et_transaction_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/tv_day_of_week"

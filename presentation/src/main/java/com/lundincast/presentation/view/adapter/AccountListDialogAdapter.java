@@ -55,7 +55,7 @@ public class AccountListDialogAdapter extends BaseAdapter {
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
         shape.setColor(color);
 
-        TextView categoryNameTv = (TextView) convertView.findViewById(R.id.tv_category_name);
+        TextView categoryNameTv = (TextView) convertView.findViewById(R.id.et_category_name);
         categoryNameTv.setText(accountList.get(position).getName());
 
         return convertView;

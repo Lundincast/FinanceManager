@@ -32,7 +32,7 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private List<OverheadModel> overheadsCollection;
     private final LayoutInflater layoutInflater;
-    private String currencyPref;
+    private String currencySymbol;
 
     private OnItemClickListener onItemClickListener;
 
@@ -40,7 +40,7 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.validateOverheadsCollection(overheadsCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.overheadsCollection = overheadsCollection;
-        this.setCurrencyPref(context);
+        this.setCurrencySymbol(context);
     }
 
     @Override
@@ -78,18 +78,7 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             dayNbInString = dayOfMonth + "th";
         }
         viewHolder.tv_overheads_recurring_time.setText("On " + dayNbInString + " of month");
-
-        // determine currency from preferences
-        String currency;
-        if (currencyPref.equals("2")) {
-            currency = " $";
-        } else if (currencyPref.equals("3")) {
-            currency = " £";
-        } else {
-            currency = " €";
-        }
-        viewHolder.tv_overheads_price.setText((String.format("%.2f", overheadModel.getPrice())) + currency);
-
+        viewHolder.tv_overheads_price.setText((String.format("%.2f", overheadModel.getPrice())) + this.currencySymbol);
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,16 +115,23 @@ public class OverheadsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public void setCurrencyPref(Context context) {
-        this.currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
+    public void setCurrencySymbol(Context context) {
+        String currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString("pref_key_currency", "1");
+        if (currencyPref.equals("2")) {
+            this.currencySymbol = " $";
+        } else if (currencyPref.equals("3")) {
+            this.currencySymbol = " £";
+        } else {
+            this.currencySymbol = " €";
+        }
     }
 
 
     static class OverheadsViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.iv_overheads_category) ImageView iv_overheads_category;
-        @Bind(R.id.tv_category_name) TextView tv_category_name;
+        @Bind(R.id.et_category_name) TextView tv_category_name;
         @Bind(R.id.tv_overheads_comment) TextView tv_overheads_comment;
         @Bind(R.id.tv_overheads_price) TextView tv_overheads_price;
         @Bind(R.id.tv_overheads_recurring_time) TextView tv_overheads_recurring_time;

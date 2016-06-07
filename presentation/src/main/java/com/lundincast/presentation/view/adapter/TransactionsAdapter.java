@@ -37,7 +37,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private List<TransactionModel> transactionsCollection;
     private final LayoutInflater layoutInflater;
-    private String currencyPref;
+    private String currencySymbol;
 
     private OnItemClickListener onItemClickListener;
 
@@ -45,7 +45,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.validateTransactionsCollection(transactionCollection);
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.transactionsCollection = transactionCollection;
-        this.setCurrencyPref(context);
+        this.setCurrencySymbol(context);
     }
 
     @Override
@@ -80,16 +80,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         viewHolder.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
         viewHolder.tvTransactionDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
         viewHolder.tvTransactionComment.setText(transactionModel.getComment());
-        // determine currency from preferences
-        String currency;
-        if (currencyPref.equals("2")) {
-            currency = " $";
-        } else if (currencyPref.equals("3")) {
-            currency = " £";
-        } else {
-            currency = " €";
-        }
-        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + currency);
+        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + this.currencySymbol);
         // set price color depending if expense or income
         if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
             viewHolder.tvTransactionPrice.setTextColor(Color.RED);
@@ -137,9 +128,16 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public void setCurrencyPref(Context context) {
-        this.currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
+    public void setCurrencySymbol(Context context) {
+        String currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString("pref_key_currency", "1");
+        if (currencyPref.equals("2")) {
+            this.currencySymbol = " $";
+        } else if (currencyPref.equals("3")) {
+            this.currencySymbol = " £";
+        } else {
+            this.currencySymbol = " €";
+        }
     }
 
 
@@ -147,7 +145,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         @Bind(R.id.iv_transaction_category) ImageView ivTransactionCategory;
         @Bind(R.id.tv_day_of_week) TextView tvDayOfWeek;
-        @Bind(R.id.tv_transaction_date) TextView tvTransactionDate;
+        @Bind(R.id.et_transaction_date) TextView tvTransactionDate;
         @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
         @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
         @Bind(R.id.iv_pending_icon) ImageView iv_pending_icon;

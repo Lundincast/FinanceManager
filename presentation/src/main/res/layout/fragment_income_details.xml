@@ -20,29 +20,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignRight="@+id/iv_calendar_icon"
+                android:layout_alignEnd="@+id/iv_calendar_icon"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:layout_above="@+id/iv_calendar_icon"
-                android:src="@drawable/ic_account_balance_black_24dp" />
+                android:src="@drawable/ic_account_balance_black_24dp"
+                android:contentDescription="@string/account_icon" />
 
             <TextView
                 android:id="@+id/tv_account_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="left"
+                android:gravity="start"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:textSize="18sp"
                 android:layout_toRightOf="@+id/iv_calendar_icon"
-                android:layout_toStartOf="@+id/tv_transaction_time"
+                android:layout_toEndOf="@+id/iv_calendar_icon"
+                android:layout_toStartOf="@+id/et_transaction_time"
                 android:layout_alignRight="@+id/et_transaction_comment"
                 android:layout_alignEnd="@+id/et_transaction_comment"
-                android:layout_toLeftOf="@+id/tv_transaction_time"
-                android:text="Current"/>
+                android:layout_toLeftOf="@+id/et_transaction_time" />
 
             <ImageView
                 android:id="@+id/iv_calendar_icon"
@@ -55,10 +57,11 @@
                 android:src="@drawable/ic_event_black_24dp"
                 android:layout_below="@+id/tv_account_name"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:contentDescription="@string/calendar_icon" />
 
             <TextView
-                android:id="@+id/tv_transaction_date"
+                android:id="@+id/et_transaction_date"
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,9 +71,11 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:layout_toRightOf="@+id/iv_comment"
+                android:layout_toEndOf="@+id/iv_comment"
                 android:layout_alignTop="@+id/iv_calendar_icon"
                 android:layout_alignBottom="@+id/iv_time_icon"
-                android:layout_alignRight="@+id/iv_time_icon" />
+                android:layout_alignRight="@+id/iv_time_icon"
+                android:layout_alignEnd="@+id/iv_time_icon" />
 
             <ImageView
                 android:id="@+id/iv_time_icon"
@@ -82,12 +87,14 @@
                 android:paddingRight="15dp"
                 android:src="@drawable/ic_access_time_black_24dp"
                 android:layout_below="@+id/tv_account_name"
-                android:layout_toLeftOf="@+id/tv_transaction_time"
+                android:layout_toLeftOf="@+id/et_transaction_time"
+                android:layout_toStartOf="@+id/et_transaction_time"
                 android:layout_marginRight="48dp"
-                android:layout_marginEnd="48dp" />
+                android:layout_marginEnd="48dp"
+                android:contentDescription="@string/time_icon" />
 
             <TextView
-                android:id="@+id/tv_transaction_time"
+                android:id="@+id/et_transaction_time"
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,7 +119,8 @@
                 android:src="@drawable/ic_sort_black_24dp"
                 android:layout_alignTop="@+id/et_transaction_comment"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:contentDescription="@string/comment_icon" />
 
             <EditText
                 android:id="@+id/et_transaction_comment"
@@ -123,8 +131,9 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:hint="@string/enter_comment"
-                android:layout_below="@+id/tv_transaction_time"
+                android:layout_below="@+id/et_transaction_time"
                 android:layout_toRightOf="@+id/iv_comment"
+                android:layout_toEndOf="@+id/iv_comment"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 

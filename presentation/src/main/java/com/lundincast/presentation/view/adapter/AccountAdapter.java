@@ -3,6 +3,7 @@ package com.lundincast.presentation.view.adapter;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private List<AccountModel> accountCollection;
     private final LayoutInflater layoutInflater;
+    private String currencySymbol;
 
     private OnItemClickListener onItemClickListener;
 
@@ -39,6 +41,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.accountCollection = accountCollection;
+        this.setCurrencySymbol(context);
     }
 
     @Override
@@ -58,10 +61,13 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         // set balance text color and value
         if (accountModel.getBalance() < 0) {
             viewHolder.tv_account_balance.setTextColor(context.getResources().getColor(R.color.Dark_red));
+            viewHolder.tv_currency_symbol.setTextColor(context.getResources().getColor(R.color.Dark_red));
         } else {
             viewHolder.tv_account_balance.setTextColor(context.getResources().getColor(R.color.Dark_green));
+            viewHolder.tv_currency_symbol.setTextColor(context.getResources().getColor(R.color.Dark_green));
         }
         viewHolder.tv_account_balance.setText((String.format("%.2f", accountModel.getBalance())));
+        viewHolder.tv_currency_symbol.setText(this.currencySymbol);
         // get color code from color name
         int color = accountModel.getColor();
         // set circle drawable color
@@ -100,12 +106,25 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public void setCurrencySymbol(Context context) {
+        String currencyPref = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString("pref_key_currency", "1");
+        if (currencyPref.equals("2")) {
+            this.currencySymbol = " $";
+        } else if (currencyPref.equals("3")) {
+            this.currencySymbol = " £";
+        } else {
+            this.currencySymbol = " €";
+        }
+    }
+
 
     static class AccountViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.iv_account_icon) ImageView iv_account_icon;
         @Bind(R.id.tv_account_name) TextView tv_account_name;
         @Bind(R.id.tv_account_balance) TextView tv_account_balance;
+        @Bind(R.id.tv_currency_symbol) TextView tv_currency_symbol;
 
         public AccountViewHolder(View itemView) {
             super(itemView);

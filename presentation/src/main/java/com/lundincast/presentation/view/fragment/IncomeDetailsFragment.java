@@ -1,8 +1,6 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.Fragment;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -39,8 +37,8 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
                                                                    TimePickerDialog.OnTimeSetListener {
 
     @Bind(R.id.tv_account_name) TextView tv_account_name;
-    @Bind(R.id.tv_transaction_date) TextView tv_transaction_date;
-    @Bind(R.id.tv_transaction_time) TextView tv_transaction_time;
+    @Bind(R.id.et_transaction_date) TextView tv_transaction_date;
+    @Bind(R.id.et_transaction_time) TextView tv_transaction_time;
     @Bind(R.id.et_transaction_comment) EditText et_transaction_comment;
 
     @Nullable
@@ -117,7 +115,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
 
     }
 
-    @OnClick(R.id.tv_transaction_date)
+    @OnClick(R.id.et_transaction_date)
     void onDateClicked() {
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
@@ -131,7 +129,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         dpd.show(getFragmentManager(), "Datepickerdialog");
     }
 
-    @OnClick(R.id.tv_transaction_time)
+    @OnClick(R.id.et_transaction_time)
     void onTimeClicked() {
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
@@ -146,7 +144,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
     }
 
     private void onAccountSet(View itemView) {
-        TextView accountNameTv = (TextView) itemView.findViewById(R.id.tv_category_name);
+        TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
         this.tv_account_name.setText(accountNameTv.getText());
         ((CreateTransactionActivity) getActivity()).onAccountSet((String) accountNameTv.getText());
     }

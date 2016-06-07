@@ -2,9 +2,14 @@ package com.lundincast.presentation.view;
 
 import android.widget.ListAdapter;
 
+import com.lundincast.presentation.model.AccountModel;
+import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.TransactionModel;
 
 import java.util.Collection;
+import java.util.List;
+
+import io.realm.RealmObject;
 
 /**
  * Interface representing a View in a model view Presenter (MVP) pattern.
@@ -40,7 +45,7 @@ public interface TransactionListView extends LoadDataView {
     /**
      * Render a dialog to filter a transaction list by category
      *
-     * @param adapter The adapter that provides the list entries
+     * @param list The list that provides the entries
      */
-    void showFilterTransactionDialog(ListAdapter adapter);
+    void showFilterTransactionDialog(List<CategoryModel> list);
 }

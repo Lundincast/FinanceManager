@@ -70,6 +70,7 @@ public class CreateAccountPresenter implements Presenter {
             // set color in parent activity (due to library limitation) and in fragment
             ((CreateOrUpdateAccountActivity) viewListView.getActivity()).color = accountModel.getColor();
             viewListView.setColor(accountModel.getColor());
+            viewListView.setBalanceLabel(R.string.current_balance);
             viewListView.setBalance(accountModel.getBalance());
             // Display delete icon since it's an existing account
             viewListView.showDeleteIcon();
@@ -77,6 +78,7 @@ public class CreateAccountPresenter implements Presenter {
             // set color in parent activity (due to library limitation) and in fragment
             ((CreateOrUpdateAccountActivity) viewListView.getActivity()).color = 0xfff44336;
             viewListView.setColor(((CreateOrUpdateAccountActivity) viewListView.getActivity()).color);
+            viewListView.setBalanceLabel(R.string.initial_balance);
         }
     }
 

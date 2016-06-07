@@ -1,7 +1,6 @@
 package com.lundincast.presentation.view.fragment;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,11 +13,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.lundincast.presentation.R;
@@ -35,7 +32,7 @@ import butterknife.OnClick;
 public class OverheadDetailsFragment  extends BaseFragment {
 
     @Bind(R.id.iv_category_icon) ImageView iv_category_icon;
-    @Bind(R.id.tv_category_name) TextView tv_category_name;
+    @Bind(R.id.et_category_name) TextView tv_category_name;
     @Bind(R.id.tv_on_day) TextView tv_on_day;
     @Bind(R.id.et_overhead_comment) EditText et_overhead_comment;
 
@@ -112,7 +109,7 @@ public class OverheadDetailsFragment  extends BaseFragment {
     }
 
 
-    @OnClick(R.id.tv_category_name)
+    @OnClick(R.id.et_category_name)
     void onCategoryClicked() {
         ((CreateOverheadActivity) getActivity()).onCategoryClickedInDetails();
     }
