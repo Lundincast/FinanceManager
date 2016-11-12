@@ -85,7 +85,14 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
                     if (et_account_balance_value.getText().toString().equals("")) {
                         balance = 0;
                     } else {
-                        balance = Double.valueOf(et_account_balance_value.getText().toString());
+                        String value = et_account_balance_value.getText().toString();
+                        while (value.contains(" ")) {
+                            value = value.replace(" ", "");
+                        }
+                        if (value.contains(",")) {
+                            value = value.replace(",", ".");
+                        }
+                        balance = Double.valueOf(value);
                     }
                     CreateOrUpdateAccountFragment.this.createAccountPresenter
                             .saveAccount(((CreateOrUpdateAccountActivity) getActivity()).accountId,

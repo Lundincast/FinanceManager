@@ -288,10 +288,11 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             // Display dialog to show changelog for new version
             new MaterialDialog.Builder(this)
                     .title(R.string.what_new)
-                    .content(Html.fromHtml("<b>Version 0.7.1<b><br />" +
+                    .content(Html.fromHtml("<b>Version 1.0.0-RC1<b><br />" +
                             "<br />" +
-                            "<b>1. NEW:</b> Manage repeating expenses (overheads).<br />" +
-                            "<b>2. FIX:</b> Delete icon was displayed in create new transaction."))
+                            "<b>1. NEW:</b> Manage your incomes.<br />" +
+                            "<b>2. NEW:</b> create accounts and assign expenses/incomes to these with automatic balance." +
+                            "<b>3. FIX:</b> Minor bug fixes."))
                     .positiveText(R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
