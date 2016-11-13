@@ -285,14 +285,36 @@ public class MainActivity extends BaseActivity implements HasComponent<Transacti
             });
         } else if (currentVersionCode > savedVersionCode) {
             // This is an upgrade
+
+            // TODO can remove from version 8
+            if (currentVersionCode == 7) {
+                Realm realm = Realm.getDefaultInstance();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        // Create default accounts
+                        AccountModel current = realm.createObject(AccountModel.class);
+                        current.setId(1);
+                        current.setName("Current");
+                        current.setColor(-769226);
+                        current.setBalance(0);
+                        AccountModel savings = realm.createObject(AccountModel.class);
+                        savings.setId(2);
+                        savings.setName("Savings");
+                        savings.setColor(-7617718);
+                        savings.setBalance(0);
+                    }
+                });
+            }
+
             // Display dialog to show changelog for new version
             new MaterialDialog.Builder(this)
                     .title(R.string.what_new)
-                    .content(Html.fromHtml("<b>Version 1.0.0-RC1<b><br />" +
+                    .content(Html.fromHtml("<b>Version 1.0.0-RC2<b><br />" +
                             "<br />" +
-                            "<b>1. NEW:</b> Manage your incomes.<br />" +
-                            "<b>2. NEW:</b> create accounts and assign expenses/incomes to these with automatic balance." +
-                            "<b>3. FIX:</b> Minor bug fixes."))
+                            "<b><font color='black'>1. NEW:</font></b> Manage your incomes.<br />" +
+                            "<b><font color='black'>2. NEW:</font></b> create accounts and assign expenses/incomes to these with automatic balance.<br />" +
+                            "<b><font color='black'>3. FIX:</font></b> Minor bug fixes."))
                     .positiveText(R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

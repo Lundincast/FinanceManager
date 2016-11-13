@@ -68,7 +68,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             color = categoryModel.getColor();
         } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
             AccountModel accountModel = transactionModel.getFromAccount();
-            color = accountModel.getColor();
+            if (accountModel != null) {
+                color = accountModel.getColor();
+            }
         }
         // set circle drawable color
         LayerDrawable bgDrawable = (LayerDrawable) viewHolder.ivTransactionCategory.getBackground();
