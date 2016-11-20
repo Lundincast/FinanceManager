@@ -82,6 +82,7 @@ public class DiskTransactionDataStore implements TransactionDataStore {
                 transaction.setYear(cal.get(Calendar.YEAR));
                 transaction.setComment(transactionModel.getComment());
                 transaction.setFromAccount(transactionModel.getFromAccount());
+                transaction.setToAccount(transactionModel.getToAccount());
                 transaction.setPending(transactionModel.isPending());
                 transaction.setDueToOrBy(transactionModel.getDueToOrBy());
                 transaction.setDueName(transactionModel.getDueName());

@@ -263,4 +263,10 @@ public class TransactionListFragment extends BaseFragment implements Transaction
         fab.close(true);
         ((MainActivity) getActivity()).onFabClicked(CreateTransactionActivity.TRANSACTION_TYPE_INCOME);
     }
+
+    @OnClick(R.id.fab3)
+    void onTransferFabClicked() {
+        fab.close(true);
+        ((MainActivity) getActivity()).onFabClicked(CreateTransactionActivity.TRANSACTION_TYPE_TRANSFER);
+    }
 }

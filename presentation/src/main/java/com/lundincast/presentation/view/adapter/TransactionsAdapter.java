@@ -39,6 +39,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final LayoutInflater layoutInflater;
     private String currencySymbol;
 
+    // Three constants for defining transaction's viewType
+    private final int EXPENSE = 0, INCOME = 1, TRANSFER = 2;
+
     private OnItemClickListener onItemClickListener;
 
     public TransactionsAdapter(Context context, List<TransactionModel> transactionCollection) {
@@ -49,60 +52,124 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public TransactionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = this.layoutInflater.inflate(R.layout.transaction_list_entry, parent, false);
+    public int getItemViewType(int position) {
+        if ((transactionsCollection.get(position).getTransactionType()).equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+            return EXPENSE;
+        } else if ((transactionsCollection.get(position).getTransactionType()).equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+            return INCOME;
+        } else {
+            return TRANSFER;
+        }
+    }
 
-        return new TransactionViewHolder(v);
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
+
+        switch (viewType) {
+            case EXPENSE:
+                View v1 = this.layoutInflater.inflate(R.layout.transaction_list_entry, parent, false);
+                viewHolder = new TransactionViewHolder(v1);
+                break;
+            case INCOME:
+                View v2 = this.layoutInflater.inflate(R.layout.income_list_entry, parent, false);
+                viewHolder = new IncomeViewHolder(v2);
+                break;
+            case TRANSFER:
+                View v3 = this.layoutInflater.inflate(R.layout.transfer_list_entry, parent, false);
+                viewHolder = new TransferViewHolder(v3);
+                break;
+            default:
+                viewHolder = null;
+                break;
+        }
+
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        TransactionViewHolder viewHolder = (TransactionViewHolder) holder;
-
         final TransactionModel transactionModel = this.transactionsCollection.get(position);
-        // extract category or account information to set icon color
-        int color = 0;
-        if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
-            CategoryModel categoryModel = transactionModel.getCategory();
-            color = categoryModel.getColor();
-        } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-            AccountModel accountModel = transactionModel.getFromAccount();
-            if (accountModel != null) {
-                color = accountModel.getColor();
-            }
-        }
-        // set circle drawable color
-        LayerDrawable bgDrawable = (LayerDrawable) viewHolder.ivTransactionCategory.getBackground();
-        final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
-        shape.setColor(color);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(transactionModel.getDate());
-        viewHolder.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
-        viewHolder.tvTransactionDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
-        viewHolder.tvTransactionComment.setText(transactionModel.getComment());
-        viewHolder.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + this.currencySymbol);
-        // set price color depending if expense or income
-        if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
-            viewHolder.tvTransactionPrice.setTextColor(Color.RED);
-        } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-            viewHolder.tvTransactionPrice.setTextColor(-11751600);
-        }
 
-        if (transactionModel.isPending()) {
-            viewHolder.iv_pending_icon.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.iv_pending_icon.setVisibility(View.GONE);
-        }
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TransactionsAdapter.this.onItemClickListener != null) {
-                    TransactionsAdapter.this.onItemClickListener.onTransactionItemClicked(transactionModel);
+        switch (holder.getItemViewType()) {
+            case 0:
+                TransactionViewHolder expenseVH = (TransactionViewHolder) holder;
+
+                // extract category or account information to set icon color
+                int color = 0;
+                if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                    CategoryModel categoryModel = transactionModel.getCategory();
+                    color = categoryModel.getColor();
+                } else if (transactionModel.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+                    AccountModel accountModel = transactionModel.getFromAccount();
+                    if (accountModel != null) {
+                        color = accountModel.getColor();
+                    }
                 }
-            }
-        });
+                // set circle drawable color
+                LayerDrawable bgDrawable = (LayerDrawable) expenseVH.ivTransactionCategory.getBackground();
+                final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
+                shape.setColor(color);
+                expenseVH.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
+                expenseVH.tvTransactionDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
+                expenseVH.tvTransactionComment.setText(transactionModel.getComment());
+                expenseVH.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + this.currencySymbol);
+                expenseVH.tvTransactionPrice.setTextColor(Color.RED);
+                if (transactionModel.isPending()) {
+                    expenseVH.iv_pending_icon.setVisibility(View.VISIBLE);
+                } else {
+                    expenseVH.iv_pending_icon.setVisibility(View.GONE);
+                }
+                expenseVH.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (TransactionsAdapter.this.onItemClickListener != null) {
+                            TransactionsAdapter.this.onItemClickListener.onTransactionItemClicked(transactionModel);
+                        }
+                    }
+                });
+                break;
+            case 1:
+                IncomeViewHolder incomeVH = (IncomeViewHolder) holder;
+                incomeVH.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
+                incomeVH.tvTransactionDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
+                incomeVH.tvTransactionComment.setText(transactionModel.getComment());
+                incomeVH.tvTransactionPrice.setText((String.format("%.2f", transactionModel.getPrice())) + this.currencySymbol);
+                incomeVH.tvTransactionPrice.setTextColor(Color.parseColor("#4caf50"));
+                incomeVH.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (TransactionsAdapter.this.onItemClickListener != null) {
+                            TransactionsAdapter.this.onItemClickListener.onTransactionItemClicked(transactionModel);
+                        }
+                    }
+                });
+                break;
+            case 2:
+                TransferViewHolder transferVH = (TransferViewHolder) holder;
+                transferVH.tvDayOfWeek.setText(CustomDateFormatter.getShortDayOfWeekName(cal));
+                transferVH.tvTransferDate.setText(CustomDateFormatter.getShortFormattedDate(cal));
+                transferVH.tvTransferComment.setText(
+                        transactionModel.getFromAccount().getName() + " -> " + transactionModel.getToAccount().getName());
+                transferVH.tvTransferPrice.setText((String.format("%.2f", transactionModel.getPrice())) + this.currencySymbol);
+                transferVH.tvTransferPrice.setTextColor(Color.parseColor("#9C27B0"));
+                transferVH.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (TransactionsAdapter.this.onItemClickListener != null) {
+                            TransactionsAdapter.this.onItemClickListener.onTransactionItemClicked(transactionModel);
+                        }
+                    }
+                });
+                break;
+            default:
+
+                break;
+        }
     }
 
     @Override
@@ -153,6 +220,32 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @Bind(R.id.iv_pending_icon) ImageView iv_pending_icon;
 
         public TransactionViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    static class IncomeViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.tv_day_of_week) TextView tvDayOfWeek;
+        @Bind(R.id.et_transaction_date) TextView tvTransactionDate;
+        @Bind(R.id.tv_transaction_comment) TextView tvTransactionComment;
+        @Bind(R.id.tv_transaction_price) TextView tvTransactionPrice;
+
+        public IncomeViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    static class TransferViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.tv_day_of_week) TextView tvDayOfWeek;
+        @Bind(R.id.et_transfer_date) TextView tvTransferDate;
+        @Bind(R.id.tv_transfer_comment) TextView tvTransferComment;
+        @Bind(R.id.tv_transfer_price) TextView tvTransferPrice;
+
+        public TransferViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

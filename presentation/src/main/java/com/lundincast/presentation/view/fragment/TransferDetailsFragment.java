@@ -31,21 +31,23 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * A {@link Fragment} subclass for showing income specific details
+ * A {@link Fragment} subclass for showing transfer details
  */
-public class IncomeDetailsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener,
-                                                                   TimePickerDialog.OnTimeSetListener {
+public class TransferDetailsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener,
+                                                                     TimePickerDialog.OnTimeSetListener {
 
-    @Bind(R.id.tv_account_name) TextView tv_account_name;
-    @Bind(R.id.et_transaction_date) TextView tv_transaction_date;
-    @Bind(R.id.et_transaction_time) TextView tv_transaction_time;
+    @Bind(R.id.et_from_account) TextView et_from_account;
+    @Bind(R.id.et_to_account) TextView et_to_account;
+    @Bind(R.id.et_transaction_date) TextView et_transaction_date;
+    @Bind(R.id.et_transaction_time) TextView et_transaction_time;
     @Bind(R.id.et_transaction_comment) EditText et_transaction_comment;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_income_details, container, false);
+        View fragmentView = inflater.inflate(R.layout.fragment_transfer_details, container, false);
         ButterKnife.bind(this, fragmentView);
 
         return fragmentView;
@@ -55,23 +57,33 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Set account as in activity's presenter
-        AccountModel account = ((CreateTransactionActivity) getActivity()).getToAccount();
+        // Set "from account" as in activity's presenter
+        AccountModel account = ((CreateTransactionActivity) getActivity()).getFromAccount();
         // Set account name
         if (account != null) {
-            tv_account_name.setText(account.getName());
+            et_from_account.setText(account.getName());
         } else {
-            tv_account_name.setText(R.string.unassigned);
+            et_from_account.setText(R.string.unassigned);
         }
+
+        // Set "to account" as in activity's presenter
+        account = ((CreateTransactionActivity) getActivity()).getToAccount();
+        // Set account name
+        if (account != null) {
+            et_to_account.setText(account.getName());
+        } else {
+            et_to_account.setText(R.string.unassigned);
+        }
+
         // Set date and time as in activity's presenter
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
         }
 
         // Set comment as in activity's presenter
@@ -95,9 +107,8 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         });
     }
 
-    @OnClick(R.id.tv_account_name)
-    void onAccountClicked() {
-
+    @OnClick(R.id.et_from_account)
+    void onFromAccountClicked() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<AccountModel> result = realm.where(AccountModel.class).findAll();
 
@@ -108,11 +119,28 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
                             @Override
                             public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                                 dialog.dismiss();
-                                IncomeDetailsFragment.this.onAccountSet(itemView);
+                                TransferDetailsFragment.this.onAccountSet(itemView, "from");
                             }
                         })
                 .show();
+    }
 
+    @OnClick(R.id.et_to_account)
+    void onToAccountClicked() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<AccountModel> result = realm.where(AccountModel.class).findAll();
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.choose_account)
+                .adapter(new AccountListDialogAdapter(getActivity(), result),
+                        new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                dialog.dismiss();
+                                TransferDetailsFragment.this.onAccountSet(itemView, "to");
+                            }
+                        })
+                .show();
     }
 
     @OnClick(R.id.et_transaction_date)
@@ -143,10 +171,15 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         tpd.show(getFragmentManager(), "TimepickerDialog");
     }
 
-    private void onAccountSet(View itemView) {
+    private void onAccountSet(View itemView, String flow) {
         TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
-        this.tv_account_name.setText(accountNameTv.getText());
-        ((CreateTransactionActivity) getActivity()).onToAccountSet((String) accountNameTv.getText());
+        if (flow == "from") {
+            this.et_from_account.setText(accountNameTv.getText());
+            ((CreateTransactionActivity) getActivity()).onFromAccountSet((String) accountNameTv.getText());
+        } else {
+            this.et_to_account.setText(accountNameTv.getText());
+            ((CreateTransactionActivity) getActivity()).onToAccountSet((String) accountNameTv.getText());
+        }
     }
 
     @Override
@@ -159,7 +192,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         // assign selected date to mDate variable in parent activity
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // format date and display
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
     }
 
     @Override
@@ -173,9 +206,9 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // Display time on screen
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
         }
     }
 }

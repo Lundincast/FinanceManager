@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="10dp">
 
     <ImageView
-        android:id="@+id/iv_transaction_category"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_margin="9dp"
-        android:background="@drawable/circle"
-        android:contentDescription="@string/transaction_color" />
+        android:id="@+id/iv_income_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:background="@drawable/ic_add_green_36dp"
+        android:contentDescription="@string/income_icon" />
 
     <TextView
         android:id="@+id/tv_day_of_week"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/iv_transaction_category"
+        android:layout_toRightOf="@+id/iv_income_icon"
+        android:layout_toEndOf="@+id/iv_income_icon"
         android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:textColor="@color/black" />
 
     <TextView
@@ -35,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_day_of_week"
-        android:layout_toRightOf="@id/iv_transaction_category"
+        android:layout_toRightOf="@id/iv_income_icon"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"
         android:textColor="@color/black"
@@ -52,15 +54,5 @@
         android:gravity="center_vertical"
         android:textSize="17sp"
         tools:ignore="RelativeOverlap" />
-
-    <ImageView
-        android:id="@+id/iv_pending_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/tv_transaction_price"
-        android:src="@drawable/ic_history_black_24dp"
-        android:visibility="gone" />
 
 </RelativeLayout>

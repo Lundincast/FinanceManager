@@ -14,4 +14,14 @@ public interface TransactionDetailsView extends LoadDataView {
 //    void renderTransaction(TransactionModel transaction);
 
     void renderTransactionPrice(String price);
+
+    /**
+     * Render a message in a Toast
+     */
+    void showMessage(String message);
+
+    /**
+     * Close activity
+     */
+    void closeActivity();
 }

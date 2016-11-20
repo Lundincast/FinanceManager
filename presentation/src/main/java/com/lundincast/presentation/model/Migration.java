@@ -67,5 +67,20 @@ public class Migration implements RealmMigration {
 
             oldVersion++;
         }
+
+        // Migrate from version 3 to version 4
+        if (oldVersion == 3) {
+            // Add toAccount field in TransactionModel and set it to null
+            schema.get("TransactionModel")
+                    .addRealmObjectField("toAccount", schema.get("AccountModel"))
+                    .transform(new RealmObjectSchema.Function() {
+                        @Override
+                        public void apply(DynamicRealmObject obj) {
+                            obj.set("toAccount", null);
+                        }
+                    });
+
+            oldVersion++;
+        }
     }
 }

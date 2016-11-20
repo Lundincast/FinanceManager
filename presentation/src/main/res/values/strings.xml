@@ -69,5 +69,11 @@
     <string name="delete_last_icon">Delete last icon</string>
     <string name="unassigned">Unassigned</string>
     <string name="full_list_icon">Full list icon</string>
+    <string name="from">From :</string>
+    <string name="to">To :</string>
+    <string name="to_account">To account</string>
+    <string name="from_account_icon">From account icon</string>
+    <string name="to_account_icon">To account icon</string>
+    <string name="income_icon">Income icon</string>
 
 </resources>

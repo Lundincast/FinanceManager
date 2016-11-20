@@ -35,7 +35,10 @@ public class CreateTransactionPresenter implements Presenter {
     private CategoryModel mCategory = null;
     private Date mDate = new Date();
     private String mComment = "";
+    private AccountModel mPreviousFromAccount;
     private AccountModel mFromAccount = null;
+    private AccountModel mPreviousToAccount;
+    private AccountModel mToAccount = null;
     private boolean mPending;
     private int mDueToOrBy;
     private String mDueName;
@@ -74,18 +77,26 @@ public class CreateTransactionPresenter implements Presenter {
                     realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst();
             this.mTransactionType = transactionModel.getTransactionType();
             this.mPrice = transactionModel.getPrice();
-            this.previousPrice = mPrice;
+            this.previousPrice = this.mPrice;
             this.mCategory = transactionModel.getCategory();
             this.mDate = transactionModel.getDate();
             this.mComment = transactionModel.getComment();
             this.mFromAccount = transactionModel.getFromAccount();
+            this.mPreviousFromAccount = this.mFromAccount;
+            this.mToAccount = transactionModel.getToAccount();
+            this.mPreviousToAccount = this.mToAccount;
             this.mPending = transactionModel.isPending();
             this.mDueToOrBy = transactionModel.getDueToOrBy();
             this.mDueName = transactionModel.getDueName();
         } else {
             AccountModel account = realm.where(AccountModel.class).findFirst();
             if (account != null) {
-                this.mFromAccount = account;
+                if (this.mTransactionType == CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE) {
+                    this.mFromAccount = account;
+                } else if (this.mTransactionType == CreateTransactionActivity.TRANSACTION_TYPE_INCOME) {
+                    this.mToAccount = account;
+                }
+
             }
         }
         showTransactionPriceInView();
@@ -96,47 +107,81 @@ public class CreateTransactionPresenter implements Presenter {
     }
 
     public void saveTransaction() {
-        TransactionModel transaction = new TransactionModel(mTransactionId);
-        transaction.setTransactionType(mTransactionType);
-        transaction.setPrice(mPrice);
-        if (mTransactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
-            transaction.setCategory(realm.copyFromRealm(mCategory));
+        String errorMessage = validateData();
+        if (errorMessage != null) {
+            this.viewDetailsView.showMessage(errorMessage);
         } else {
-            transaction.setCategory(null);
-        }
-        transaction.setDate(mDate);
-        transaction.setComment(mComment);
-        transaction.setFromAccount(mFromAccount);
-        transaction.setPending(mPending);
-        transaction.setDueToOrBy(mDueToOrBy);
-        transaction.setDueName(mDueName);
-        this.transactionRepository.saveTransaction(transaction);
-
-        // Update account balance with transaction value if necessary
-        double delta;
-        if (previousPrice == -1) {
-            delta = mPrice;
-        } else {
-            delta = mPrice - previousPrice;
-        }
-        if (previousPrice - mPrice != 0) {
-            if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
-                this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
-            } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-                this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), delta);
+            TransactionModel transaction = new TransactionModel(mTransactionId);
+            transaction.setTransactionType(mTransactionType);
+            transaction.setPrice(mPrice);
+            if (mTransactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                transaction.setCategory(realm.copyFromRealm(mCategory));
+            } else {
+                transaction.setCategory(null);
             }
+            transaction.setDate(mDate);
+            transaction.setComment(mComment);
+            transaction.setFromAccount(mFromAccount);
+            transaction.setToAccount(mToAccount);
+            transaction.setPending(mPending);
+            transaction.setDueToOrBy(mDueToOrBy);
+            transaction.setDueName(mDueName);
+            this.transactionRepository.saveTransaction(transaction);
+
+            // Update account balance with transaction value if necessary
+            double delta;
+            if (previousPrice == -1) {
+                delta = mPrice;
+            } else {
+                delta = mPrice - previousPrice;
+            }
+            if (previousPrice - mPrice != 0) {
+                if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                    this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
+                } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+                    this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), delta);
+                } else {
+                    this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
+                    this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), delta);
+                }
+            }
+            this.viewDetailsView.closeActivity();
         }
     }
 
     public void deleteTransaction(int transactionId) {
-        this.transactionRepository.deleteTransaction(transactionId);
         // remove transaction value from account balance
         TransactionModel transaction = realm.where(TransactionModel.class).equalTo("transactionId", transactionId).findFirst();
         if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
             this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), transaction.getPrice());
         } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-            this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -transaction.getPrice());
+            this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), -transaction.getPrice());
+        } else {
+            this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), transaction.getPrice());
+            this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), -transaction.getPrice());
         }
+        this.transactionRepository.deleteTransaction(transactionId);
+    }
+
+    private String validateData() {
+        String errorMessage = null;
+        if (this.mTransactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+            if (this.mFromAccount == null) {
+                errorMessage = "Please select an account";
+            }
+        } else if (this.mTransactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+            if (this.mToAccount == null) {
+                errorMessage = "Please select an account";
+            }
+        } else if (this.mTransactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_TRANSFER)) {
+            if (this.mFromAccount == null) {
+                errorMessage = "Please select source account";
+            }
+            if (this.mToAccount == null) {
+                errorMessage = "Please select target account";
+            }
+        }
+        return errorMessage;
     }
 
     public String getmTransactionType() {
@@ -181,6 +226,14 @@ public class CreateTransactionPresenter implements Presenter {
 
     public void setmFromAccount(String accountName) {
         this.mFromAccount = realm.where(AccountModel.class).equalTo("name", accountName).findFirst();
+    }
+
+    public AccountModel getmToAccount() {
+        return mToAccount;
+    }
+
+    public void setmToAccount(String accountName) {
+        this.mToAccount = realm.where(AccountModel.class).equalTo("name", accountName).findFirst();
     }
 
     public boolean ismPending() {

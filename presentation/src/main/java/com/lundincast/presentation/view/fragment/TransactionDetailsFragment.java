@@ -91,7 +91,7 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
         }
 
         // Set account as in activity's presenter
-        AccountModel account = ((CreateTransactionActivity) getActivity()).getAccount();
+        AccountModel account = ((CreateTransactionActivity) getActivity()).getFromAccount();
         // Set account name
         if (account != null) {
             et_account_name.setText(account.getName());
@@ -257,6 +257,6 @@ public class TransactionDetailsFragment extends BaseFragment implements DatePick
     private void onAccountSet(View itemView) {
         TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
         this.et_account_name.setText(accountNameTv.getText());
-        ((CreateTransactionActivity) getActivity()).onAccountSet((String) accountNameTv.getText());
+        ((CreateTransactionActivity) getActivity()).onFromAccountSet((String) accountNameTv.getText());
     }
 }

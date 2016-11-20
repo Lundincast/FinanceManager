@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -29,6 +30,7 @@ import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFr
 import com.lundincast.presentation.view.fragment.IncomeDetailsFragment;
 import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
 import com.lundincast.presentation.view.fragment.TransactionDetailsFragment;
+import com.lundincast.presentation.view.fragment.TransferDetailsFragment;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.Date;
@@ -52,6 +54,7 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
 
     public static final String TRANSACTION_TYPE_EXPENSE = "Expense";
     public static final String TRANSACTION_TYPE_INCOME = "Income";
+    public static final String TRANSACTION_TYPE_TRANSFER = "Transfer";
 
     public static Intent getCallingIntent(Context context, int transactionId, String transactionType) {
         Intent callingIntent = new Intent(context, CreateTransactionActivity.class);
@@ -145,8 +148,10 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         } else {
             if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
                 addFragment(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment");
-            } else {
+            } else if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
                 addFragment(R.id.fl_transaction_details_container, new IncomeDetailsFragment(), "TransactionDetailsFragment");
+            } else {
+                addFragment(R.id.fl_transaction_details_container, new TransferDetailsFragment(), "TransactionDetailsFragment");
             }
             step = FlowStep.Final;
         }
@@ -179,6 +184,16 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
     @Override
     public void hideLoading() {
 
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void closeActivity() {
+        this.finish();
     }
 
     @Override
@@ -245,10 +260,16 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                                 .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
                                 .commit();
                         step = FlowStep.Category;
-                    } else {
+                    } else if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
                         getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.fl_transaction_details_container, new IncomeDetailsFragment(),"IncomeDetailsFragment")
+                                .commit();
+                        step = FlowStep.Final;
+                    } else {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new TransferDetailsFragment(),"TransferDetailsFragment")
                                 .commit();
                         step = FlowStep.Final;
                     }
@@ -259,10 +280,16 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                                 .replace(R.id.fl_transaction_details_container, new TransactionDetailsFragment(), "TransactionDetailsFragment")
                                 .commit();
                         step = FlowStep.Final;
-                    } else {
+                    } else if (transactionType.equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
                         getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.fl_transaction_details_container, new IncomeDetailsFragment(),"IncomeDetailsFragment")
+                                .commit();
+                        step = FlowStep.Final;
+                    } else {
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fl_transaction_details_container, new TransferDetailsFragment(),"TransferDetailsFragment")
                                 .commit();
                         step = FlowStep.Final;
                     }
@@ -270,7 +297,6 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
                 break;
             case Final:
                 this.createTransactionPresenter.saveTransaction();
-                finish();
                 break;
             default:
                 break;
@@ -390,12 +416,20 @@ public class CreateTransactionActivity extends BaseActivity implements HasCompon
         this.createTransactionPresenter.setmComment(comment);
     }
 
-    public AccountModel getAccount() {
+    public AccountModel getFromAccount() {
         return this.createTransactionPresenter.getmFromAccount();
     }
 
-    public void onAccountSet(String accountName) {
+    public void onFromAccountSet(String accountName) {
         this.createTransactionPresenter.setmFromAccount(accountName);
+    }
+
+    public AccountModel getToAccount() {
+        return this.createTransactionPresenter.getmToAccount();
+    }
+
+    public void onToAccountSet(String accountName) {
+        this.createTransactionPresenter.setmToAccount(accountName);
     }
 
     public boolean isPending() {

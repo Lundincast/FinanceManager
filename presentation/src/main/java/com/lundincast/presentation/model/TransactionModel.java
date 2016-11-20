@@ -30,6 +30,7 @@ public class TransactionModel extends RealmObject {
     private int year;
     private String comment;
     private AccountModel fromAccount;
+    private AccountModel toAccount;
     private boolean pending;
     private int dueToOrBy;
     private String dueName;
@@ -113,6 +114,14 @@ public class TransactionModel extends RealmObject {
 
     public void setFromAccount(AccountModel fromAccount) {
         this.fromAccount = fromAccount;
+    }
+
+    public AccountModel getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(AccountModel toAccount) {
+        this.toAccount = toAccount;
     }
 
     public String getDueName() {
