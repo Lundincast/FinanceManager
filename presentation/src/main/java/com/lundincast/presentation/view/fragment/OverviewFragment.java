@@ -59,6 +59,7 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
     @Inject OverviewPresenter overviewPresenter;
 
     @Bind(R.id.ll_loading) LinearLayout ll_loading;
+    @Bind(R.id.tv_overview_title) TextView tv_overview_title;
     @Bind(R.id.tv_total_income) TextView tv_total_income;
     @Bind(R.id.tv_total_expenses) TextView tv_total_expenses;
     @Bind(R.id.piechart_monthly_distribution) PieChart piechart_monthly;
@@ -190,6 +191,11 @@ public class OverviewFragment extends BaseFragment implements OverviewView,
         this.getComponent(TransactionComponent.class).inject(this);
         this.overviewPresenter.setView(this);
         this.overviewPresenter.setCurrency(((MainActivity) getActivity()).sharedPreferences);
+    }
+
+    @Override
+    public void setMonthOverviewTitle(String month) {
+        tv_overview_title.setText("Overview - " + month);
     }
 
     @Override

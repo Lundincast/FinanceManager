@@ -70,11 +70,14 @@ public class CreateOrUpdateCategoryFragment extends BaseFragment {
         iv_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (et_category_name.getText().toString().equals("")) {
+                String categoryName = et_category_name.getText().toString();
+                if (categoryName.equals("")) {
                     CreateOrUpdateCategoryFragment.this.showToastMessage("Category name cannot be empty!");
+                } else if (CreateOrUpdateCategoryFragment.this.createCategoryPresenter.isDuplicate(categoryName)) {
+                    CreateOrUpdateCategoryFragment.this.showToastMessage("Category " + categoryName + " already exists!");
                 } else {
                     CreateOrUpdateCategoryFragment.this.createCategoryPresenter
-                            .saveCategory(activity.categoryId, et_category_name.getText().toString(), activity.color);
+                            .saveCategory(activity.categoryId, categoryName, activity.color);
                     activity.finish();
                 }
             }

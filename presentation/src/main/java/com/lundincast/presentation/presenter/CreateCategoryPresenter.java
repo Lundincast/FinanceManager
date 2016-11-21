@@ -5,17 +5,22 @@ import com.lundincast.presentation.model.CategoryModel;
 
 import javax.inject.Inject;
 
+import io.realm.Realm;
+
 /**
  * {@link Presenter} that controls communication between views and models of the presentation
  * layer.
  */
 public class CreateCategoryPresenter implements Presenter {
 
+    private Realm realm;
+
     private final CategoryRepository categoryRepository;
 
     @Inject
     public CreateCategoryPresenter(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+        this.realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -31,6 +36,10 @@ public class CreateCategoryPresenter implements Presenter {
     @Override
     public void destroy() {
 
+    }
+
+    public boolean isDuplicate(String categoryName) {
+        return (realm.where(CategoryModel.class).equalTo("name", categoryName).findFirst() != null);
     }
 
     public void saveCategory(Long categoryId, String categoryName, int categoryColor) {

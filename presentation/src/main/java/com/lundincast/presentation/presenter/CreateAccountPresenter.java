@@ -139,6 +139,10 @@ public class CreateAccountPresenter implements Presenter {
         this.viewListView.showDialog(builder);
     }
 
+    public boolean isDuplicate(String accountName) {
+        return (realm.where(AccountModel.class).equalTo("name", accountName).findFirst() != null);
+    }
+
     public void saveAccount(Long accountId, String accountName, int accountColor, double balance) {
         if (!accountName.equals("")) {
             AccountModel accountModel = new AccountModel();

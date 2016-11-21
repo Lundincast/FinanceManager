@@ -44,8 +44,6 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
     ImageView iv_done;
 
     @Inject CreateAccountPresenter createAccountPresenter;
-    @Inject SharedPreferences sharedPreferences;
-
 
     @Nullable
     @Override
@@ -78,8 +76,11 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
         iv_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (et_account_name.getText().toString().equals("")) {
+                String accountName = et_account_name.getText().toString();
+                if (accountName.equals("")) {
                     CreateOrUpdateAccountFragment.this.showToastMessage("Account name cannot be empty!");
+                } else if (CreateOrUpdateAccountFragment.this.createAccountPresenter.isDuplicate(accountName)) {
+                    CreateOrUpdateAccountFragment.this.showToastMessage("Account "+ accountName + " already exists!");
                 } else {
                     double balance;
                     if (et_account_balance_value.getText().toString().equals("")) {
@@ -96,7 +97,7 @@ public class CreateOrUpdateAccountFragment extends BaseFragment implements Creat
                     }
                     CreateOrUpdateAccountFragment.this.createAccountPresenter
                             .saveAccount(((CreateOrUpdateAccountActivity) getActivity()).accountId,
-                                         et_account_name.getText().toString(),
+                                         accountName,
                                          ((CreateOrUpdateAccountActivity) getActivity()).color,
                                          balance);
                     getActivity().finish();

@@ -12,6 +12,11 @@ import java.util.ArrayList;
 public interface OverviewView extends LoadDataView {
 
     /**
+     * Set Overview card title
+     */
+    void setMonthOverviewTitle(String month);
+
+    /**
      * Set total income in monthly overview
      */
     void setMonthIncome(double totalMonthIncome);

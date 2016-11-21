@@ -137,7 +137,18 @@ public class OverviewPresenter implements Presenter {
      */
     public void initialize() {
 
+        this.setOverviewTitleWithCurrentMonth();
         this.loadTransactionList();
+    }
+
+    /**
+     * Get current month
+     */
+    private void setOverviewTitleWithCurrentMonth() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        String month = CustomDateFormatter.getCompleteMonthName(cal.get(Calendar.MONTH));
+        this.viewOverView.setMonthOverviewTitle(month);
     }
 
     /**
