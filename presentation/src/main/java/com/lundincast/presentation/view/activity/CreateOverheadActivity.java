@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ import com.lundincast.presentation.view.TransactionDetailsView;
 import com.lundincast.presentation.view.fragment.CategoryListForNewTransactionFragment;
 import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
 import com.lundincast.presentation.view.fragment.OverheadDetailsFragment;
-import com.melnykov.fab.FloatingActionButton;
+
 
 import javax.inject.Inject;
 
@@ -56,7 +57,8 @@ public class CreateOverheadActivity extends BaseActivity implements HasComponent
     @Bind(R.id.iv_back) ImageView iv_back;
     @Bind(R.id.iv_delete) ImageView iv_delete;
     @Bind(R.id.tv_transaction_price) TextView tv_transaction_price;
-    @Bind(R.id.fab) FloatingActionButton fab;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
 
     @Inject SharedPreferences sharedPreferences;
     @Inject CreateOverheadPresenter createOverheadPresenter;

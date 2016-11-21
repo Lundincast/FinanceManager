@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,7 +32,6 @@ import com.lundincast.presentation.view.fragment.IncomeDetailsFragment;
 import com.lundincast.presentation.view.fragment.NumericKeyboardFragment;
 import com.lundincast.presentation.view.fragment.TransactionDetailsFragment;
 import com.lundincast.presentation.view.fragment.TransferDetailsFragment;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.util.Date;
 
