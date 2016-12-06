@@ -15,9 +15,11 @@ import com.lundincast.presentation.data.TransactionRepositoryImpl;
 import com.lundincast.presentation.data.datasource.DiskTransactionDataStore;
 import com.lundincast.presentation.model.OverheadModel;
 import com.lundincast.presentation.model.TransactionModel;
+import com.lundincast.presentation.view.activity.CreateTransactionActivity;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -47,11 +49,16 @@ public class OverheadService extends Service {
         // query realm for overhead to be created on this day
         RealmResults<OverheadModel> overheadsList =
                 realm.where(OverheadModel.class).equalTo("dayOfMonth", dayOfMonth).findAll();
+        // Get iterator
+        Iterator<OverheadModel> iterator = overheadsList.iterator();
         // Create new transaction for each result
-        for (OverheadModel overhead : overheadsList) {
+        while (iterator.hasNext()){
+            OverheadModel overhead = iterator.next();
             TransactionModel transaction = new TransactionModel(-1);
+            transaction.setTransactionType(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE);
             transaction.setPrice(overhead.getPrice());
             transaction.setCategory(realm.copyFromRealm(overhead.getCategory()));
+            transaction.setFromAccount(realm.copyFromRealm(overhead.getFromAccount()));
             transaction.setDate(cal.getTime());
             transaction.setComment(overhead.getComment());
             transaction.setPending(false);

@@ -80,6 +80,15 @@ public class Migration implements RealmMigration {
                         }
                     });
 
+            schema.get("OverheadModel")
+                    .addRealmObjectField("fromAccount", schema.get("AccountModel"))
+                    .transform(new RealmObjectSchema.Function() {
+                        @Override
+                        public void apply(DynamicRealmObject obj) {
+                            obj.set("fromAccount", null);
+                        }
+                    });
+
             oldVersion++;
         }
     }

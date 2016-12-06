@@ -37,6 +37,7 @@ public class DiskOverheadsDataStore implements OverheadsDataStore {
                 overhead.setPrice(overheadModel.getPrice());
                 CategoryModel category = realm.where(CategoryModel.class).equalTo("id", overheadModel.getCategory().getId()).findFirst();
                 overhead.setCategory(category);
+                overhead.setFromAccount(overheadModel.getFromAccount());
                 overhead.setDayOfMonth(overheadModel.getDayOfMonth());
                 overhead.setComment(overheadModel.getComment());
                 realm.copyToRealmOrUpdate(overhead);

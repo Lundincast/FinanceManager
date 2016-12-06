@@ -21,6 +21,7 @@ import com.lundincast.presentation.dagger.HasComponent;
 import com.lundincast.presentation.dagger.components.DaggerOverheadsComponent;
 import com.lundincast.presentation.dagger.components.OverheadsComponent;
 import com.lundincast.presentation.dagger.modules.OverheadsModule;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.presenter.CreateOverheadPresenter;
 import com.lundincast.presentation.view.CreateItemUtility;
@@ -340,6 +341,14 @@ public class CreateOverheadActivity extends BaseActivity implements HasComponent
                 .replace(R.id.fl_transaction_details_container, new CategoryListForNewTransactionFragment(), "CategoryListForNewTransactionFragment")
                 .commit();
         step = FlowStep.Category;
+    }
+
+    public AccountModel getFromAccount() {
+        return this.createOverheadPresenter.getmFromAccount();
+    }
+
+    public void onFromAccountSet(String accountName) {
+        this.createOverheadPresenter.setmFromAccount(accountName);
     }
 
     public short getDayOfMonth() {

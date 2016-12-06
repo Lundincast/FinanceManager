@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 
 import com.lundincast.presentation.broadcastreceivers.OverheadReceiver;
 import com.lundincast.presentation.data.OverheadsRepository;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.model.OverheadModel;
 import com.lundincast.presentation.view.TransactionDetailsView;
@@ -35,6 +36,7 @@ public class CreateOverheadPresenter implements Presenter {
     private int mOverheadId = -1;
     private double mPrice = 0;
     private CategoryModel mCategory = null;
+    private AccountModel mFromAccount = null;
     private short mDayOfMonth = 1;
     private String mComment;
 
@@ -58,6 +60,14 @@ public class CreateOverheadPresenter implements Presenter {
 
     public void setmCategory(CategoryModel categoryModel) {
         this.mCategory = categoryModel;
+    }
+
+    public AccountModel getmFromAccount() {
+        return mFromAccount;
+    }
+
+    public void setmFromAccount(String accountName) {
+        this.mFromAccount = realm.where(AccountModel.class).equalTo("name", accountName).findFirst();
     }
 
     public short getmDayOfMonth() {
@@ -98,6 +108,7 @@ public class CreateOverheadPresenter implements Presenter {
                     realm.where(OverheadModel.class).equalTo("overheadId", overheadId).findFirst();
             this.mPrice = overheadModel.getPrice();
             this.mCategory = overheadModel.getCategory();
+            this.mFromAccount = overheadModel.getFromAccount();
             this.mDayOfMonth = overheadModel.getDayOfMonth();
             this.mComment = overheadModel.getComment();
         }
@@ -112,6 +123,7 @@ public class CreateOverheadPresenter implements Presenter {
         OverheadModel overhead = new OverheadModel(mOverheadId);
         overhead.setPrice(mPrice);
         overhead.setCategory(realm.copyFromRealm(mCategory));
+        overhead.setFromAccount(realm.copyFromRealm(mFromAccount));
         overhead.setDayOfMonth(mDayOfMonth);
         overhead.setComment(mComment);
         this.overheadsRepository.saveOverhead(overhead);

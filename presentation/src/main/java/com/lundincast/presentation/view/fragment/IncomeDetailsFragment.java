@@ -36,9 +36,9 @@ import io.realm.RealmResults;
 public class IncomeDetailsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener,
                                                                    TimePickerDialog.OnTimeSetListener {
 
-    @Bind(R.id.tv_account_name) TextView tv_account_name;
-    @Bind(R.id.et_transaction_date) TextView tv_transaction_date;
-    @Bind(R.id.et_transaction_time) TextView tv_transaction_time;
+    @Bind(R.id.et_account_name) EditText et_account_name;
+    @Bind(R.id.et_transaction_date) EditText et_transaction_date;
+    @Bind(R.id.et_transaction_time) EditText et_transaction_time;
     @Bind(R.id.et_transaction_comment) EditText et_transaction_comment;
 
     @Nullable
@@ -59,19 +59,19 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         AccountModel account = ((CreateTransactionActivity) getActivity()).getToAccount();
         // Set account name
         if (account != null) {
-            tv_account_name.setText(account.getName());
+            et_account_name.setText(account.getName());
         } else {
-            tv_account_name.setText(R.string.unassigned);
+            et_account_name.setText(R.string.unassigned);
         }
         // Set date and time as in activity's presenter
         Calendar cal = Calendar.getInstance();
         Date date = ((CreateTransactionActivity) getActivity()).getDate();
         cal.setTime(date);
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
         }
 
         // Set comment as in activity's presenter
@@ -95,7 +95,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         });
     }
 
-    @OnClick(R.id.tv_account_name)
+    @OnClick(R.id.et_account_name)
     void onAccountClicked() {
 
         Realm realm = Realm.getDefaultInstance();
@@ -145,7 +145,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
 
     private void onAccountSet(View itemView) {
         TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
-        this.tv_account_name.setText(accountNameTv.getText());
+        this.et_account_name.setText(accountNameTv.getText());
         ((CreateTransactionActivity) getActivity()).onToAccountSet((String) accountNameTv.getText());
     }
 
@@ -159,7 +159,7 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         // assign selected date to mDate variable in parent activity
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // format date and display
-        tv_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
+        et_transaction_date.setText(CustomDateFormatter.getShortFormattedDate(cal));
     }
 
     @Override
@@ -173,9 +173,9 @@ public class IncomeDetailsFragment extends BaseFragment implements DatePickerDia
         ((CreateTransactionActivity) getActivity()).onDateSet(cal.getTime());
         // Display time on screen
         if (cal.get(Calendar.MINUTE) <= 9) {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":0" + cal.get(Calendar.MINUTE));
         } else {
-            tv_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
+            et_transaction_time.setText(cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE));
         }
     }
 }

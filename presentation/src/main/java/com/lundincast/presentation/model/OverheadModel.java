@@ -14,6 +14,7 @@ public class OverheadModel extends RealmObject {
 
     private double price;
     private CategoryModel category;
+    private AccountModel fromAccount;
     private short dayOfMonth;
     private String comment;
 
@@ -61,5 +62,13 @@ public class OverheadModel extends RealmObject {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public AccountModel getFromAccount() {
+        return fromAccount;
+    }
+
+    public void setFromAccount(AccountModel fromAccount) {
+        this.fromAccount = fromAccount;
     }
 }

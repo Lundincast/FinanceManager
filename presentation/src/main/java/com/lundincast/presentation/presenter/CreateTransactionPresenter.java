@@ -35,9 +35,9 @@ public class CreateTransactionPresenter implements Presenter {
     private CategoryModel mCategory = null;
     private Date mDate = new Date();
     private String mComment = "";
-    private AccountModel mPreviousFromAccount;
+    private AccountModel mPreviousFromAccount = null;
     private AccountModel mFromAccount = null;
-    private AccountModel mPreviousToAccount;
+    private AccountModel mPreviousToAccount = null;
     private AccountModel mToAccount = null;
     private boolean mPending;
     private int mDueToOrBy;
@@ -130,20 +130,70 @@ public class CreateTransactionPresenter implements Presenter {
 
             // Update account balance with transaction value if necessary
             double delta;
-            if (previousPrice == -1) {
+            if (previousPrice == -1 || previousPrice == mPrice) {
                 delta = mPrice;
             } else {
                 delta = mPrice - previousPrice;
             }
-            if (previousPrice - mPrice != 0) {
+            if (delta != 0) {
                 if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
-                    this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
+                    if (mPreviousFromAccount == null || mFromAccount == mPreviousFromAccount) {
+                        // In case of a new expense or if the fromAccount hasn't changed, only apply the delta
+                        this.accountRepository.updateAccountBalance(mFromAccount.getId(), -delta);
+                    } else {
+                        // If fromAccount has been updated, add previous price to old fromAccount and subtract
+                        // new price to new fromAccount
+                        this.accountRepository.updateAccountBalance(mPreviousFromAccount.getId(), previousPrice);
+                        this.accountRepository.updateAccountBalance(mFromAccount.getId(), -mPrice);
+                    }
                 } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
-                    this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), delta);
+                    if (mPreviousToAccount == null || mToAccount == mPreviousToAccount) {
+                        // In case of a new income or if the toAccount hasn't changed, only apply the delta
+                        this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), delta);
+                    } else {
+                        // If toAccount has been updated, substract previous price to old toAccount and add
+                        // new price to new toAccount
+                        this.accountRepository.updateAccountBalance(mPreviousToAccount.getId(), -previousPrice);
+                        this.accountRepository.updateAccountBalance(mToAccount.getId(), mPrice);
+                    }
                 } else {
-                    this.accountRepository.updateAccountBalance(transaction.getFromAccount().getId(), -delta);
-                    this.accountRepository.updateAccountBalance(transaction.getToAccount().getId(), delta);
+                    if (mPreviousFromAccount == null || (mFromAccount == mPreviousFromAccount && mToAccount == mPreviousToAccount)) {
+                        // In case of a new transfer or if none of the accounts have changed, only apply the delta
+                        this.accountRepository.updateAccountBalance(mFromAccount.getId(), -delta);
+                        this.accountRepository.updateAccountBalance(mToAccount.getId(), delta);
+                    } else {
+                        if (mFromAccount != mPreviousFromAccount) {
+                            this.accountRepository.updateAccountBalance(mFromAccount.getId(), delta);
+                            this.accountRepository.updateAccountBalance(mPreviousFromAccount.getId(), -delta);
+                        }
+                        if (mToAccount != mPreviousToAccount) {
+                            this.accountRepository.updateAccountBalance(mToAccount.getId(), -delta);
+                            this.accountRepository.updateAccountBalance(mPreviousToAccount.getId(), delta);
+                        }
+                    }
                 }
+            } else {
+                if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_EXPENSE)) {
+                    if (mFromAccount != mPreviousFromAccount) {
+                        this.accountRepository.updateAccountBalance(mFromAccount.getId(), -delta);
+                        this.accountRepository.updateAccountBalance(mPreviousFromAccount.getId(), delta);
+                    }
+                } else if (transaction.getTransactionType().equals(CreateTransactionActivity.TRANSACTION_TYPE_INCOME)) {
+                    if (mToAccount != mPreviousToAccount) {
+                        this.accountRepository.updateAccountBalance(mToAccount.getId(), delta);
+                        this.accountRepository.updateAccountBalance(mPreviousToAccount.getId(), -delta);
+                    }
+                } else {
+                    if (mFromAccount != mPreviousFromAccount) {
+                        this.accountRepository.updateAccountBalance(mFromAccount.getId(), delta);
+                        this.accountRepository.updateAccountBalance(mPreviousFromAccount.getId(), -delta);
+                    }
+                    if (mToAccount != mPreviousToAccount) {
+                        this.accountRepository.updateAccountBalance(mToAccount.getId(), -delta);
+                        this.accountRepository.updateAccountBalance(mPreviousToAccount.getId(), delta);
+                    }
+                }
+
             }
             this.viewDetailsView.closeActivity();
         }

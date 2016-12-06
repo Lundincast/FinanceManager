@@ -32,6 +32,7 @@ public class CreateAccountPresenter implements Presenter {
     private CreateOrUpdateAccountFragment viewListView;
 
     private AccountModel accountModel;
+    private long accountId;
     private String currencySymbol;
 
     @Inject
@@ -60,6 +61,7 @@ public class CreateAccountPresenter implements Presenter {
         } else {
             this.currencySymbol = " €";
         }
+        this.accountId = accountId;
         // set default values
         if (accountId != -1) {
             // Toolbar title by default is "New category". Set to "Edit account" in this case.
@@ -140,7 +142,12 @@ public class CreateAccountPresenter implements Presenter {
     }
 
     public boolean isDuplicate(String accountName) {
-        return (realm.where(AccountModel.class).equalTo("name", accountName).findFirst() != null);
+        AccountModel account = realm.where(AccountModel.class).equalTo("name", accountName).findFirst();
+        if (account != null && account.getId() != this.accountId) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void saveAccount(Long accountId, String accountName, int accountColor, double balance) {

@@ -18,13 +18,18 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lundincast.presentation.R;
+import com.lundincast.presentation.model.AccountModel;
 import com.lundincast.presentation.model.CategoryModel;
 import com.lundincast.presentation.view.activity.CreateOverheadActivity;
+import com.lundincast.presentation.view.adapter.AccountListDialogAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * A {@link Fragment} subclass for showing overhead details
@@ -32,8 +37,9 @@ import butterknife.OnClick;
 public class OverheadDetailsFragment  extends BaseFragment {
 
     @Bind(R.id.iv_category_icon) ImageView iv_category_icon;
-    @Bind(R.id.et_category_name) TextView tv_category_name;
-    @Bind(R.id.tv_on_day) TextView tv_on_day;
+    @Bind(R.id.et_category_name) EditText et_category_name;
+    @Bind(R.id.et_on_day) EditText et_on_day;
+    @Bind(R.id.et_from_account_name) EditText et_from_account_name;
     @Bind(R.id.et_overhead_comment) EditText et_overhead_comment;
 
     private NumberPicker np;
@@ -63,7 +69,7 @@ public class OverheadDetailsFragment  extends BaseFragment {
         final GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.circle_id);
         shape.setColor(color);
         // Set category name
-        tv_category_name.setText(category.getName());
+        et_category_name.setText(category.getName());
 
         // Set day
         defaultDayValue = ((CreateOverheadActivity) getActivity()).getDayOfMonth();
@@ -71,6 +77,15 @@ public class OverheadDetailsFragment  extends BaseFragment {
             defaultDayValue = 1;
         }
         this.setOnDayTvText(defaultDayValue);
+
+        // Set fromAccount as in activity's presenter
+        AccountModel account = ((CreateOverheadActivity) getActivity()).getFromAccount();
+        // Set account name
+        if (account != null) {
+            et_from_account_name.setText(account.getName());
+        } else {
+            et_from_account_name.setText(R.string.unassigned);
+        }
 
         // Set comment as in activity's presenter
         et_overhead_comment.setText(((CreateOverheadActivity) getActivity()).getComment());
@@ -105,7 +120,7 @@ public class OverheadDetailsFragment  extends BaseFragment {
         } else {
             suffix = "th";
         }
-        tv_on_day.setText(" On " + String.valueOf(dayOfMonth) + suffix + " of the month");
+        et_on_day.setText(" On " + String.valueOf(dayOfMonth) + suffix + " of the month");
     }
 
 
@@ -114,7 +129,25 @@ public class OverheadDetailsFragment  extends BaseFragment {
         ((CreateOverheadActivity) getActivity()).onCategoryClickedInDetails();
     }
 
-    @OnClick(R.id.tv_on_day)
+    @OnClick(R.id.et_from_account_name)
+    void onAccountClicked() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<AccountModel> result = realm.where(AccountModel.class).findAll();
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.choose_account)
+                .adapter(new AccountListDialogAdapter(getActivity(), result),
+                        new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                dialog.dismiss();
+                                OverheadDetailsFragment.this.onAccountSet(itemView);
+                            }
+                        })
+                .show();
+    }
+
+    @OnClick(R.id.et_on_day)
     void onDayTvClicked() {
         // set up number picker
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -147,6 +180,12 @@ public class OverheadDetailsFragment  extends BaseFragment {
     private void updateDayCurrentValue(short dayValue) {
         defaultDayValue = dayValue;
         ((CreateOverheadActivity) getActivity()).setDayOfMonth( dayValue);
+    }
+
+    private void onAccountSet(View itemView) {
+        TextView accountNameTv = (TextView) itemView.findViewById(R.id.et_category_name);
+        this.et_from_account_name.setText(accountNameTv.getText());
+        ((CreateOverheadActivity) getActivity()).onFromAccountSet((String) accountNameTv.getText());
     }
 
 }
